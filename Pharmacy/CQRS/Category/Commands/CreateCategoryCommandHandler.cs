@@ -20,7 +20,8 @@ public class CreateCategoryCommandHandler(
     public async Task<CategoryResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
         var exist = await dbContext.Categories
-            .AnyAsync(x => x.Name == request.Request.Name, cancellationToken);
+            .AnyAsync(x => x.Name == request.Request.Name, 
+                cancellationToken);
 
         if (exist)
         {

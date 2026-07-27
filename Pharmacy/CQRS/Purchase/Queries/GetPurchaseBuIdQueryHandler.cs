@@ -8,6 +8,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Queries;
 
 public record GetPurchaseBuIdQuery(
+    long PharmacyId,
     long Id) : IRequest<PurchaseResponse>;
 
 public class GetPurchaseBuIdQueryHandler(
@@ -18,7 +19,10 @@ public class GetPurchaseBuIdQueryHandler(
     {
         var purchase = await dbContext.Purchases
             .Include(x => x.PurchaseItems)
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.Id,
+                cancellationToken);
         if (purchase == null)
         {
             throw new RecourseNotFoundException("Purchase not found");

@@ -1,7 +1,7 @@
 using FluentValidation;
 using Pharmacy.Models.Dto.Request;
 
-namespace Pharmacy.Validators;
+namespace Pharmacy.CQRS.Category.CategoryValidators;
 
 public class CategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
 
@@ -14,7 +14,6 @@ public class CategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
             .WithMessage("Name is required");
         RuleFor(request => request.Description)
             .NotNull()
-            .NotEmpty()
             .WithMessage("Description is required");
     }
 }

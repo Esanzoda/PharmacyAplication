@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Dto.Response;
@@ -22,9 +23,13 @@ public class UpdatePharmacyNameCommandHandler(IMapper mapper, IApplicationDbCont
             throw new RecourseNotFoundException("Pharmacy not found");
         }
 
-        if (pharmacy.Name == request.NewName)
+        var pharmacyExist = await dbContext.Pharmacies
+            .AnyAsync(x => x.Id != request.Id &&
+                           x.Name == request.NewName,
+                cancellationToken);
+        if (pharmacyExist)
         {
-            throw new BusinessException(" Pharmacy with this name already exist");
+            throw new RecourseIsAlreadyExistException("Pharmacy with this name already exist");
         }
 
         pharmacy.Name = request.NewName;

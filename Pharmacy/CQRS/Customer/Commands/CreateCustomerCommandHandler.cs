@@ -21,10 +21,11 @@ public class CreateCustomerHandler(
 {
     public async Task<CustomerResponse> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
-        var customerByEmail = await dbContext.Customers
-            .AnyAsync(x => x.Email == request.Request.Email || x.PhoneNumber == request.Request.PhoneNumber,
+        var customerExist = await dbContext.Customers
+            .AnyAsync(x => x.Email == request.Request.Email ||
+                           x.PhoneNumber == request.Request.PhoneNumber,
                 cancellationToken);
-        if (customerByEmail)
+        if (customerExist)
         {
             throw new RecourseIsAlreadyExistException(
                 $"Customer already exists with this email {request.Request.Email} or number {request.Request.PhoneNumber}");

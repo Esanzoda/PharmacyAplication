@@ -12,15 +12,14 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Order.Commands;
 
 public record UpdateOrderStatusCommand(
+    long CustomerId,
     long OrderId,
     UpdateOrderRequest Request) : IRequest<OrderResponse>;
 
 public class UpdateOrderStatusHandler(
     IMapper mapper,
     IPublishEndpoint publishEndpoint,
-    IApplicationDbContext dbContext)
-    :
-        IRequestHandler<UpdateOrderStatusCommand, OrderResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<UpdateOrderStatusCommand, OrderResponse>
 {
     public async Task<OrderResponse> Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
     {
@@ -28,20 +27,21 @@ public class UpdateOrderStatusHandler(
         var order = await dbContext.Orders
             .Include(x => x.OrderItems)
             .ThenInclude(x => x.Product)
-            .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId &&
+                                      x.Id == request.OrderId, cancellationToken);
         if (order == null)
         {
             throw new RecourseNotFoundException($"Order not found");
         }
 
-//its order.status alredy changed
+//its order.status already changed
         if (order.OrderStatus is OrderStatus.Completed or OrderStatus.Shipped or OrderStatus.Cancelled)
         {
             throw new BusinessException($"Cannot update a {order.OrderStatus} order");
         }
 
 
-//its new request will chanch ordersTATUS when order canseled
+//its new request will cheng orderStatus when order canceled
         if (request.Request.OrderStatus == OrderStatus.Cancelled)
         {
             foreach (var item in order.OrderItems)

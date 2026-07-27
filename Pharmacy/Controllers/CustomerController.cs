@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pharmacy.CQRS.Cart.Commands;
+using Pharmacy.CQRS.Category.Queries;
 using Pharmacy.CQRS.Customer.Commands;
-using Pharmacy.CQRS.Customer.Queries;
 using Pharmacy.Models.Dto.Request;
 using Pharmacy.Models.Dto.Response;
 
@@ -13,15 +13,16 @@ namespace Pharmacy.Controllers;
 [Route("api/[controller]/[action]")]
 public class CustomerController(IMediator mediator) : ControllerBase
 {
-    [Authorize]
-    [HttpPost]
-    public async Task<ActionResult<CustomerResponse>> Create([FromBody] CustomerRequest request)
+    // [Authorize(Roles = nameof(Role.Customer))]
+    [HttpPatch]
+    public async Task<IActionResult> UpdateCartItemQuantity(long productId, int quantity)
     {
-        var response = await mediator.Send(new CreateCustomerCommand(request));
+        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var response = await mediator.Send(new UpdateQuantityCartItemCommand(customerId, productId, quantity));
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.Customer))]
     [HttpPut]
     public async Task<ActionResult<CustomerResponse>> Update([FromBody] UpdateCustomerRequest request)
     {
@@ -30,62 +31,45 @@ public class CustomerController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.Customer))]
     [HttpPatch]
-    public async Task<ActionResult<CustomerResponse>> UpdatePassword([FromBody] string newPassword)
+    public async Task<ActionResult<CustomerResponse>> UpdatePassword([FromBody] string oldPassword, string newPassword)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var response = await mediator.Send(new UpdateCustomerPasswordCommand(customerId, newPassword));
+        var response = await mediator.Send(new UpdateCustomerPasswordCommand(customerId, oldPassword, newPassword));
         return Ok(response);
     }
-
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.Customer))]
     [HttpGet]
-    public async Task<ActionResult<CustomerResponse>> GetById(long id)
+    public async Task<ActionResult<List<ProductResponse>>> GetCategoryWithProducts(int categoryId, int page, int pageSize)
+    {
+        var response = await mediator.Send(new GetCategoryByIdWithProductsQuery(categoryId, page, pageSize));
+        return Ok(response);
+    }
+    // [Authorize(Roles = nameof(Role.Customer))]
+    [HttpPost]
+    public async Task<IActionResult> AddToCartAsync(CartItemRequest request)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var response = await mediator.Send(new GetCustomerByIdQuery(id));
+        var pharmacyId = 1;
+        var response = await mediator.Send(new AddItemToCartCommand(pharmacyId,customerId, request));
         return Ok(response);
     }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<List<CustomerResponse>>> GetAllByPagination(int pageNumber, int pageSize)
-    {
-        var response = await mediator.Send(new GetAllCustomerByPaginationQuery(pageNumber, pageSize),
-            HttpContext.RequestAborted);
-        return Ok(response);
-    }
-
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.Customer))]
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id)
+    public async Task<IActionResult> RemoveItemFromCartAsync(long productId)
     {
-        var response = await mediator.Send(new DeleteCustomerCommand(id));
+        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var response = await mediator.Send(new RemoveItemFromCartCommand(customerId, productId));
         return Ok(response);
     }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<CustomerResponse?>> GetByEmailAsync(string email)
+    
+    // [Authorize(Roles = nameof(Role.Customer))]
+    [HttpDelete]
+    public async Task<IActionResult> ClearCartAsync()
     {
-        var response = await mediator.Send(new GetCustomerByEmailQuery(email));
-        return Ok(response);
-    }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<CustomerResponse?>> GetByPhoneAsync(string phone)
-    {
-        var response = await mediator.Send(new GetCustomerByPhoneNumberQuery(phone));
-        return Ok(response);
-    }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<List<CustomerResponse>>> GetByNameAsync(string name)
-    {
-        var response = await mediator.Send(new GetCustomerByNameQuery(name));
+        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var response = await mediator.Send(new ClearCartCommand(customerId));
         return Ok(response);
     }
 }

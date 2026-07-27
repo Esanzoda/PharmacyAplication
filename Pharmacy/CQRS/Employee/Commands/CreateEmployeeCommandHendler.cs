@@ -9,21 +9,23 @@ using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Employee.Commands;
 
-public record CreateEmployeeCommand(long PharmacyId,
+public record CreateEmployeeCommand(
+    long PharmacyId,
     EmployeeRequest Request) : IRequest<EmployeeResponse>;
 
-public class CreatEmployeeCommandHandler(
+public class CreateEmployeeCommandHandler(
     IApplicationDbContext dbContext,
     IMapper mapper
 ) : IRequestHandler<CreateEmployeeCommand, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
-       
         var employeeExist = await dbContext.Employees
             .AnyAsync(x => x.PharmacyId == request.PharmacyId &&
-                           x.Email == request.Request.Email
-                           || x.Name == request.Request.PhoneNumber,
+                           (
+                               x.Email == request.Request.Email
+                               || x.PhoneNumber == request.Request.PhoneNumber
+                           ),
                 cancellationToken);
         if (employeeExist)
         {
@@ -37,7 +39,9 @@ public class CreatEmployeeCommandHandler(
         }
 
         var newEmployee = mapper.Map<Models.Domain.Employee>(request.Request);
+        newEmployee.PharmacyId = request.PharmacyId;
         await dbContext.Employees.AddAsync(newEmployee, cancellationToken);
+        
         await dbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<EmployeeResponse>(newEmployee);
     }

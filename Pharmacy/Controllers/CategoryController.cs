@@ -13,68 +13,67 @@ namespace Pharmacy.Controllers;
 [Route("api/[controller]/[action]")]
 public class CategoryController(IMediator mediator) : ControllerBase
 {
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpPost]
-    public async Task<ActionResult<CategoryResponse>> Create([FromBody] CreateCategoryRequest request)
+    public async Task<ActionResult<CategoryResponse>> AddCategory([FromBody] CreateCategoryRequest request)
     {
         var response = await mediator.Send(new CreateCategoryCommand(request));
         return Ok(response);
     }
 
-    [Authorize(Roles = nameof(Role.Admin))]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpPut]
-    public async Task<ActionResult<CategoryResponse>> Update(long id, [FromBody] UpdateCategoryRequest request)
+    public async Task<ActionResult<CategoryResponse>> UpdateCategory(long id, [FromBody] UpdateCategoryRequest request)
     {
         var response = await mediator.Send(new UpdateCategoryCommand(id, request));
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<CategoryResponse>> GetById(long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<CategoryResponse>> GetCategoryById(long id, CancellationToken cancellationToken = default)
     {
         var response = await mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
         return Ok(response);
     }
-    
-    [Authorize]
+
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<List<CategoryResponse>>> GetAllByPaginationAsync(int page, int pageSize)
+    public async Task<ActionResult<List<CategoryResponse>>> GetAllCategories(int page, int pageSize)
     {
         var response = await mediator.Send(new GetAllCategoriesByPaginationQuery(page, pageSize));
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id)
+    public async Task<IActionResult> DeleteCategoryById(long id)
     {
         var response = await mediator.Send(new DeleteCategoryCommand(id));
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<List<ProductResponse>>> GetWithProducts(int categoryId, int page,
-        int pageSize)
+    public async Task<ActionResult<List<ProductResponse>>> GetCategoryWithProducts(int categoryId, int page, int pageSize)
     {
         var response = await mediator.Send(new GetCategoryByIdWithProductsQuery(categoryId, page, pageSize));
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<List<CategoryResponse>>> SearchByNameAsync(string name)
+    public async Task<ActionResult<List<CategoryResponse>>> GetCategoryByName(string name)
     {
         var response = await mediator.Send(new GetByNameQuery(name));
         return Ok(response);
     }
 
-    [Authorize]
+    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<List<CategoryResponse>>> GetActiveAsync(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<CategoryResponse>>> GetByStatus(CategoryStatus categoryStatus,int pageNumber, int pageSize)
     {
-        var response = await mediator.Send(new GetActiveCategoriesQuery(pageNumber, pageSize));
+        var response = await mediator.Send(new GetCategoriesByStatusQuery(categoryStatus, pageNumber, pageSize));
         return Ok(response);
     }
 }

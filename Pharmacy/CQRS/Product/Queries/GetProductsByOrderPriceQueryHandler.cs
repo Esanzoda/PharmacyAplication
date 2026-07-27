@@ -24,9 +24,12 @@ public class GetProductsByOrderPriseQueryHandler(
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!product.Any())
+        {
             throw new RecourseNotFoundException("Product with this price  not found");
+        }
 
         return mapper.Map<List<ProductResponse>>(product);
     }

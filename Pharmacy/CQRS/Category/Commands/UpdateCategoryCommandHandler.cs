@@ -29,14 +29,15 @@ public class UpdateCategoryHandler(
         }
 
         var existCategory = await dbContext.Categories
-            .AnyAsync(x => x.Name == request.Request.Name, cancellationToken);
+            .AnyAsync(x => x.Id != request.Id &&
+                           x.Name == request.Request.Name,
+                cancellationToken);
         if (existCategory)
         {
             throw new RecourseIsAlreadyExistException("Category  with this name already exist");
         }
 
         mapper.Map(request.Request, category);
-        dbContext.Categories.Update(category);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"CategoryById-{request.Id}";

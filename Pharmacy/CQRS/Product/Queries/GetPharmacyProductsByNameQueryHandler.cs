@@ -7,24 +7,29 @@ using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
-public record GetOutOfStockQuery(
+public record GetPharmacyProductsByNameQuery(
+    long PharmacyId,
+    string Name,
     int Page,
     int PageSize) : IRequest<List<ProductResponse>>;
 
-public class GetOutOfStockQueryHandler(
+public class GetPharmacyProductsByNameQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetOutOfStockQuery, List<ProductResponse>>
+    IMapper mapper) : IRequestHandler<GetPharmacyProductsByNameQuery, List<ProductResponse>>
 {
-    public async Task<List<ProductResponse>> Handle(GetOutOfStockQuery request, CancellationToken cancellationToken)
+    public async Task<List<ProductResponse>> Handle(GetPharmacyProductsByNameQuery request,
+        CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
-            .Where(x => x.Stock == 0)
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.Name.Contains(request.Name))
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!product.Any())
-            throw new RecourseNotFoundException("Product  not found");
+            throw new RecourseNotFoundException("Product with this name not found");
 
         return mapper.Map<List<ProductResponse>>(product);
     }

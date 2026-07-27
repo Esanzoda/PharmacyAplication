@@ -1,48 +1,35 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Pharmacy.CQRS.Deliver.Commands;
+using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Models.Dto.Request;
+using Pharmacy.Models.Dto.Response;
+
 namespace Pharmacy.Controllers;
-/*
+
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class DeliverController : ControllerBase
+public class DeliverController(
+    IMediator mediator) : ControllerBase
 {
-    
-
-    public DeliverController(IDelivererService deliverService)
-    {
-        _deliverService = deliverService;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<DeliverResponse>> CreateDeliver([FromBody] DeliverRequest request)
-    {
-        var response = await _deliverService.CreateAsync(request);
-        return Ok(response);
-    }
-
+    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpPut]
     public async Task<ActionResult<DeliverResponse>> UpdateDeliver(long id, [FromBody] DeliverRequest request)
     {
-        var response = await _deliverService.UpdateAsync(id, request);
+        var pharmacyId = 1;
+        var response = await mediator.Send(new UpdateDeliverCommand(pharmacyId, 1, request));
         return Ok(response);
     }
 
-    [HttpGet("id")]
-    public async Task<ActionResult<DeliverResponse>> GetDeliverById(long id)
+    // [Authorize(Roles = nameof(Role.Admin))]
+    [HttpPut]
+    public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long orderId, OrderStatus newOrderStatus)
     {
-        var response = await _deliverService.GetByIdAsync(id, CancellationToken.None);
+        var deliverId = 1;
+        var pharmacyId = 1;
+        var response =
+            await mediator.Send(new UpdateOrderStatusCommand(pharmacyId, deliverId, orderId, newOrderStatus));
         return Ok(response);
     }
-
-    [HttpGet]
-    public async Task<ActionResult<List<DeliverResponse>>> GetAllDekiversByPagenation(int pageNumber, int pageSize)
-    {
-        var response = await _deliverService.GetAllByPaginationAsync(pageNumber, pageSize);
-        return Ok(response);
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> DeleteDeliverById(long id)
-    {
-        var response = await _deliverService.DeleteAsync(id);
-        return Ok(response);
-    }
-}*/
+}

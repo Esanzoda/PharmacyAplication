@@ -19,7 +19,8 @@ public class GetCustomerByNameQueryHandler(
         CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
-            .FirstOrDefaultAsync(x => x.Name == request.Name, cancellationToken);
+            .Where(x => x.Name.ToLower().Contains(request.Name.ToLower()))
+            .ToListAsync(cancellationToken);
         if (customer is null)
         {
             throw new RecourseNotFoundException($"Customer with this name{request.Name} not found");

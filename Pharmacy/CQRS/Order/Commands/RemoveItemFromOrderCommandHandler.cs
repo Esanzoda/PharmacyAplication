@@ -19,22 +19,17 @@ public class RemoveItemFromOrderHandler(
 {
     public async Task<OrderResponse> Handle(RemoveItemFromOrderCommand request, CancellationToken cancellationToken)
     {
-        var customer = await dbContext.Customers
-            .FirstOrDefaultAsync(x => x.Id == request.CustomerId, cancellationToken);
-        if (customer is null)
-        {
-            throw new RecourseNotFoundException("Customer not found");
-        }
-
         var order = await dbContext.Orders
             .Include(x => x.OrderItems)
-            .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.OrderId &&
+                                      x.CustomerId == request.CustomerId,
+                cancellationToken);
         if (order == null)
         {
             throw new RecourseNotFoundException("Order not found");
         }
 
-        if (order.OrderStatus == OrderStatus.Completed || order.OrderStatus == OrderStatus.Cancelled)
+        if (order.OrderStatus is OrderStatus.Completed or OrderStatus.Cancelled or OrderStatus.Shipped)
         {
             throw new BusinessException("Can't remove item completed or cancelled order ");
         }
@@ -46,7 +41,8 @@ public class RemoveItemFromOrderHandler(
         }
 
         var product = await dbContext.Products
-            .FindAsync(itemToRemove.ProductId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PharmacyId == itemToRemove.PharmacyId &&
+                                      x.Id == itemToRemove.ProductId, cancellationToken);
         if (product == null)
         {
             throw new RecourseNotFoundException($"Product not found");
@@ -58,8 +54,6 @@ public class RemoveItemFromOrderHandler(
         order.OrderItems.Remove(itemToRemove);
         order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
-        dbContext.OrderItems
-            .Remove(itemToRemove);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return mapper.Map<OrderResponse>(order);

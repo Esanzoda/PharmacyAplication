@@ -30,14 +30,12 @@ public class CreatOrderFromCartHandler(
             .Include(x => x.Customer)
             .Include(x => x.CartItems)
             .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId, cancellationToken);
-        if (cart == null && cart!.CartItems.Any())
+        if (cart == null || cart.CartItems.Count == 0)
         {
             throw new RecourseNotFoundException($"Cart is empty");
         }
 
-
-        var newAddress = string.IsNullOrEmpty(request.Address) ? cart.Customer?.Address : request.Address;
-
+        var newAddress = string.IsNullOrEmpty(request.Address) ? cart.Customer.Address : request.Address;
 
         var order = new Models.Domain.Order
         {
@@ -45,42 +43,42 @@ public class CreatOrderFromCartHandler(
             OrderType = request.OrderType,
             OrderStatus = OrderStatus.Pending,
             Address = newAddress,
-            Customer = cart.Customer,
             TotalAmount = cart.TotalAmount,
         };
         await dbContext.Orders
             .AddAsync(order, cancellationToken);
+
+        var productIds = cart.CartItems
+            .Select(x => x.ProductId)
+            .ToList();
+        var products = await dbContext.Products
+            .Where(x => productIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, cancellationToken);
         foreach (var item in cart.CartItems)
         {
-            if (item != null)
+            if (!products.TryGetValue(item.ProductId, out var product))
             {
-                var product = await dbContext.Products
-                    .FindAsync(item.ProductId, cancellationToken);
-                if (product == null)
-                {
-                    throw new RecourseNotFoundException($"Product {item.ProductId} not found");
-                }
-
-                if (product.Stock < item.Quantity)
-                {
-                    throw new BusinessException(
-                        $"Insufficient stock for product {product.Name}: available {product.Stock}, requested {item.Quantity}");
-                }
-
-                var orderItem = new OrderItem
-                {
-                    OrderId = order.Id,
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    Price = product.Price,
-                    TotalPrice = product.Price * item.Quantity
-                };
-                order.OrderItems.Add(orderItem);
-                await dbContext.OrderItems
-                    .AddAsync(orderItem, cancellationToken);
-                product.Stock -= item.Quantity;
+                throw new RecourseNotFoundException("Product not found");
             }
+
+            if (product.Stock < item.Quantity)
+            {
+                throw new BusinessException(
+                    $"Insufficient stock for product {product.Name}: available {product.Stock}, requested {item.Quantity}");
+            }
+
+            var orderItem = new OrderItem
+            {
+                ProductId = item.ProductId,
+                Quantity = item.Quantity,
+                Price = product.Price,
+                TotalPrice = product.Price * item.Quantity
+            };
+            order.OrderItems.Add(orderItem);
+
+            product.Stock -= item.Quantity;
         }
+
 
         var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
         decimal deliverPrice = 0;
@@ -88,7 +86,7 @@ public class CreatOrderFromCartHandler(
         {
             var address = newAddress;
 
-            if (address is "1" || address is "2" || address is "3")
+            if (address is "1" or "2" or "3")
             {
                 deliverPrice = 10;
             }
@@ -102,6 +100,7 @@ public class CreatOrderFromCartHandler(
         {
             OrderId = order.Id,
             CustomerId = order.CustomerId,
+            DeliverPrice = deliverPrice,
             TotalAmount = order.TotalAmount,
         }, cancellationToken);
         return mapper.Map<OrderResponse>(order);

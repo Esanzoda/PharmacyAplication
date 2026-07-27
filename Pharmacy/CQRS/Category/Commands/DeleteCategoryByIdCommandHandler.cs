@@ -16,7 +16,7 @@ public class DeleteCategoryByIdHandler(
     public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FindAsync(request.Id, cancellationToken);
 
         if (category is null)
         {
@@ -25,7 +25,7 @@ public class DeleteCategoryByIdHandler(
 
         dbContext.Categories.Remove(category);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var key = $"CustomerById-{request.Id}";
+        var key = $"CategoryById-{request.Id}";
         await cache.RemoveAsync(key, cancellationToken);
         return true;
     }

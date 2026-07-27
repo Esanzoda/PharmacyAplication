@@ -37,11 +37,10 @@ public class UpdateCustomerHandler(
         if (customerExist)
         {
             throw new RecourseIsAlreadyExistException(
-                $"Customer already exists with this phone number{request.Request.PhoneNumber} or ");
+                $"Customer already exists with this phone number{request.Request.PhoneNumber} or with email{request.Request.Email} ");
         }
 
         mapper.Map(request.Request, customer);
-        dbContext.Customers.Update(customer);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"CustomerById-{customer.Id}";

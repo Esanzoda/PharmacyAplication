@@ -7,6 +7,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Queries;
 
 public record GetPurchaseByDateQuery(
+    long PharmacyId,
     DateTime Date,
     int PageNumber,
     int PageSize) : IRequest<List<PurchaseResponse>>;
@@ -20,11 +21,13 @@ public class GetPurchaseByDateHandler(
         CancellationToken cancellationToken)
     {
         var purchase = await dbContext.Purchases
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.CreatedAt == request.Date)
             .Include(o => o.PurchaseItems)
-            .Where(x => x.CreatedAt == request.Date)
             .OrderBy(o => o.Id)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         return mapper.Map<List<PurchaseResponse>>(purchase);
     }

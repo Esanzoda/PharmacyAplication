@@ -20,18 +20,21 @@ public class GetCategoryByIdHandler(
     public async Task<CategoryResponse> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
         var key = $"CategoryById-{request.CategoryId}";
+
         var cachedCategory = await cache.GetStringAsync(key, cancellationToken);
         if (cachedCategory is not null)
         {
-            var entity = JsonConvert.DeserializeObject<Models.Domain.Category?>(cachedCategory);
+            var entity = JsonConvert.DeserializeObject<Models.Domain.Category>(cachedCategory);
             if (entity is not null)
             {
                 return mapper.Map<CategoryResponse>(entity);
             }
         }
 
+
         var category = await dbContext.Categories
-            .FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.CategoryId,
+                cancellationToken);
         if (category is null)
         {
             throw new RecourseNotFoundException("Category not found");
@@ -40,7 +43,7 @@ public class GetCategoryByIdHandler(
         await cache.SetStringAsync(key,
             JsonConvert.SerializeObject(category), new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
             }, cancellationToken);
         return mapper.Map<CategoryResponse>(category);
     }

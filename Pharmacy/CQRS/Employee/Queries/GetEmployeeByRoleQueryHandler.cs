@@ -9,6 +9,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Employee.Queries;
 
 public record GetEmployeeByRoleQuery(
+    long PharmacyId,
     Role Role,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
@@ -22,10 +23,12 @@ public class GetEmployeeByRoleQueryHandler(
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
-            .Where(x => x.Role == request.Role)
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.Role == request.Role)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!employees.Any())
         {

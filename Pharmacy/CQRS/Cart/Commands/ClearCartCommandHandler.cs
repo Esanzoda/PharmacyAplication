@@ -19,19 +19,13 @@ public class ClearCartCommandHandler(
             .Include(x => x.CartItems)
             .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId, cancellationToken);
 
-        if (cart == null)
+        if (cart is null)
         {
             throw new RecourseNotFoundException("Cart not found");
         }
 
-        if (cart.CartItems.Count == 0)
-        {
-            throw new RecourseNotFoundException("Cart  is already empty");
-        }
-
+        dbContext.CartItems.RemoveRange(cart.CartItems);
         cart.TotalAmount = 0;
-        dbContext.CartItems
-            .RemoveRange(cart.CartItems!);
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }

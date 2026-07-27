@@ -7,11 +7,11 @@ public record ProductRequest
     public required string Name { get; init; }
     public ProductType ProductType { get; init; }
     public long CategoryId { get; init; }
-    public string Description { get; init; }= string.Empty;
+    public string Description { get; init; } = string.Empty;
     public CountryEnum Country { get; init; }
     public decimal PurchasePrice { get; init; }
     public decimal Price { get; init; }
-    public string? Barcode { get; init; }
-    public int Stock { get; init; }
-    public DateTime ExpiryDate { get; init; }
+    public required string Barcode { get; set; }
+    public int Stock { get; set; }
+    public DateTime ExpiryDate { get; set; }
 }

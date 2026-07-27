@@ -24,7 +24,7 @@ public class CheckExpiredProductsHandler(
         if (!expiredProducts.Any())
             return;
 
-        var report = new ExpiryDateProduct();
+        var report = new ExpiryDate();
 
         foreach (var product in expiredProducts)
         {
@@ -47,7 +47,7 @@ public class CheckExpiredProductsHandler(
             product.Stock = 0;
         }
 
-        dbContext.ExpireDateProducts.Add(report);
+        await dbContext.ExpireDateProducts.AddAsync(report, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

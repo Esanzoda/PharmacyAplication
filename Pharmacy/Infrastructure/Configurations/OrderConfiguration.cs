@@ -13,14 +13,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Id)
             .IsUnique();
-
-        builder.HasOne(x => x.Customer)
-            .WithMany(c => c.Orders)
-            .HasForeignKey(x => x.CustomerId)
-            .OnDelete(DeleteBehavior.Cascade);
         builder.Property(x => x.Address)
             .IsRequired()
             .HasMaxLength(100);
-        
     }
 }

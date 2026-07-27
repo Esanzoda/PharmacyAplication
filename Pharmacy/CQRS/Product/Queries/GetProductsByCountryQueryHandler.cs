@@ -25,9 +25,13 @@ public class GetProductsByCountryQueryHandler(
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!products.Any())
+        {
             throw new RecourseNotFoundException($"Product from this country[{request.Country}] not found");
+        }
+
         return mapper.Map<List<ProductResponse>>(products);
     }
 }

@@ -8,6 +8,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Employee.Queries;
 
 public record GetEmployeesByNameQuery(
+    long PharmacyId,
     string Name,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
@@ -21,10 +22,13 @@ public class GetEmployeesByNameQueryHandler(
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
-            .Where(x => x.Name!.ToLower().Contains(request.Name.ToLower()))
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.Name.ToLower().Contains(request.Name.ToLower())
+            )
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
 

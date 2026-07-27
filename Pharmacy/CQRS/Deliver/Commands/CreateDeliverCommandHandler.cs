@@ -18,12 +18,12 @@ public class CreateDeliverCommandHandler(
 {
     public async Task<DeliverResponse> Handle(CreateDeliverCommand request, CancellationToken cancellationToken)
     {
-        var deliverExist = await dbContext.Delivers
+        var deliverExists = await dbContext.Delivers
             .AnyAsync(x => x.PharmacyId == request.PharmacyId &&
                            (x.Email == request.Request.Email ||
                             x.PhoneNumber == request.Request.PhoneNumber), cancellationToken);
 
-        if (deliverExist)
+        if (deliverExists)
         {
             throw new RecourseIsAlreadyExistException("Deliver already exist");
         }

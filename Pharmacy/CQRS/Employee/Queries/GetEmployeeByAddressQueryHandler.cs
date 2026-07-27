@@ -8,11 +8,12 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Employee.Queries;
 
 public record GetEmployeesByAddressQuery(
+    long PharmacyId,
     string Address,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
 
-public class GEtEmployeeByAddressQueryHandler(
+public class GetEmployeeByAddressQueryHandler(
     IApplicationDbContext dbContext,
     IMapper mapper
 ) : IRequestHandler<GetEmployeesByAddressQuery, List<EmployeeResponse>>
@@ -21,10 +22,12 @@ public class GEtEmployeeByAddressQueryHandler(
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
-            .Where(x => x.Address!.ToLower() == request.Address.ToLower())
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.Address.ToLower() == request.Address.ToLower())
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         if (employees is null)

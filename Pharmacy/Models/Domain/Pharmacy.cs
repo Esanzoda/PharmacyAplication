@@ -8,7 +8,5 @@ public class Pharmacy : BaseEntity
     public string Email { get; set; } = string.Empty;
     public TimeOnly OpeningTime { get; set; }
     public TimeOnly ClosingTime { get; set; }
-    public List<Product> Products { get; set; } = new List<Product>();
-    public List<Employee> Employees { get; set; } = new List<Employee>();
-    public List<Deliver> Delivers { get; set; } = new List<Deliver>();
+
 }

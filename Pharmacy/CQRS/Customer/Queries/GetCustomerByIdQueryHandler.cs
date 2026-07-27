@@ -21,6 +21,7 @@ public class GetCustomerByIdHandler(
     {
         var key = $"CustomerById-{request.Id}";
         var cachedCustomer = await cache.GetStringAsync(key, cancellationToken);
+
         if (cachedCustomer is not null)
         {
             var redis = JsonConvert.DeserializeObject<CustomerResponse>(cachedCustomer);

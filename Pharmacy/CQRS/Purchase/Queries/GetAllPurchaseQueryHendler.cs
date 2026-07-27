@@ -7,6 +7,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Queries;
 
 public record GetAllPurchaseQuery(
+    long PharmacyId,
     int Page,
     int PageSize) : IRequest<List<PurchaseResponse>>;
 
@@ -17,10 +18,12 @@ public class GetAllPurchaseQueryHandler(
     public async Task<List<PurchaseResponse>> Handle(GetAllPurchaseQuery request, CancellationToken cancellationToken)
     {
         var purchase = await dbContext.Purchases
+            .Where(x=>x.PharmacyId==request.PharmacyId)
             .Include(o => o.PurchaseItems)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         return mapper.Map<List<PurchaseResponse>>(purchase);
     }

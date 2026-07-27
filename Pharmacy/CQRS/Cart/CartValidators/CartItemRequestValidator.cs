@@ -1,7 +1,7 @@
 using FluentValidation;
 using Pharmacy.Models.Dto.Request;
 
-namespace Pharmacy.Validators;
+namespace Pharmacy.CQRS.Cart.CartValidators;
 
 public class CartItemRequestValidator : AbstractValidator<CartItemRequest>
 {

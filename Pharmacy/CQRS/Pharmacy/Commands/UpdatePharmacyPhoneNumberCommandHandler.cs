@@ -28,10 +28,11 @@ public class UpdatePharmacyPhoneNumberCommandHandler(
 
         var pharmacyExist = await dbContext.Pharmacies
             .AnyAsync(x => x.Id != request.Id
-                           && x.PhoneNumber == request.NewNumber, cancellationToken);
+                           && x.PhoneNumber == request.NewNumber,
+                cancellationToken);
         if (pharmacyExist)
         {
-            throw new BusinessException(" Pharmacy with this number alredy exsist ");
+            throw new RecourseIsAlreadyExistException(" Pharmacy with this number already exist ");
         }
 
         pharmacy.PhoneNumber = request.NewNumber;
