@@ -24,7 +24,11 @@ public class GetDeliverByIdHandler(
         var cached = await cache.GetStringAsync(key, cancellationToken);
         if (cached is not null)
         {
-            return mapper.Map<DeliverResponse>(cached);
+            var redis = JsonConvert.DeserializeObject<DeliverResponse>(cached);
+            if (redis is not null)
+            {
+                return redis;
+            }
         }
 
         var deliver = await dbContext.Delivers

@@ -8,7 +8,7 @@ namespace Pharmacy.CQRS.Deliver.Commands;
 
 public record DeleteDeliverCommand(
     long PharmacyId,
-    int Id) : IRequest<bool>;
+    long Id) : IRequest<bool>;
 
 public class DeleteDeliverHandler(
     IApplicationDbContext dbContext,
