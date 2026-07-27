@@ -30,12 +30,10 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.HasOne(x => x.Cart)
             .WithOne(x => x.Customer)
-            .HasForeignKey<Cart>(x => x.CustomerId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey<Cart>(x => x.CustomerId);
 
-        builder.HasMany(x => x.Orders)
+        builder.HasMany<Order>()
             .WithOne(x => x.Customer)
-            .HasForeignKey(x => x.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.CustomerId);
     }
 }

@@ -2,7 +2,7 @@ using FluentValidation;
 using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Models.Dto.Request;
 
-namespace Pharmacy.Validators;
+namespace Pharmacy.CQRS.Customer.CustomerValidators;
 
 public class CustomerRequestValidator : AbstractValidator<CustomerRequest>
 {

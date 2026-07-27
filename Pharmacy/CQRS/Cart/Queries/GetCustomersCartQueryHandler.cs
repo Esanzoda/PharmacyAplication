@@ -1,13 +1,13 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Cart.Queries;
 
-public record GetCartItemByIQuery(long CustomerId) : IRequest<CartResponse>;
+public record GetCartItemByIQuery(
+    long CustomerId) : IRequest<CartResponse>;
 
 public class GetAllCartItemQueryHandler(
     IMapper mapper,
@@ -17,13 +17,9 @@ public class GetAllCartItemQueryHandler(
     {
         var cart = await dbContext.Carts
             .Include(x => x.CartItems)
-            .ThenInclude(x => x!.Product)
+            .ThenInclude(x => x.Product)
             .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId,
                 cancellationToken);
-        if (cart is null)
-        {
-            throw new RecourseNotFoundException("Cart is empty");
-        }
 
         return mapper.Map<CartResponse>(cart);
     }

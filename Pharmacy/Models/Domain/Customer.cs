@@ -9,8 +9,8 @@ public class Customer : BaseEntity
     public string Address { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public Role Role { get; set; }
+    public Role Role { get; set; } = Role.Customer;
     public Cart Cart { get; set; }= null!;
-    public List<Order> Orders { get; set; } = new List<Order>();
-    public List<RefreshToken> RefreshTokens { get; set; } = new();
+ 
+    
 }

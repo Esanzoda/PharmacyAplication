@@ -23,6 +23,7 @@ public class GetAllCustomerByPaginationHandler(
             .OrderBy(x => x.Id)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         return mapper.Map<List<CustomerResponse>>(customers);
