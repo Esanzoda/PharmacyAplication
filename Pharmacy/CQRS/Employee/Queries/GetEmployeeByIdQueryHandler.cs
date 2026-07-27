@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Pharmacy.Exception;
@@ -9,6 +10,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Employee.Queries;
 
 public record GetEmployeeByIdQuery(
+    long PharmacyId,
     long Id) : IRequest<EmployeeResponse>;
 
 public class GetEmployeeByIdQueryHandler(
@@ -32,11 +34,13 @@ public class GetEmployeeByIdQueryHandler(
         }
 
         var employee = await dbContext.Employees
-            .FindAsync(request.Id, cachedEmployee);
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.Id,
+                cancellationToken);
 
-        if (employee == null)
+        if (employee is null)
         {
-            throw new RecourseNotFoundException("customer not found");
+            throw new RecourseNotFoundException("Employee not found");
         }
 
         var response = mapper.Map<EmployeeResponse>(employee);

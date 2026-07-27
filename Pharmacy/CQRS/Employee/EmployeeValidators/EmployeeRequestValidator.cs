@@ -1,7 +1,7 @@
 using FluentValidation;
 using Pharmacy.Models.Dto.Request;
 
-namespace Pharmacy.Validators;
+namespace Pharmacy.CQRS.Employee.EmployeeValidators;
 
 public class EmployeeRequestValidator : AbstractValidator<EmployeeRequest>
 {

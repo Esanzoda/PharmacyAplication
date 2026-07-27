@@ -22,9 +22,8 @@ public class UpdateEmployeeHandler(
     public async Task<EmployeeResponse> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
-            .FirstOrDefaultAsync(
-                x => x.Id == request.EmployeeId &&
-                     x.PharmacyId == request.PharmacyId,
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.EmployeeId,
                 cancellationToken);
         if (employee is null)
         {
@@ -33,10 +32,10 @@ public class UpdateEmployeeHandler(
 
         var employeeExist = await dbContext.Employees
             .AnyAsync(x => x.PharmacyId == request.PharmacyId &&
-                           x.Id!=request.EmployeeId &&
+                           x.Id != request.EmployeeId &&
                            (
                                x.Email == request.Request.Email ||
-                               x.Name == request.Request.PhoneNumber
+                               x.PhoneNumber == request.Request.PhoneNumber
                            ), cancellationToken);
         if (employeeExist)
         {

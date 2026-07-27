@@ -8,6 +8,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Employee.Queries;
 
 public record GetEmployeeBySalaryQuery(
+    long PharmacyId,
     decimal Salary,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
@@ -21,10 +22,12 @@ public class GetEmployeeBySalaryQueryHandler(
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
-            .Where(x => x.Salary == request.Salary)
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.Salary == request.Salary)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!employees.Any())
         {
