@@ -10,6 +10,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Commands;
 
 public record CreatePurchaseCommand(
+    long PharmacyId,
     PurchaseRequest Request
 ) : IRequest<PurchaseResponse>;
 
@@ -19,32 +20,30 @@ public class CreatePurchaseCommandHandler(
 {
     public async Task<PurchaseResponse> Handle(CreatePurchaseCommand request, CancellationToken cancellationToken)
     {
-        var employee = await dbContext.Employees
-            .FindAsync(request.Request.EmployeeId, cancellationToken);
-        if (employee == null)
-        {
-            throw new RecourseNotFoundException($"Employee with this id  not found");
-        }
-
         var purchase = mapper.Map<Models.Domain.Purchase>(request.Request);
+        purchase.PharmacyId = request.PharmacyId;
         await dbContext.Purchases
             .AddAsync(purchase, cancellationToken);
+        var productIds = request.Request.PurchaseItems
+            .Select(x => x.ProductId)
+            .ToList();
+        var products = await dbContext.Products
+            .Where(x => productIds.Contains(x.Id) &&
+                        x.PharmacyId==request.PharmacyId)
+            .ToDictionaryAsync(x => x.Id, cancellationToken);
 
         foreach (var item in request.Request.PurchaseItems)
         {
-            var product = await dbContext.Products
-                .FirstOrDefaultAsync(x => x.Barcode == item.Barcode, cancellationToken);
-            if (product == null)
+            if (!products.TryGetValue(item.ProductId, out var product))
             {
-                throw new RecourseNotFoundException($"Product whith this barcode not found");
+                throw new RecourseNotFoundException("Product not found");
             }
 
             var purchaseItem = mapper.Map<PurchaseItem>(item);
+            purchaseItem.PharmacyId = request.PharmacyId; 
             purchaseItem.TotalPrice = item.Quantity * item.PurchasePrice;
 
             purchase.PurchaseItems.Add(purchaseItem);
-            await dbContext.PurchaseItems
-                .AddAsync(purchaseItem, cancellationToken);
             product.Stock += item.Quantity;
         }
 

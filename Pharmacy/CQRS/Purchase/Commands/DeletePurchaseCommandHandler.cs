@@ -6,6 +6,8 @@ using Pharmacy.Interfaces;
 namespace Pharmacy.CQRS.Purchase.Commands;
 
 public record DeletePurchaseCommand(
+    long PharmacyId,
+    long EmployeeId,
     long Id) : IRequest<bool>;
 
 public class DeletePurchaseCommandHandler(
@@ -14,8 +16,9 @@ public class DeletePurchaseCommandHandler(
     public async Task<bool> Handle(DeletePurchaseCommand request, CancellationToken cancellationToken)
     {
         var purchase = await dbContext.Purchases
-            .Include(x => x.PurchaseItems)
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.Id,
+                cancellationToken);
         if (purchase is null)
         {
             throw new RecourseNotFoundException($"Purchase with id {request.Id} not found");

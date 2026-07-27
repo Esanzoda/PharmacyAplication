@@ -1,7 +1,7 @@
 using FluentValidation;
 using Pharmacy.Models.Dto.Request;
 
-namespace Pharmacy.Validators;
+namespace Pharmacy.CQRS.Purchase.PurchaseValidators;
 
 public class PurchaseItemRequestValidator : AbstractValidator<PurchaseItemRequest>
 {

@@ -10,6 +10,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Commands;
 
 public record AddItemToPurchaseCommand(
+    long PharmacyId,
     long Id,
     PurchaseItemRequest Request) : IRequest<PurchaseResponse>;
 
@@ -20,29 +21,47 @@ public class AddItemToPurchaseCommandHandler(
     public async Task<PurchaseResponse> Handle(AddItemToPurchaseCommand request, CancellationToken cancellationToken)
     {
         var purchase = await dbContext.Purchases
-            .FindAsync(request.Id, cancellationToken);
-        if (purchase == null)
+            .Include(x => x.PurchaseItems)
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.Id,
+                cancellationToken);
+        if (purchase is null)
+        {
             throw new RecourseNotFoundException($"Purchase with this id not found");
+        }
+
         var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.Id == request.Request.ProductId || x.Barcode == request.Request.Barcode,
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.Request.ProductId,
                 cancellationToken);
         if (product == null)
         {
             throw new RecourseNotFoundException($"Product not found");
         }
 
-        product.Stock += request.Request.Quantity;
-        var purchaseItem = mapper.Map<PurchaseItem>(request.Request);
-        purchaseItem.PurchaseId = purchase.Id;
-        purchaseItem.TotalPrice = request.Request.Quantity * request.Request.PurchasePrice;
+        var existItem = purchase.PurchaseItems
+            .FirstOrDefault(x => x.ProductId == product.Id);
+        if (existItem != null)
+        {
+            existItem.Quantity += request.Request.Quantity;
+            existItem.TotalPrice = existItem.Quantity * request.Request.PurchasePrice;
+        }
+        else
+        {
+            var purchaseItem = mapper.Map<PurchaseItem>(request.Request);
+            purchaseItem.PurchaseId = purchase.Id;
+            purchaseItem.PharmacyId = request.PharmacyId;
+            purchaseItem.TotalPrice = request.Request.Quantity * request.Request.PurchasePrice;
 
-        await dbContext.PurchaseItems
-            .AddAsync(purchaseItem, cancellationToken);
+            purchase.PurchaseItems.Add(purchaseItem);
+        }
+
+        product.Stock += request.Request.Quantity;
 
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<PurchaseResponse>(purchaseItem);
+        return mapper.Map<PurchaseResponse>(purchase);
     }
 }

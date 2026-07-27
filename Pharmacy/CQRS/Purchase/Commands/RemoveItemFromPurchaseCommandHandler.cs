@@ -8,7 +8,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Commands;
 
 public record RemoveItemFromPurchaseCommand(
-    long EmployeeId,
+    long PharmacyId,
     long PurchaseId,
     long ItemId) : IRequest<PurchaseResponse>;
 
@@ -20,40 +20,43 @@ public class RemoveItemFromPurchaseCommandHandler(
     public async Task<PurchaseResponse> Handle(RemoveItemFromPurchaseCommand request,
         CancellationToken cancellationToken)
     {
-        var employee = await dbContext.Employees
-            .FindAsync(request.EmployeeId, cancellationToken);
-        if (employee == null)
-        {
-            throw new RecourseNotFoundException("Employee not found");
-        }
-
         var purchase = await dbContext.Purchases
-            .Include(x => x.PurchaseItems)
-            .FirstOrDefaultAsync(x => x.Id == request.PurchaseId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.PurchaseId, cancellationToken);
         if (purchase == null)
         {
             throw new RecourseNotFoundException("Purchase not found");
         }
 
-        var purchaseItemToRemove = purchase.PurchaseItems.FirstOrDefault(x => x.Id == request.ItemId);
+        var purchaseItemToRemove = await dbContext.PurchaseItems
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.PurchaseId == request.PurchaseId &&
+                                      x.Id == request.ItemId,
+                cancellationToken);
+
         if (purchaseItemToRemove == null)
         {
             throw new RecourseNotFoundException("Purchase item not found");
         }
 
         var product = await dbContext.Products
-            .FindAsync(purchaseItemToRemove.ProductId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == purchaseItemToRemove.ProductId,
+                cancellationToken);
         if (product == null)
+        {
             throw new RecourseNotFoundException("Product not found");
+        }
+
 
         product.Stock -= purchaseItemToRemove.Quantity;
 
         purchase.PurchaseItems.Remove(purchaseItemToRemove);
-        dbContext.PurchaseItems.Remove(purchaseItemToRemove);
+       // dbContext.PurchaseItems.Remove(purchaseItemToRemove);
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<PurchaseResponse>(purchaseItemToRemove);
+        return mapper.Map<PurchaseResponse>(purchase);
     }
 }
