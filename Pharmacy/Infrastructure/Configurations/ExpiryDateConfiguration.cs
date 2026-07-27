@@ -4,9 +4,9 @@ using Pharmacy.Models.Domain;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class ExpiryDateProductConfiguration : IEntityTypeConfiguration<ExpiryDateProduct>
+public class ExpiryDateConfiguration : IEntityTypeConfiguration<ExpiryDate>
 {
-    public void Configure(EntityTypeBuilder<ExpiryDateProduct> builder)
+    public void Configure(EntityTypeBuilder<ExpiryDate> builder)
     {
         builder.HasKey(x => x.Id);
         
