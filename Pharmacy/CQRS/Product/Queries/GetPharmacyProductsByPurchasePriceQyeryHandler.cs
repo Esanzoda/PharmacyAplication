@@ -7,25 +7,30 @@ using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
-public record GetLowOfStockQuery(
-    int MinQuantity,
+public record GetProductsByPurchasePriceQuery(
+    long PharmacyId,
+    decimal Price,
     int Page,
     int PageSize) : IRequest<List<ProductResponse>>;
 
-public class GetLowOfStockQueryHandler(
+public class GetProductsByPurchasePriceQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetLowOfStockQuery, List<ProductResponse>>
+    IMapper mapper)
+    : IRequestHandler<GetProductsByPurchasePriceQuery, List<ProductResponse>>
 {
-    public async Task<List<ProductResponse>> Handle(GetLowOfStockQuery request, CancellationToken cancellationToken)
+    public async Task<List<ProductResponse>> Handle(GetProductsByPurchasePriceQuery request,
+        CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
-            .Where(x => x.Stock <= request.MinQuantity)
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.PurchasePrice == request.Price)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!product.Any())
-            throw new RecourseNotFoundException("Product not found");
+            throw new RecourseNotFoundException("Product with this purchase price  not found");
 
         return mapper.Map<List<ProductResponse>>(product);
     }

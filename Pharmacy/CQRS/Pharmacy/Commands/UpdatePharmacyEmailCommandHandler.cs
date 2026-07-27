@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Dto.Response;
@@ -21,9 +22,13 @@ public class UpdatePharmacyEmailCommandHandler(
             throw new RecourseNotFoundException("Pharmacy not found");
         }
 
-        if (pharmacy.Email == request.NewEmail)
+        var pharmacyExist = await dbContext.Pharmacies
+            .AnyAsync(x => x.Id != request.Id &&
+                           x.Email == request.NewEmail,
+                cancellationToken);
+        if (pharmacyExist)
         {
-            throw new BusinessException("Pharmacy with this email already exist");
+            throw new RecourseIsAlreadyExistException("Pharmacy with this email already exist");
         }
 
         pharmacy.Email = request.NewEmail;
