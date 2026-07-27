@@ -20,22 +20,25 @@ public class GetProductsByCategoryIdQueryHandler(
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .Include(x => x.Products)
-            .FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken);
-        if (category == null)
+            .AsNoTracking()
+            .AnyAsync(x => x.Id == request.CategoryId, cancellationToken);
+        if (!category)
         {
             throw new RecourseNotFoundException("Category with this id  not found");
         }
-
 
         var product = await dbContext.Products
             .Where(x => x.CategoryId == request.CategoryId)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!product.Any())
+        {
             throw new RecourseNotFoundException("We dont have product  with categoryId ");
+        }
+
         return mapper.Map<List<ProductResponse>>(product);
     }
 }

@@ -20,6 +20,7 @@ public class GetAllProductsQueryHandler(
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         return mapper.Map<List<ProductResponse>>(products);
     }
