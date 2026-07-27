@@ -13,9 +13,8 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Order.Commands;
 
 public record CreateOrderCommand(
-    long Id,
-    OrderRequest Request
-) : IRequest<OrderResponse>;
+    long CustomerId,
+    OrderRequest Request) : IRequest<OrderResponse>;
 
 public class CreateOrderCommandHandler(
     IMapper mapper,
@@ -24,18 +23,11 @@ public class CreateOrderCommandHandler(
 {
     public async Task<OrderResponse> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
-        var customer = await dbContext.Customers
-            .FindAsync(request.Id, cancellationToken);
-        if (customer == null)
-        {
-            throw new RecourseNotFoundException($"Customer not found");
-        }
-
         var order = mapper.Map<Models.Domain.Order>(request.Request);
 
         order.OrderStatus = OrderStatus.Pending;
-        order.CustomerId = customer.Id;
-        order.Customer = customer;
+        order.CustomerId = request.CustomerId;
+        order.CustomerId = request.CustomerId;
         await dbContext.Orders
             .AddAsync(order, cancellationToken);
 
@@ -70,11 +62,8 @@ public class CreateOrderCommandHandler(
                 var orderItem = mapper.Map<OrderItem>(item);
                 orderItem.Price = product.Price;
                 orderItem.TotalPrice = item.Quantity * product.Price;
-                await dbContext.OrderItems
-                    .AddAsync(orderItem, cancellationToken);
                 order.OrderItems.Add(orderItem);
             }
-
 
             product.Stock -= item.Quantity;
         }
@@ -85,7 +74,7 @@ public class CreateOrderCommandHandler(
         {
             var address = request.Request.Adress;
 
-            if (address is "1" || address is "2" || address is "3")
+            if (address is "1" or "2" or "3")
             {
                 deliverPrice = 10;
             }

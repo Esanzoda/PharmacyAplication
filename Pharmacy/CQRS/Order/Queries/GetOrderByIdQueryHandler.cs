@@ -8,6 +8,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Order.Queries;
 
 public record GetOrderByIdQuery(
+    long CustomerId,
     long Id) : IRequest<OrderResponse>;
 
 public class GetOrderByIdQueryHandler(
@@ -18,7 +19,9 @@ public class GetOrderByIdQueryHandler(
     {
         var customer = await dbContext.Orders
             .Include(x => x.OrderItems)
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId &&
+                                      x.Id == request.Id,
+                cancellationToken);
         if (customer == null)
         {
             throw new RecourseNotFoundException("Order not found");

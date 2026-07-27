@@ -8,6 +8,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Order.Queries;
 
 public record GetOrderByOrderStatusQuery(
+    long CustomerId,
     OrderStatus OrderStatus,
     int PageNumber,
     int PageSize)
@@ -21,10 +22,12 @@ public class GetOrderByOrderStatusQueryHandler(
         CancellationToken cancellationToken)
     {
         var orders = await dbContext.Orders
-            .Where(x => x.OrderStatus == request.OrderStatus)
+            .Where(x => x.CustomerId == request.CustomerId &&
+                        x.OrderStatus == request.OrderStatus)
             .OrderBy(x => x.Id)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
 
