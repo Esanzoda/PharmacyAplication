@@ -10,6 +10,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Cart.Commands;
 
 public record AddItemToCartCommand(
+    long PharmacyId,
     long CustomerId,
     CartItemRequest ItemRequest
 ) : IRequest<CartResponse>;
@@ -23,7 +24,8 @@ public class AddItemToCartCommandHandler(
     {
         var cart = await dbContext.Carts
             .Include(x => x.CartItems)
-            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId,
+                cancellationToken);
 
         if (cart is null)
         {
@@ -31,42 +33,38 @@ public class AddItemToCartCommandHandler(
         }
 
         var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.Id == request.ItemRequest.ProductId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.ItemRequest.ProductId,
+                cancellationToken);
         if (product == null)
         {
             throw new RecourseNotFoundException("Product not found");
         }
 
-        var existingCartItem = await dbContext.CartItems
-            .FirstOrDefaultAsync(x => x.ProductId == request.ItemRequest.ProductId &&
-                                      x.CustomerId == request.CustomerId, cancellationToken);
+        var existingCartItem = cart.CartItems
+            .FirstOrDefault(x => x.ProductId == request.ItemRequest.ProductId);
 
 
-        var alreadyInCart = existingCartItem?.Quantity ?? 0;
-        var totalRequestedQuantity = alreadyInCart + request.ItemRequest.Quantity;
-        if (product.Stock < totalRequestedQuantity)
-        {
-            throw new BusinessException(
-                $"Insufficient product stock{product.Stock} for the requested quantity {totalRequestedQuantity}");
-        }
-
+        var existQuantity = existingCartItem?.Quantity ?? 0;
+        var totalRequestedQuantity = existQuantity + request.ItemRequest.Quantity;
 
         if (existingCartItem != null)
         {
-            existingCartItem.Quantity += request.ItemRequest.Quantity;
-            existingCartItem.TotalPrice = existingCartItem.Quantity * product.Price;
+            existingCartItem.Quantity = totalRequestedQuantity;
+            existingCartItem.TotalPrice = totalRequestedQuantity * existingCartItem.Price;
         }
         else
         {
             var cartItem = mapper.Map<CartItem>(request.ItemRequest);
             cartItem.CustomerId = request.CustomerId;
+            cartItem.Cart = cart;
             cartItem.Price = product.Price;
             cartItem.TotalPrice = product.Price * request.ItemRequest.Quantity;
-            await dbContext.CartItems
-                .AddAsync(cartItem, cancellationToken);
+
+            cart.CartItems.Add(cartItem);
         }
 
-        cart.TotalAmount = cart.CartItems.Sum(x => x!.TotalPrice);
+        cart.TotalAmount = cart.CartItems.Sum(x => x.TotalPrice);
         await dbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<CartResponse>(cart);
     }
