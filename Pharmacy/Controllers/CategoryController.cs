@@ -13,7 +13,7 @@ namespace Pharmacy.Controllers;
 [Route("api/[controller]/[action]")]
 public class CategoryController(IMediator mediator) : ControllerBase
 {
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> AddCategory([FromBody] CreateCategoryRequest request)
     {
@@ -21,7 +21,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpPut]
     public async Task<ActionResult<CategoryResponse>> UpdateCategory(long id, [FromBody] UpdateCategoryRequest request)
     {
@@ -29,7 +29,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<CategoryResponse>> GetCategoryById(long id, CancellationToken cancellationToken = default)
     {
@@ -37,7 +37,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<List<CategoryResponse>>> GetAllCategories(int page, int pageSize)
     {
@@ -45,7 +45,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpDelete]
     public async Task<IActionResult> DeleteCategoryById(long id)
     {
@@ -53,7 +53,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<List<ProductResponse>>> GetCategoryWithProducts(int categoryId, int page, int pageSize)
     {
@@ -61,17 +61,17 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<List<CategoryResponse>>> GetCategoryByName(string name)
     {
-        var response = await mediator.Send(new GetByNameQuery(name));
+        var response = await mediator.Send(new GetCategoryByNameQuery(name));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
+    [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<List<CategoryResponse>>> GetByStatus(CategoryStatus categoryStatus,int pageNumber, int pageSize)
+    public async Task<ActionResult<List<CategoryResponse>>> GetByStatus(CategoryStatus categoryStatus, int pageNumber, int pageSize)
     {
         var response = await mediator.Send(new GetCategoriesByStatusQuery(categoryStatus, pageNumber, pageSize));
         return Ok(response);

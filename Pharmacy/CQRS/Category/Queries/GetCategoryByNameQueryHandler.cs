@@ -7,20 +7,22 @@ using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Category.Queries;
 
-public record GetByNameQuery(
+public record GetCategoryByNameQuery(
     string Name) : IRequest<List<CategoryResponse>>;
 
-public class GetByNameHandler(
+public class GetCategoryByNameQueryHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<GetByNameQuery, List<CategoryResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByNameQuery, List<CategoryResponse>>
 {
-    public async Task<List<CategoryResponse>> Handle(GetByNameQuery request, CancellationToken cancellationToken)
+    public async Task<List<CategoryResponse>> Handle(GetCategoryByNameQuery request,
+        CancellationToken cancellationToken)
     {
         var categories = await dbContext.Categories
             .Where(x => x.Name.Contains(request.Name))
             .OrderBy(x => x.Id)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (!categories.Any())
+        if (categories.Count == 0)
         {
             throw new RecourseNotFoundException("Category not found");
         }
