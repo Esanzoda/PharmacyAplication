@@ -2,10 +2,11 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Customer.Models.DTOs.Request;
+using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
+using Pharmacy.Services.GoogleMaps;
 
 namespace Pharmacy.CQRS.Customer.Commands;
 
@@ -16,7 +17,8 @@ public record UpdateCustomerCommand(
 public class UpdateCustomerHandler(
     IMapper mapper,
     IDistributedCache cache,
-    IApplicationDbContext dbContext) : IRequestHandler<UpdateCustomerCommand, CustomerResponse>
+    IApplicationDbContext dbContext,
+    IGeocodingService geocodingService) : IRequestHandler<UpdateCustomerCommand, CustomerResponse>
 {
     public async Task<CustomerResponse> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
@@ -40,7 +42,10 @@ public class UpdateCustomerHandler(
                 $"Customer already exists with this phone number{request.Request.PhoneNumber} or with email{request.Request.Email} ");
         }
 
-        mapper.Map(request.Request, customer);
+        var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
+        var updateCustomer = mapper.Map(request.Request, customer);
+        updateCustomer.Latitude = geocoding.Lat;
+        updateCustomer.Longitude = geocoding.Lng;
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"CustomerById-{customer.Id}";
