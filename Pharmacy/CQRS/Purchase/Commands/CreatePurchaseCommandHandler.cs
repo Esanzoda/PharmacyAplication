@@ -1,11 +1,11 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Purchase.Models;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Purchase.Commands;
 
@@ -20,7 +20,7 @@ public class CreatePurchaseCommandHandler(
 {
     public async Task<PurchaseResponse> Handle(CreatePurchaseCommand request, CancellationToken cancellationToken)
     {
-        var purchase = mapper.Map<Models.Domain.Purchase>(request.Request);
+        var purchase = mapper.Map<Models.Purchase>(request.Request);
         purchase.PharmacyId = request.PharmacyId;
         await dbContext.Purchases
             .AddAsync(purchase, cancellationToken);
@@ -29,7 +29,7 @@ public class CreatePurchaseCommandHandler(
             .ToList();
         var products = await dbContext.Products
             .Where(x => productIds.Contains(x.Id) &&
-                        x.PharmacyId==request.PharmacyId)
+                        x.PharmacyId == request.PharmacyId)
             .ToDictionaryAsync(x => x.Id, cancellationToken);
 
         foreach (var item in request.Request.PurchaseItems)
@@ -40,7 +40,7 @@ public class CreatePurchaseCommandHandler(
             }
 
             var purchaseItem = mapper.Map<PurchaseItem>(item);
-            purchaseItem.PharmacyId = request.PharmacyId; 
+            purchaseItem.PharmacyId = request.PharmacyId;
             purchaseItem.TotalPrice = item.Quantity * item.PurchasePrice;
 
             purchase.PurchaseItems.Add(purchaseItem);

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Dto.Response;
@@ -8,6 +9,7 @@ using Pharmacy.Models.Dto.Response;
 namespace Pharmacy.CQRS.Purchase.Commands;
 
 public record RemoveItemFromPurchaseCommand(
+    long EmployeeId,
     long PharmacyId,
     long PurchaseId,
     long ItemId) : IRequest<PurchaseResponse>;
@@ -22,7 +24,9 @@ public class RemoveItemFromPurchaseCommandHandler(
     {
         var purchase = await dbContext.Purchases
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Id == request.PurchaseId, cancellationToken);
+                                      x.Id == request.PurchaseId &&
+                                      x.EmployeeId == request.EmployeeId,
+                cancellationToken);
         if (purchase == null)
         {
             throw new RecourseNotFoundException("Purchase not found");
@@ -52,7 +56,7 @@ public class RemoveItemFromPurchaseCommandHandler(
         product.Stock -= purchaseItemToRemove.Quantity;
 
         purchase.PurchaseItems.Remove(purchaseItemToRemove);
-       // dbContext.PurchaseItems.Remove(purchaseItemToRemove);
+        // dbContext.PurchaseItems.Remove(purchaseItemToRemove);
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);

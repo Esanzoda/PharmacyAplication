@@ -1,4 +1,4 @@
-namespace Pharmacy.Models.Dto.Request;
+namespace Pharmacy.CQRS.Purchase.Models.DTOs.Request;
 
 public record PurchaseItemRequest
 {
