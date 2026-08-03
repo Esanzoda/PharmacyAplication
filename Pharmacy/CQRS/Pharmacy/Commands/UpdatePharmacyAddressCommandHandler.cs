@@ -1,8 +1,10 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
+using Pharmacy.Services.GoogleMaps;
 
 namespace Pharmacy.CQRS.Pharmacy.Commands;
 
@@ -12,8 +14,8 @@ public record UpdatePharmacyAddressCommand(
 
 public class UpdatePharmacyAddressCommandHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext)
-    : IRequestHandler<UpdatePharmacyAddressCommand, PharmacyResponse>
+    IApplicationDbContext dbContext,
+    IGeocodingService geocodingService) : IRequestHandler<UpdatePharmacyAddressCommand, PharmacyResponse>
 {
     public async Task<PharmacyResponse> Handle(UpdatePharmacyAddressCommand request,
         CancellationToken cancellationToken)
@@ -25,10 +27,19 @@ public class UpdatePharmacyAddressCommandHandler(
             throw new RecourseNotFoundException("Pharmacy not found");
         }
 
-        if (pharmacy.Address == request.NewAddress)
+        var pharmacyExists = await dbContext.Pharmacies
+            .AnyAsync(x => x.Id != request.Id &&
+                           x.Address == request.NewAddress,
+                cancellationToken);
+        if (pharmacyExists)
         {
-            throw new BusinessException("Pharmacy with this email already exist");
+            throw new RecourseIsAlreadyExistException("Pharmacy with this address already exist");
         }
+
+        var geoCoding = await geocodingService.GetCoordinatesAsync(pharmacy.Address);
+
+        pharmacy.Latitude = geoCoding.Lat;
+        pharmacy.Longitude = geoCoding.Lng;
 
         pharmacy.Address = request.NewAddress;
         await dbContext.SaveChangesAsync(cancellationToken);
