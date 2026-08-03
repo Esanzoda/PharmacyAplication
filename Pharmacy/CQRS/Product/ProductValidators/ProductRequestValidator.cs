@@ -1,5 +1,5 @@
 using FluentValidation;
-using Pharmacy.Models.Dto.Request;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Request;
 
 namespace Pharmacy.CQRS.Product.ProductValidators;
 
@@ -16,7 +16,7 @@ public class ProductRequestValidator : AbstractValidator<ProductRequest>
             .WithMessage("Purchase price is required")
             .GreaterThan(0)
             .WithMessage("Product price must be greater than 0");
-        RuleFor(x => x.Price)
+        RuleFor(x => x.SalePrice)
             .NotEmpty()
             .NotNull()
             .WithMessage("Order price is required")

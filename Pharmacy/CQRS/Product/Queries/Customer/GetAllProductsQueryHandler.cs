@@ -1,10 +1,10 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
-namespace Pharmacy.CQRS.Product.Queries;
+namespace Pharmacy.CQRS.Product.Queries.Customer;
 
 public record GetAllProductsQuery(
     int Page,

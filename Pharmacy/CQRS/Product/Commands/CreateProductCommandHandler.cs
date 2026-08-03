@@ -1,10 +1,10 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Request;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Product.Commands;
 
@@ -32,14 +32,16 @@ public class CreateProductCommandHandler(
         if (productExist)
         {
             throw new RecourseIsAlreadyExistException(
-                $"Product already exists with this name {request.Request.Name} or barcode {request.Request.Barcode}");
+                $"Product already exists with  barcode {request.Request.Barcode}");
         }
 
-        var product = mapper.Map<Models.Domain.Product>(request.Request);
+        var product = mapper.Map<ProductModels.Product>(request.Request);
         product.PharmacyId = request.PharmacyId;
         await dbContext.Products
             .AddAsync(product, cancellationToken);
+
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<ProductResponse>(product);
     }
 }

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.Models.Domain;
+using Pharmacy.CQRS.Product.ProductModels;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
@@ -11,8 +11,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.ToTable("Products");
 
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Id)
-            .IsUnique();
 
         builder.Property(x => x.Name)
             .IsRequired()
@@ -33,7 +31,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
-        builder.Property(x => x.Price)
+        builder.Property(x => x.SalePrice)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 

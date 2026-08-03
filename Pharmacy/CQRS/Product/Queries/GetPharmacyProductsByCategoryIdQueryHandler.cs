@@ -1,15 +1,15 @@
-
-
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
-public record GetPharmacyProductsByCategoryIdQuery(long PharmacyId,
+public record GetPharmacyProductsByCategoryIdQuery(
+    long PharmacyId,
     long CategoryId,
     int Page,
     int PageSize) : IRequest<List<ProductResponse>>;
@@ -28,10 +28,10 @@ public class GetPharmacyProductsByCategoryIdQueryHandler(
         {
             throw new RecourseNotFoundException("Category with this id  not found");
         }
-        
+
         var product = await dbContext.Products
-            .Where(x =>x.PharmacyId==request.PharmacyId && 
-                       x.CategoryId == request.CategoryId)
+            .Where(x => x.PharmacyId == request.PharmacyId &&
+                        x.CategoryId == request.CategoryId)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
