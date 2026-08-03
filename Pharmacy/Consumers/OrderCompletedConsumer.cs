@@ -1,9 +1,9 @@
 using MassTransit;
 using MediatR;
-using Pharmacy.CQRS;
 using Pharmacy.CQRS.Notification.Commands;
 using Pharmacy.Interfaces;
 using Pharmacy.Messages.Events;
+using Pharmacy.Services.Message;
 
 namespace Pharmacy.Consumers;
 

@@ -1,6 +1,6 @@
-namespace Pharmacy.Models.Dto.Request;
+namespace Pharmacy.CQRS.Cart.Models.DTOs.Request;
 
-public record OrderItemRequest
+public record CartItemRequest
 {
     public long ProductId { get; init; }
     public int Quantity { get; init; }

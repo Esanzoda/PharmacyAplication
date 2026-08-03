@@ -1,11 +1,12 @@
-namespace Pharmacy.Models.Domain;
+using Pharmacy.Models.Domain;
+
+namespace Pharmacy.CQRS.Order.Models;
 
 public class OrderItem : BaseEntity
 {
-    public long PharmacyId { get; set; }
+   
     public long ProductId { get; set; }
-    public long OrderId { get; set; }
-    public Product Product { get; set; }= null!;
+    public Product.ProductModels.Product Product { get; set; }= null!;
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public decimal TotalPrice { get; set; }

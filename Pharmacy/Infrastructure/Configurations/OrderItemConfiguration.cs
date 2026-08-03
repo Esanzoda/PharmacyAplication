@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.Models.Domain;
+using Pharmacy.CQRS.Order.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
@@ -11,13 +11,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.ToTable("OrderItems");
 
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Id)
-            .IsUnique();
-
-        builder.HasOne<Order>()
-            .WithMany(x => x.OrderItems)
-            .HasForeignKey(x => x.OrderId);
-
+        
         builder.HasOne(x => x.Product)
             .WithMany()
             .HasForeignKey(x => x.ProductId);

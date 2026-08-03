@@ -1,9 +1,9 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Cart.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Cart.Commands;
 
@@ -22,8 +22,9 @@ public class UpdateQuantityCartItemCommandHandler(
     {
         var cartItem = await dbContext.CartItems
             .Include(x => x.Cart)
+            .ThenInclude(x => x.CartItems)
             .FirstOrDefaultAsync(x => x.ProductId == request.ProductId &&
-                                      x.CustomerId == request.CustomerId,
+                                      x.Cart.CustomerId == request.CustomerId,
                 cancellationToken);
 
         if (cartItem is null)
@@ -33,7 +34,7 @@ public class UpdateQuantityCartItemCommandHandler(
 
         cartItem.Quantity = request.Quantity;
         cartItem.TotalPrice = cartItem.Price * request.Quantity;
-        cartItem.Cart!.TotalAmount = cartItem.Cart.CartItems.Sum(x => x!.TotalPrice);
+        cartItem.Cart.TotalAmount = cartItem.Cart.CartItems.Sum(x => x.TotalPrice);
         await dbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<CartItemResponse>(cartItem);
     }

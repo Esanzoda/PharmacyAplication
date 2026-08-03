@@ -4,6 +4,7 @@ using Pharmacy.CQRS;
 using Pharmacy.CQRS.Notification.Commands;
 using Pharmacy.Interfaces;
 using Pharmacy.Messages.Events;
+using Pharmacy.Services.Message;
 
 namespace Pharmacy.Consumers;
 
@@ -19,9 +20,10 @@ public class OrderCancelledConsumer(
         var message = context.Message;
 
         logger.LogInformation(
-            "Order cancelled: OrderId={OrderId}, CustomerId={CustomerId}",
+            "Order cancelled: OrderId={OrderId}, CustomerId={CustomerId} UpdateTime={UpdateTime}",
             message.OrderId,
-            message.CustomerId);
+            message.CustomerId,
+            message.UpdateTime);
 
 
         var user = await dbContext.Customers

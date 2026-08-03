@@ -1,23 +1,24 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Order.Commands;
 
 public record RemoveItemFromOrderCommand(
     long CustomerId,
     long OrderId,
-    long ItemId) : IRequest<OrderResponse>;
+    long ProductId) : IRequest<OrderResponseForCustomer>;
 
 public class RemoveItemFromOrderHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<RemoveItemFromOrderCommand, OrderResponse>
+    IMapper mapper) : IRequestHandler<RemoveItemFromOrderCommand, OrderResponseForCustomer>
 {
-    public async Task<OrderResponse> Handle(RemoveItemFromOrderCommand request, CancellationToken cancellationToken)
+    public async Task<OrderResponseForCustomer> Handle(RemoveItemFromOrderCommand request,
+        CancellationToken cancellationToken)
     {
         var order = await dbContext.Orders
             .Include(x => x.OrderItems)
@@ -31,17 +32,17 @@ public class RemoveItemFromOrderHandler(
 
         if (order.OrderStatus is OrderStatus.Completed or OrderStatus.Cancelled or OrderStatus.Shipped)
         {
-            throw new BusinessException("Can't remove item completed or cancelled order ");
+            throw new BusinessException("Items cannot be removed from completed, shipped, or cancelled orders");
         }
 
-        var itemToRemove = order.OrderItems.FirstOrDefault(x => x.Id == request.ItemId);
+        var itemToRemove = order.OrderItems.FirstOrDefault(x => x.ProductId == request.ProductId);
         if (itemToRemove == null)
         {
             throw new RecourseNotFoundException($"OrderItem not found");
         }
 
         var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.PharmacyId == itemToRemove.PharmacyId &&
+            .FirstOrDefaultAsync(x => x.PharmacyId == order.PharmacyId &&
                                       x.Id == itemToRemove.ProductId, cancellationToken);
         if (product == null)
         {
@@ -52,10 +53,16 @@ public class RemoveItemFromOrderHandler(
 
 
         order.OrderItems.Remove(itemToRemove);
+        dbContext.OrderItems.Remove(itemToRemove);
+        if (order.OrderItems.Count == 0)
+        {
+            dbContext.Orders.Remove(order);
+        }
+
         order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<OrderResponse>(order);
+        return mapper.Map<OrderResponseForCustomer>(order);
     }
 }

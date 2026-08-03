@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.Models.Domain;
+using Pharmacy.CQRS.Order.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
@@ -11,8 +11,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.ToTable("Orders");
 
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Id)
-            .IsUnique();
+
         builder.Property(x => x.Address)
             .IsRequired()
             .HasMaxLength(100);
