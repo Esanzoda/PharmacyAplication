@@ -1,6 +1,6 @@
 using Pharmacy.Models.Domain;
 
-namespace Pharmacy.CQRS;
+namespace Pharmacy.Services.Message;
 
 public interface IMessageService
 {

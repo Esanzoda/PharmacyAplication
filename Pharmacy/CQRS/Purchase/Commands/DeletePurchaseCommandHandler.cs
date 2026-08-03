@@ -17,7 +17,7 @@ public class DeletePurchaseCommandHandler(
     {
         var purchase = await dbContext.Purchases
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Id == request.Id,
+                                      x.Id == request.Id && x.EmployeeId == request.EmployeeId,
                 cancellationToken);
         if (purchase is null)
         {

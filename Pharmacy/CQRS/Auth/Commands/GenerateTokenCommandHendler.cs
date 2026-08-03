@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -8,7 +9,7 @@ using Pharmacy.Infrastructure.Setting;
 
 namespace Pharmacy.CQRS.Auth.Commands;
 
-public record GenerateTokenCommand(Models.Domain.Customer Request) : IRequest<string>;
+public record GenerateTokenCommand(Customer.Models.Customer Request) : IRequest<string>;
 
 public class GenerateTokenCommandHandler(IOptionsMonitor<JwtOption> jwt) : IRequestHandler<GenerateTokenCommand, string>
 {
@@ -18,7 +19,9 @@ public class GenerateTokenCommandHandler(IOptionsMonitor<JwtOption> jwt) : IRequ
         {
             new Claim(ClaimTypes.NameIdentifier, request.Request.Id.ToString()),
             new Claim(ClaimTypes.Email, request.Request.Email),
-            new Claim(ClaimTypes.Role, request.Request.Role.ToString())
+            new Claim(ClaimTypes.Role, request.Request.Role.ToString()),
+            new Claim("Latitude", request.Request.Latitude.ToString(CultureInfo.InvariantCulture)),
+            new Claim("Longitude", request.Request.Longitude.ToString(CultureInfo.InvariantCulture))
         };
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwt.CurrentValue.SecretKey));
@@ -32,8 +35,7 @@ public class GenerateTokenCommandHandler(IOptionsMonitor<JwtOption> jwt) : IRequ
             audience: jwt.CurrentValue.Audience,
             claims: claims,
             expires:
-            DateTime.UtcNow.AddMinutes(
-                Convert.ToDouble(jwt.CurrentValue.AccessTokenExpirationMinutes)),
+            DateTime.UtcNow.AddMinutes(jwt.CurrentValue.AccessTokenExpirationMinutes),
             signingCredentials:
             credentials
         );

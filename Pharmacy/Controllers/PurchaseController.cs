@@ -2,10 +2,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Purchase.Commands;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.CQRS.Purchase.Queries;
 using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.Controllers;
 
@@ -27,14 +27,13 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<PurchaseResponse>> Update(long id, [FromBody] PurchaseRequest request)
     {
         var pharmacyId = 1;
-        var employeeId = 1;
-        var response = await mediator.Send(new UpdatePurchaseCommand(pharmacyId, employeeId, id, request));
+        var response = await mediator.Send(new UpdatePurchaseCommand(pharmacyId, id, request));
         return Ok(response);
     }
 
     // [Authorize(Roles = nameof(Role.PurchasingManager))]
-    [HttpGet("id")]
-    public async Task<ActionResult<PurchaseResponse>> GetByIdAsync(long id)
+    [HttpGet]
+    public async Task<ActionResult<PurchaseResponse>> GetById(long id)
     {
         var pharmacyId = 1;
         var response = await mediator.Send(new GetPurchaseBuIdQuery(pharmacyId, id));
@@ -43,7 +42,7 @@ public class PurchaseController(IMediator mediator) : ControllerBase
 
     // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpGet]
-    public async Task<ActionResult<List<PurchaseResponse>>> GetAllByPagination(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(int pageNumber, int pageSize)
     {
         var pharmacyId = 1;
         var response = await mediator.Send(new GetAllPurchaseQuery(pharmacyId, pageNumber, pageSize));
@@ -55,7 +54,7 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> DeleteById(long id)
     {
         var pharmacyId = 1;
-        var employeeId = 1;
+        var employeeId = 1; //long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new DeletePurchaseCommand(pharmacyId, employeeId, id));
         return Ok(response);
     }
@@ -76,7 +75,9 @@ public class PurchaseController(IMediator mediator) : ControllerBase
         long purchaseItemId)
     {
         var pharmacyId = 1;
-        var response = await mediator.Send(new RemoveItemFromPurchaseCommand(pharmacyId, purchaseId, purchaseItemId));
+        var employeeId = 1; //long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var response =
+            await mediator.Send(new RemoveItemFromPurchaseCommand(employeeId, pharmacyId, purchaseId, purchaseItemId));
         return Ok(response);
     }
 }

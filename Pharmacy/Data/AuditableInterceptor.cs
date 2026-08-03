@@ -6,7 +6,9 @@ namespace Pharmacy.Data;
 
 public class AuditableInterceptor : SaveChangesInterceptor
 {
-    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+        InterceptionResult<int> result,
+        CancellationToken cancellationToken = new CancellationToken())
     {
         if (eventData.Context is not null)
         {
@@ -32,6 +34,6 @@ public class AuditableInterceptor : SaveChangesInterceptor
             }
         }
 
-        return base.SavingChanges(eventData, result);
+        return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }

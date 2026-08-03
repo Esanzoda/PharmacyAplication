@@ -1,16 +1,15 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Purchase.Commands;
 
 public record UpdatePurchaseCommand(
     long PharmacyId,
-    long EmployeeId,
     long Id,
     PurchaseRequest Request) : IRequest<PurchaseResponse>;
 
@@ -30,9 +29,8 @@ public class UpdatePurchaseHandler(
             throw new RecourseNotFoundException("Purchase not found");
         }
 
-        purchase.EmployeeId = request.EmployeeId;
         mapper.Map(request.Request, purchase);
-       // dbContext.Purchases.Update(purchase);
+        // dbContext.Purchases.Update(purchase);
         await dbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<PurchaseResponse>(purchase);
     }
