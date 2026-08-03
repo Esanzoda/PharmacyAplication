@@ -28,20 +28,17 @@ public class CheckExpiredProductsHandler(
 
         foreach (var product in expiredProducts)
         {
-            var oldStock = product.Stock;
             var item = new ExpiryDateItems
             {
                 PharmacyId = product.PharmacyId,
                 Product = product,
-                ProductName = product.Name,
-                Quantity = oldStock,
-                TotalOrderPrice = product.Stock * product.Price,
+                TotalSalePrice = product.Stock * product.SalePrice,
                 TotalPurchasePrice = product.Stock * product.PurchasePrice
             };
 
             report.ExpiryDateItemsList.Add(item);
 
-            report.TotalOrderPrice += item.TotalOrderPrice;
+            report.TotalSalePrice += item.TotalSalePrice;
             report.TotalPurchasePrice += item.TotalPurchasePrice;
 
             product.Stock = 0;

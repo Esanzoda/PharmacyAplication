@@ -1,10 +1,9 @@
 using Pharmacy.Models.Domain;
 
-namespace Pharmacy.Models.Dto.Response;
+namespace Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 
-public record ExpireDateProductResponse
+public class ExpireDateProductResponse : BaseEntity
 {
-    public long Id { get; set; }
     public DateTime DateTime { get; set; }
     public int Count { get; set; }
     public decimal ToTalPrice { get; set; }
