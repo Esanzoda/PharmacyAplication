@@ -1,6 +1,6 @@
 using Pharmacy.Models.Domain.Enum;
 
-namespace Pharmacy.Models.Dto.Request;
+namespace Pharmacy.CQRS.Product.ProductModels.DTos.Request;
 
 public record ProductRequest
 {
@@ -10,8 +10,8 @@ public record ProductRequest
     public string Description { get; init; } = string.Empty;
     public CountryEnum Country { get; init; }
     public decimal PurchasePrice { get; init; }
-    public decimal Price { get; init; }
-    public required string Barcode { get; set; }
-    public int Stock { get; set; }
-    public DateTime ExpiryDate { get; set; }
+    public decimal SalePrice { get; init; }
+    public required string Barcode { get; init; }
+    public int Stock { get; init; }
+    public DateTime ExpiryDate { get; init; }
 }

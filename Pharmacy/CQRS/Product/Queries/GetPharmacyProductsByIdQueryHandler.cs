@@ -4,27 +4,28 @@ using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
-public record GetProductByBarcodeQuery(
+public record GetPharmacyLowOfStockQuery(
     long PharmacyId,
-    string Barcode) : IRequest<ProductResponse>;
+    long Id) : IRequest<ProductResponse>;
 
-public class GetPharmacyProductByBarcodeQueryHandler(
+public class GetPharmacyProductsByIdQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetProductByBarcodeQuery, ProductResponse>
+    IMapper mapper) : IRequestHandler<GetPharmacyLowOfStockQuery, ProductResponse>
 {
-    public async Task<ProductResponse> Handle(GetProductByBarcodeQuery request, CancellationToken cancellationToken)
+    public async Task<ProductResponse> Handle(GetPharmacyLowOfStockQuery request, CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Barcode == request.Barcode,
+                                      x.Id == request.Id,
                 cancellationToken);
         if (product == null)
-            throw new RecourseNotFoundException("Product with this barcode not found");
+        {
+            throw new RecourseNotFoundException("Product not found");
+        }
 
         return mapper.Map<ProductResponse>(product);
     }

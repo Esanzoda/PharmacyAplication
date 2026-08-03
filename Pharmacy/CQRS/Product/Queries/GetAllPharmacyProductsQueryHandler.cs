@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Dto.Response;
 

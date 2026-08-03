@@ -1,14 +1,13 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
-namespace Pharmacy.CQRS.Product.Queries;
+namespace Pharmacy.CQRS.Product.Queries.Customer;
 
 public record GetProductByIdQuery(
-    long PharmacyId,
     long Id) : IRequest<ProductResponse>;
 
 public class GetProductByIdQueryHandler(
@@ -19,8 +18,7 @@ public class GetProductByIdQueryHandler(
     {
         var product = await dbContext.Products
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Id == request.Id,
+            .FirstOrDefaultAsync(x => x.Id == request.Id,
                 cancellationToken);
         if (product == null)
         {
