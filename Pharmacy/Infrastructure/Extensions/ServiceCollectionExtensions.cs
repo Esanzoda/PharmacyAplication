@@ -4,6 +4,10 @@ using Pharmacy.CQRS;
 using Pharmacy.Data;
 using Pharmacy.Interfaces;
 using Pharmacy.Jobs;
+using Pharmacy.Services.DeliveryFee;
+using Pharmacy.Services.GoogleMaps;
+using Pharmacy.Services.Message;
+using Pharmacy.Services.Password;
 
 namespace Pharmacy.Infrastructure.Extensions;
 
@@ -26,5 +30,9 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddScoped<Report>();
         serviceCollection.AddOpenApi();
         serviceCollection.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
+        serviceCollection.AddHttpClient<IGeocodingService, GeocodingService>();
+        serviceCollection.AddHttpClient<IRoutesService, RoutesApiService>();
+        serviceCollection.AddScoped<IPasswordService, PasswordService>();
+        serviceCollection.AddScoped<IDeliveryFeeByDistance, DeliveryFeeByDistance>();
     }
 }

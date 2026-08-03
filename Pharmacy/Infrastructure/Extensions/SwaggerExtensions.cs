@@ -8,7 +8,7 @@ public static class SwaggerExtensions
     {
         serviceCollection.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pharmacy API", Version = "v1" });
 
 
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
