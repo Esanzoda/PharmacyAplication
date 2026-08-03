@@ -1,11 +1,11 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Auth.Queries;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain;
 using Pharmacy.Models.Dto.Request;
 using Pharmacy.Models.Dto.Response;
+using Pharmacy.Services.Password;
 
 namespace Pharmacy.CQRS.Auth.Commands;
 
@@ -14,7 +14,8 @@ public record LoginCommand(
 
 public class LoginHandler(
     IMediator mediator,
-    IApplicationDbContext dbContext) : IRequestHandler<LoginCommand, LoginResponse>
+    IApplicationDbContext dbContext,
+    IPasswordService passwordService) : IRequestHandler<LoginCommand, LoginResponse>
 {
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
@@ -26,9 +27,7 @@ public class LoginHandler(
             throw new RecourseNotFoundException("Customer not found");
         }
 
-        var passwordCheck =
-            await mediator.Send(new PasswordVerifyQuery(request.Request.Password, customer.PasswordHash),
-                cancellationToken);
+        var passwordCheck = await passwordService.PasswordVerify(request.Request.Password, customer.PasswordHash);
         if (!passwordCheck)
         {
             throw new BusinessException("Invalid email or password");

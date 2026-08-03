@@ -1,25 +1,26 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Auth.Commands;
+using Pharmacy.CQRS.Customer.Models.DTOs.Request;
+using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
+using Pharmacy.Services.GoogleMaps;
+using Pharmacy.Services.Password;
 
 namespace Pharmacy.CQRS.Customer.Commands;
 
-public record CreateCustomerCommand(
+public record RegisterCommand(
     CustomerRequest Request) : IRequest<CustomerResponse>;
 
-public class CreateCustomerHandler(
+public class RegisterHandler(
     IMapper mapper,
     IApplicationDbContext dbContext,
-    IMediator mediator)
-    : IRequestHandler<CreateCustomerCommand, CustomerResponse>
+    IGeocodingService geocodingService,
+    IPasswordService passwordService) : IRequestHandler<RegisterCommand, CustomerResponse>
 {
-    public async Task<CustomerResponse> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+    public async Task<CustomerResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var customerExist = await dbContext.Customers
             .AnyAsync(x => x.Email == request.Request.Email ||
@@ -36,12 +37,15 @@ public class CreateCustomerHandler(
             throw new BusinessException("You can create only customer role.");
         }
 
-        var passwordHash = await mediator.Send(new PasswordHashCommand(request.Request.Password), cancellationToken);
-        var newCustomer = mapper.Map<Models.Domain.Customer>(request.Request);
+        var passwordHash = await passwordService.PasswordHash(request.Request.Password);
+        var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
+        var newCustomer = mapper.Map<Models.Customer>(request.Request);
         newCustomer.PasswordHash = passwordHash;
+        newCustomer.Latitude = geocoding.Lat;
+        newCustomer.Longitude = geocoding.Lng;
 
 
-        var cart = new Models.Domain.Cart
+        var cart = new Cart.Models.Cart
         {
             Customer = newCustomer,
             TotalAmount = 0
