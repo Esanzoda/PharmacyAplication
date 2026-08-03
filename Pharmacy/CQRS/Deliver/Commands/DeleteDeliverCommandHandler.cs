@@ -7,7 +7,6 @@ using Pharmacy.Interfaces;
 namespace Pharmacy.CQRS.Deliver.Commands;
 
 public record DeleteDeliverCommand(
-    long PharmacyId,
     long Id) : IRequest<bool>;
 
 public class DeleteDeliverHandler(
@@ -18,8 +17,7 @@ public class DeleteDeliverHandler(
     {
         var deliver = await dbContext.Delivers
             .FirstOrDefaultAsync(
-                x => x.Id == request.Id &&
-                     x.PharmacyId == request.PharmacyId,
+                x => x.Id == request.Id,
                 cancellationToken);
         if (deliver is null)
         {

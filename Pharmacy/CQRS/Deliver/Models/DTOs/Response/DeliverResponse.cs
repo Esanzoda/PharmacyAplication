@@ -1,4 +1,4 @@
-namespace Pharmacy.Models.Dto.Response;
+namespace Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 
 public class PharmacyResponse
 {
