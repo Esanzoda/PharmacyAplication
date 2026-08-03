@@ -1,8 +1,7 @@
-namespace Pharmacy.Models.Dto.Response;
+namespace Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 
 public record DeliverResponse
 {
-    public long PharmacyId { get; set; }
     public long Id { get; set; }
     public required string Name { get; set; }
     public required string PhoneNumber { get; set; }

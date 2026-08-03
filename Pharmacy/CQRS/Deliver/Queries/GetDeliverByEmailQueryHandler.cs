@@ -1,15 +1,14 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Deliver.Queries;
 
 public record GetDeliverByEmailQuery(
-    long PharmacyId,
-    string Email ) : IRequest<DeliverResponse>;
+    string Email) : IRequest<DeliverResponse>;
 
 public class GetDeliverByEmailHandler(
     IApplicationDbContext dbContext,
@@ -20,8 +19,7 @@ public class GetDeliverByEmailHandler(
     {
         var deliver = await dbContext.Delivers
             .FirstOrDefaultAsync(
-                x => x.PharmacyId == request.PharmacyId &&
-                     x.Email == request.Email,
+                x => x.Email == request.Email,
                 cancellationToken);
         if (deliver is null)
         {

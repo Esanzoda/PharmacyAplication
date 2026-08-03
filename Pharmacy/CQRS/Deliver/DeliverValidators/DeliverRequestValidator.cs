@@ -1,5 +1,5 @@
 using FluentValidation;
-using Pharmacy.Models.Dto.Request;
+using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
 
 namespace Pharmacy.CQRS.Deliver.DeliverValidators;
 
@@ -11,14 +11,16 @@ public class DeliverRequestValidator : AbstractValidator<DeliverRequest>
             .NotNull()
             .NotEmpty()
             .WithMessage("Deliver name is required");
+
         RuleFor(x => x.PhoneNumber)
-            .NotNull()
             .NotEmpty()
             .WithMessage("Deliver phone number is required");
+
         RuleFor(x => x.Address)
             .NotNull()
             .NotEmpty()
             .WithMessage("Deliver address is required");
+
         RuleFor(x => x.Email)
             .NotNull()
             .NotEmpty()

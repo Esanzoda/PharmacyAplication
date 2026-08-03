@@ -3,14 +3,13 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Deliver.Queries;
 
 public record GetDeliverByIdQuery(
-    long PharmacyId,
     long DeliverId) : IRequest<DeliverResponse>;
 
 public class GetDeliverByIdHandler(
@@ -33,8 +32,7 @@ public class GetDeliverByIdHandler(
 
         var deliver = await dbContext.Delivers
             .FirstOrDefaultAsync(
-                x => x.PharmacyId == request.PharmacyId &&
-                     x.Id == request.DeliverId,
+                x => x.Id == request.DeliverId,
                 cancellationToken);
         if (deliver is null)
         {
