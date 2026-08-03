@@ -21,7 +21,8 @@ public class ReportCommandHandler(
         var yesterday = DateTime.UtcNow; //.AddDays(-1);
         decimal totalAmount = 0;
         var completedOrders = await dbContext.Orders
-            .Where(x => x.OrderStatus == OrderStatus.Completed)
+            .Where(x => x.OrderStatus == OrderStatus.Completed &&
+                        x.CreatedAt==yesterday)
             .OrderBy(x => x.Id)
             .ToListAsync(cancellationToken);
         foreach (var order in completedOrders)
@@ -38,7 +39,8 @@ public class ReportCommandHandler(
         }, cancellationToken);
         logger.LogInformation("OrderCompletedEventReportToCeo published");
         var cancelledOrders = await dbContext.Orders
-            .Where(x => x.OrderStatus == OrderStatus.Cancelled && x.CreatedAt == yesterday)
+            .Where(x => x.OrderStatus == OrderStatus.Cancelled
+                        && x.CreatedAt == yesterday)
             .OrderBy(x => x.Id)
             .ToListAsync(cancellationToken);
         await publishEndpoint.Publish(new OrderCancelledEventToCeo()
@@ -47,7 +49,8 @@ public class ReportCommandHandler(
             Count = cancelledOrders.Count
         }, cancellationToken);
         var sheepadOrders = await dbContext.Orders
-            .Where(x => x.OrderStatus == OrderStatus.Shipped && x.CreatedAt == yesterday)
+            .Where(x => x.OrderStatus == OrderStatus.Shipped && 
+                        x.CreatedAt == yesterday)
             .OrderBy(x => x.Id)
             .ToListAsync(cancellationToken);
         await publishEndpoint.Publish(new OrderShippedEventToCeo

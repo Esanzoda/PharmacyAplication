@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.Models.Domain;
+using Pharmacy.CQRS.Purchase.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
@@ -11,11 +11,11 @@ public class PurchaseItemConfiguration : IEntityTypeConfiguration<PurchaseItem>
         builder.ToTable("PurchaseItems");
 
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.Id)
-            .IsUnique();
+
         builder.HasOne<Purchase>()
             .WithMany(x => x.PurchaseItems)
             .HasForeignKey(x => x.PurchaseId);
+
         builder.Property(x => x.Barcode)
             .IsRequired()
             .HasMaxLength(100);

@@ -1,3 +1,5 @@
+using Pharmacy.CQRS.Customer.Models;
+
 namespace Pharmacy.Models.Domain;
 
 public class RefreshToken : BaseEntity

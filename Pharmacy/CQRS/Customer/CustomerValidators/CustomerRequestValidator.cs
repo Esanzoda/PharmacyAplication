@@ -1,6 +1,6 @@
 using FluentValidation;
+using Pharmacy.CQRS.Customer.Models.DTOs.Request;
 using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Request;
 
 namespace Pharmacy.CQRS.Customer.CustomerValidators;
 

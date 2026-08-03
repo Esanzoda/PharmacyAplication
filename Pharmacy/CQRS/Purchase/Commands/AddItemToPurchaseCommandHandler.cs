@@ -1,11 +1,11 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Purchase.Models;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
+using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Purchase.Commands;
 

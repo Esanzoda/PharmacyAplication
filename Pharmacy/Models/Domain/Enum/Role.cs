@@ -6,5 +6,6 @@ public enum Role
     Admin = 1,
     PurchasingManager = 2,
     SuperAdmin = 3,
-    Deliver = 4
+    Deliver = 4,
+    Employee = 5
 }

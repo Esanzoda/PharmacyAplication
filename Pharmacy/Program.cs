@@ -12,6 +12,10 @@ builder.Services.Configure<RabbitMqOption>(
     builder.Configuration.GetSection(RabbitMqOption.SettingName));
 builder.Services.Configure<JwtOption>(
     builder.Configuration.GetSection(JwtOption.SettingName));
+builder.Services.Configure<EmailOption>(
+    builder.Configuration.GetSection(EmailOption.SettingName));
+builder.Services.Configure<GoogleMap>(
+    builder.Configuration.GetSection(GoogleMap.SettingName));
 
 builder.Services.AddConsumers(builder.Configuration);
 builder.Services.AddAppDbContext(builder.Configuration);

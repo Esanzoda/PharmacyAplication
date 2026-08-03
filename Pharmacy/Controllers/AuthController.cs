@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Auth.Commands;
+using Pharmacy.CQRS.Customer.Commands;
+using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.Controllers;
@@ -24,17 +26,11 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
+    // [Authorize]
     [HttpPost]
     public async Task<ActionResult<LoginResponse>> ReCreateToken(ReGenerateRefreshTokenCommand request)
     {
         var response = await mediator.Send(request);
         return Ok(response);
-    }
-
-    [Authorize]
-    [HttpPatch]
-    public async Task<ActionResult<string>> ChangePassword(string oldPassword, string newPassword)
-    {
-        return Ok("changed");
     }
 }

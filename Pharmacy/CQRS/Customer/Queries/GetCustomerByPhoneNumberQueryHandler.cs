@@ -1,13 +1,14 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Customer.Queries;
 
 public record GetCustomerByPhoneNumberQuery(
+    long PharmacyId,
     string PhoneNumber) : IRequest<CustomerResponse>;
 
 public class GetCustomerByPhoneNumberQueryHandler(
@@ -18,12 +19,24 @@ public class GetCustomerByPhoneNumberQueryHandler(
     public async Task<CustomerResponse> Handle(GetCustomerByPhoneNumberQuery request,
         CancellationToken cancellationToken)
     {
-        var customer = await dbContext.Customers
-            .FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber, cancellationToken);
-        if (customer == null)
+        var orders = await dbContext.Orders
+            .Where(x => x.PharmacyId == request.PharmacyId)
+            .OrderBy(x => x.Id)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+        var customerIds = orders
+            .Select(x => x.CustomerId)
+            .ToList();
+        var customers = await dbContext.Customers
+            .Where(x => customerIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.PhoneNumber, cancellationToken);
+
+
+        if (!customers.TryGetValue(request.PhoneNumber, out var customer))
         {
-            throw new RecourseNotFoundException($"Customer with this phoneNumber{request.PhoneNumber} not found");
+            throw new RecourseNotFoundException("Customer not found");
         }
+
 
         return mapper.Map<CustomerResponse>(customer);
     }
