@@ -3,9 +3,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Category.Queries;
 
@@ -24,7 +24,7 @@ public class GetCategoryByIdHandler(
         var cachedCategory = await cache.GetStringAsync(key, cancellationToken);
         if (cachedCategory is not null)
         {
-            var entity = JsonConvert.DeserializeObject<Models.Domain.Category>(cachedCategory);
+            var entity = JsonConvert.DeserializeObject<Models.Category>(cachedCategory);
             if (entity is not null)
             {
                 return mapper.Map<CategoryResponse>(entity);

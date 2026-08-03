@@ -1,4 +1,4 @@
-namespace Pharmacy.Models.Dto.Response;
+namespace Pharmacy.CQRS.Category.Models.DTOs.Response;
 
 public record CategoryResponse
 {

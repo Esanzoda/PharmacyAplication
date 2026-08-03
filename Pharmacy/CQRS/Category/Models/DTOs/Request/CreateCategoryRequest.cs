@@ -1,4 +1,4 @@
-namespace Pharmacy.Models.Dto.Request;
+namespace Pharmacy.CQRS.Category.Models.DTOs.Request;
 
 public record CreateCategoryRequest
 {
