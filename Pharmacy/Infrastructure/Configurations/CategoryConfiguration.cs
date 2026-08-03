@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.Models.Domain;
+using Pharmacy.CQRS.Category.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
@@ -11,9 +11,11 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.ToTable("Categories");
 
         builder.HasKey(x => x.Id);
+
         builder.Property(x => x.Name)
             .IsRequired()
             .HasMaxLength(100);
+
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(100);

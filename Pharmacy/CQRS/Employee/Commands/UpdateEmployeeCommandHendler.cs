@@ -1,23 +1,23 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Employee.Models.DTOs.Request;
+using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Employee.Commands;
 
 public record UpdateEmployeeCommand(
     long PharmacyId,
     long EmployeeId,
-    EmployeeRequest Request) : IRequest<EmployeeResponse>;
+    UpdateEmployeeRequest Request) : IRequest<EmployeeResponse>;
 
 public class UpdateEmployeeHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper
-) : IRequestHandler<UpdateEmployeeCommand, EmployeeResponse>
+    IDistributedCache cache,
+    IMapper mapper) : IRequestHandler<UpdateEmployeeCommand, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
     {
@@ -43,13 +43,12 @@ public class UpdateEmployeeHandler(
                 $"Email: {request.Request.Email} or Number{request.Request.PhoneNumber}already exists");
         }
 
-        if (request.Request.Role == Role.Customer)
-        {
-            throw new BusinessException("Cant update employee status to  customer status");
-        }
 
         mapper.Map(request.Request, employee);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        var key = $"Employee-{request.PharmacyId}-{employee.Id}";
+        await cache.RemoveAsync(key, cancellationToken);
         return mapper.Map<EmployeeResponse>(employee);
     }
 }

@@ -1,24 +1,24 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Employee.Queries;
 
-public record GetEmployeeBySalaryQuery(
+public record GetEmployeesBySalaryQuery(
     long PharmacyId,
     decimal Salary,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
 
-public class GetEmployeeBySalaryQueryHandler(
+public class GetEmployeesBySalaryQueryHandler(
     IApplicationDbContext dbContext,
     IMapper mapper
-) : IRequestHandler<GetEmployeeBySalaryQuery, List<EmployeeResponse>>
+) : IRequestHandler<GetEmployeesBySalaryQuery, List<EmployeeResponse>>
 {
-    public async Task<List<EmployeeResponse>> Handle(GetEmployeeBySalaryQuery request,
+    public async Task<List<EmployeeResponse>> Handle(GetEmployeesBySalaryQuery request,
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
@@ -29,7 +29,7 @@ public class GetEmployeeBySalaryQueryHandler(
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (!employees.Any())
+        if (employees.Count == 0)
         {
             throw new RecourseNotFoundException($"Employee with this salary {request.Salary} not found");
         }

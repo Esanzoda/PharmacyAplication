@@ -1,6 +1,6 @@
 using Pharmacy.Models.Domain.Enum;
 
-namespace Pharmacy.Models.Dto.Request;
+namespace Pharmacy.CQRS.Employee.Models.DTOs.Request;
 
 public record EmployeeRequest
 {

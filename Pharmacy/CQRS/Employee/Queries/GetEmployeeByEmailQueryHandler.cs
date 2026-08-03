@@ -1,9 +1,9 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Employee.Queries;
 
@@ -18,6 +18,7 @@ public class GetEmployeeByEmailHandler(
     public async Task<EmployeeResponse> Handle(GetEmployeeByEmailQuery request, CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Email == request.Email, cancellationToken);
         if (employee == null)

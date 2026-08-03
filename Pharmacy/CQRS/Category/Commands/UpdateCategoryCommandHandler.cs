@@ -2,10 +2,10 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Category.Models.DTOs.Request;
+using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Category.Commands;
 
@@ -13,11 +13,10 @@ public record UpdateCategoryCommand(
     long Id,
     UpdateCategoryRequest Request) : IRequest<UpdateCategoryResponse>;
 
-public class UpdateCategoryHandler(
+public class UpdateCategoryCommandHandler(
     IMapper mapper,
     IApplicationDbContext dbContext,
-    IDistributedCache cache)
-    : IRequestHandler<UpdateCategoryCommand, UpdateCategoryResponse>
+    IDistributedCache cache) : IRequestHandler<UpdateCategoryCommand, UpdateCategoryResponse>
 {
     public async Task<UpdateCategoryResponse> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {

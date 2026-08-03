@@ -20,7 +20,16 @@ public class DeleteCategoryByIdHandler(
 
         if (category is null)
         {
-            throw new RecourseNotFoundException("Category not found  ");
+            throw new RecourseNotFoundException("Category not found");
+        }
+
+        var exsistsProduct = await dbContext.Products
+            .AnyAsync(x => x.CategoryId == request.Id,
+                cancellationToken);
+
+        if (exsistsProduct)
+        {
+            throw new BusinessException("Cannot delete category with products");
         }
 
         dbContext.Categories.Remove(category);
