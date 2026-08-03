@@ -1,8 +1,8 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Pharmacy.Queries;
 
@@ -20,6 +20,7 @@ public class GetAllPharmacyQueryHandler(
             .OrderBy(x => x.Id)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         return mapper.Map<List<PharmacyResponse>>(pharmacies);
     }
