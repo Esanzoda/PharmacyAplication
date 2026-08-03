@@ -1,38 +1,38 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
+using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Employee.Queries;
 
-public record GetEmployeesByAddressQuery(
+public record GetEmployeesByRoleQuery(
     long PharmacyId,
-    string Address,
+    Role Role,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
 
-public class GetEmployeeByAddressQueryHandler(
+public class GetEmployeesByRoleQueryHandler(
     IApplicationDbContext dbContext,
     IMapper mapper
-) : IRequestHandler<GetEmployeesByAddressQuery, List<EmployeeResponse>>
+) : IRequestHandler<GetEmployeesByRoleQuery, List<EmployeeResponse>>
 {
-    public async Task<List<EmployeeResponse>> Handle(GetEmployeesByAddressQuery request,
+    public async Task<List<EmployeeResponse>> Handle(GetEmployeesByRoleQuery request,
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
             .Where(x => x.PharmacyId == request.PharmacyId &&
-                        x.Address.ToLower() == request.Address.ToLower())
+                        x.Role == request.Role)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-
-        if (employees is null)
+        if (employees.Count == 0)
         {
-            throw new RecourseNotFoundException($"Employee with this address{request.Address} not found ");
+            throw new RecourseNotFoundException($"Employee with this role {request.Role} not found");
         }
 
         return mapper.Map<List<EmployeeResponse>>(employees);

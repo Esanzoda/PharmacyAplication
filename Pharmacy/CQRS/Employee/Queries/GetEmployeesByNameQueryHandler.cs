@@ -1,9 +1,9 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Employee.Queries;
 
@@ -32,7 +32,7 @@ public class GetEmployeesByNameQueryHandler(
             .ToListAsync(cancellationToken);
 
 
-        if (!employees.Any())
+        if (employees.Count == 0)
         {
             throw new RecourseNotFoundException($"Employee with this name {request.Name} not found ");
         }
