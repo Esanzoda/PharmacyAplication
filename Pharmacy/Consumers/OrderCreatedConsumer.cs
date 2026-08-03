@@ -9,16 +9,17 @@ namespace Pharmacy.Consumers;
 public class OrderCreatedConsumer(
     ILogger<OrderCreatedConsumer> logger,
     IMediator mediator,
-    IApplicationDbContext dbContext ) : IConsumer<OrderCreatedEvent>
+    IApplicationDbContext dbContext) : IConsumer<OrderCreatedEvent>
 {
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
         var message = context.Message;
 
         logger.LogInformation(
-            "Order created: OrderId={OrderId}, CustomerId={CustomerId}, Total={Total} , CreatedAt={CreatededAt}",
+            "Order created: OrderId={OrderId}, CustomerId={CustomerId}, DeliveryFee{DeliveryFee} Total={Total} , CreatedAt={CreatedAt}",
             message.OrderId,
             message.CustomerId,
+            message.DeliveryFee,
             message.TotalAmount,
             message.CreatedAt);
 
@@ -30,6 +31,7 @@ public class OrderCreatedConsumer(
                 user.Email,
                 message.OrderId,
                 message.TotalAmount,
+                message.DeliveryFee,
                 message.CreatedAt));
         }
     }

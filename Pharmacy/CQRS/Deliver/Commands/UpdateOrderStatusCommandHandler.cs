@@ -7,7 +7,6 @@ using Pharmacy.Models.Domain.Enum;
 namespace Pharmacy.CQRS.Deliver.Commands;
 
 public record UpdateOrderStatusCommand(
-    long PharmacyId,
     long DeliverId,
     long OrderId,
     OrderStatus NewOrderStatus)
@@ -19,18 +18,22 @@ public class UpdateOrderStatusCommandHandler(
     public async Task<OrderStatus> Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
     {
         var order = await dbContext.Orders
-            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Id == request.OrderId &&
-                                      x.Deliver != null &&
-                                      x.Deliver.Id == request.DeliverId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.OrderId &&
+                                      x.Deliver != null && x.Deliver.Id == request.DeliverId,
+                cancellationToken);
         if (order is null)
         {
             throw new RecourseNotFoundException("Order not found");
         }
 
-        if (request.NewOrderStatus is not (OrderStatus.Cancelled or OrderStatus.Shipped))
+        if (order.OrderStatus is OrderStatus.Cancelled or OrderStatus.Completed)
         {
-            throw new BusinessException("You cannot choice other status");
+            throw new BusinessException($"Deliver cannot update a {order.OrderStatus} order");
+        }
+
+        if (request.NewOrderStatus is not (OrderStatus.Shipped or OrderStatus.Completed))
+        {
+            throw new BusinessException("Deliver can only update the status to Shipped or Completed");
         }
 
         order.OrderStatus = request.NewOrderStatus;

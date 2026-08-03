@@ -1,9 +1,9 @@
 using Pharmacy.Models.Domain.Enum;
 
-namespace Pharmacy.Models.Dto.Response;
+namespace Pharmacy.CQRS.Order.Models.DTOs.Response;
 
 public record UpdateOrderResponse
 {
-    public long UserId { get; set; }
+    public long CustomerId { get; set; }
     public OrderStatus OrderStatus { get; set; }
 }

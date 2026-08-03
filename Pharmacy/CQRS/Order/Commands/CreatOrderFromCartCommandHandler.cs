@@ -3,28 +3,35 @@ using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Cart.Commands;
+using Pharmacy.CQRS.Order.Models;
+using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Messages.Events;
 using Pharmacy.Models.Domain;
 using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Response;
+using Pharmacy.Services.DeliveryFee;
+using Pharmacy.Services.GoogleMaps;
 
 namespace Pharmacy.CQRS.Order.Commands;
 
 public record CreateOrderFromCartCommand(
     long CustomerId,
     OrderType OrderType,
-    string Address) : IRequest<OrderResponse>;
+    double CustomerLatitude,
+    double CustomerLongitude) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreatOrderFromCartHandler(
     IMapper mapper,
     IApplicationDbContext dbContext,
     IMediator mediator,
-    IPublishEndpoint publishEndpoint)
-    : IRequestHandler<CreateOrderFromCartCommand, OrderResponse>
+    IPublishEndpoint publishEndpoint,
+    IRoutesService routesService,
+    IDeliveryFeeByDistance deliveryFeeByDistance)
+    : IRequestHandler<CreateOrderFromCartCommand, List<OrderResponseForCustomer>>
 {
-    public async Task<OrderResponse> Handle(CreateOrderFromCartCommand request, CancellationToken cancellationToken)
+    public async Task<List<OrderResponseForCustomer>> Handle(CreateOrderFromCartCommand request,
+        CancellationToken cancellationToken)
     {
         var cart = await dbContext.Carts
             .Include(x => x.Customer)
@@ -35,25 +42,14 @@ public class CreatOrderFromCartHandler(
             throw new RecourseNotFoundException($"Cart is empty");
         }
 
-        var newAddress = string.IsNullOrEmpty(request.Address) ? cart.Customer.Address : request.Address;
-
-        var order = new Models.Domain.Order
-        {
-            CustomerId = cart.CustomerId,
-            OrderType = request.OrderType,
-            OrderStatus = OrderStatus.Pending,
-            Address = newAddress,
-            TotalAmount = cart.TotalAmount,
-        };
-        await dbContext.Orders
-            .AddAsync(order, cancellationToken);
-
         var productIds = cart.CartItems
             .Select(x => x.ProductId)
             .ToList();
         var products = await dbContext.Products
             .Where(x => productIds.Contains(x.Id))
             .ToDictionaryAsync(x => x.Id, cancellationToken);
+        var preparedCartItems = new List<PreparedOrderItem>();
+        var orders = new List<Models.Order>();
         foreach (var item in cart.CartItems)
         {
             if (!products.TryGetValue(item.ProductId, out var product))
@@ -67,42 +63,85 @@ public class CreatOrderFromCartHandler(
                     $"Insufficient stock for product {product.Name}: available {product.Stock}, requested {item.Quantity}");
             }
 
-            var orderItem = new OrderItem
+            preparedCartItems.Add(new PreparedOrderItem()
             {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                Price = product.Price,
-                TotalPrice = product.Price * item.Quantity
-            };
-            order.OrderItems.Add(orderItem);
-
-            product.Stock -= item.Quantity;
+                Product = product,
+                Quantity = item.Quantity
+            });
         }
 
-
-        var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
-        decimal deliverPrice = 0;
-        if (request.OrderType is OrderType.Deliver)
+        var pharmacyGroup = preparedCartItems
+            .GroupBy(x => x.Product.PharmacyId)
+            .ToList();
+        var pharmacyIds = pharmacyGroup
+            .Select(x => x.Key)
+            .ToList();
+        var pharmacies = await dbContext.Pharmacies
+            .Where(x => pharmacyIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, cancellationToken);
+        foreach (var pharmacy in pharmacyGroup)
         {
-            var address = newAddress;
-
-            if (address is "1" or "2" or "3")
+            var order = new Models.Order
             {
-                deliverPrice = 10;
+                CustomerId = cart.CustomerId,
+                PharmacyId = pharmacy.Key,
+                OrderType = request.OrderType,
+                OrderStatus = OrderStatus.Pending,
+                Address = cart.Customer.Address,
+                TotalAmount = cart.TotalAmount,
+            };
+            await dbContext.Orders
+                .AddAsync(order, cancellationToken);
+            foreach (var preparedOrderItem in pharmacy)
+            {
+                var orderItem = new OrderItem
+                {
+                    ProductId = preparedOrderItem.Product.Id,
+                    Quantity = preparedOrderItem.Quantity,
+                    Price = preparedOrderItem.Product.SalePrice,
+                    TotalPrice = preparedOrderItem.Product.SalePrice * preparedOrderItem.Quantity
+                };
+                order.OrderItems.Add(orderItem);
+
+                preparedOrderItem.Product.Stock -= preparedOrderItem.Quantity;
             }
 
-            order.TotalAmount = deliverPrice + totalAmount;
+            var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
+            decimal deliveryFee = 0;
+            if (request.OrderType is OrderType.Deliver)
+            {
+                if (!pharmacies.TryGetValue(pharmacy.Key, out var currentPharmacy))
+                {
+                    throw new RecourseNotFoundException($"Pharmacy with id {pharmacy.Key} not found");
+                }
+
+                var routeRequest = new RoutesApiRequest()
+                {
+                    StartLat = currentPharmacy.Latitude,
+                    StartLng = currentPharmacy.Longitude,
+                    FinishLat = request.CustomerLatitude,
+                    FinishLng = request.CustomerLongitude,
+                };
+                var distanceKm = await routesService.CalculateRouteAsync(routeRequest);
+                deliveryFee = deliveryFeeByDistance.CalCulateDeliveryFee(distanceKm.DistanceKm);
+
+                order.TotalAmount = deliveryFee + totalAmount;
+            }
+
+            order.DeliveryFee = deliveryFee;
+            orders.Add(order);
+            await dbContext.SaveChangesAsync(cancellationToken);
+            await publishEndpoint.Publish(new OrderCreatedEvent()
+            {
+                OrderId = order.Id,
+                CustomerId = order.CustomerId,
+                DeliveryFee = deliveryFee,
+                TotalAmount = order.TotalAmount,
+            }, cancellationToken);
         }
 
-        await dbContext.SaveChangesAsync(cancellationToken);
         await mediator.Send(new ClearCartCommand(request.CustomerId), cancellationToken);
-        await publishEndpoint.Publish(new OrderCreatedEvent()
-        {
-            OrderId = order.Id,
-            CustomerId = order.CustomerId,
-            DeliverPrice = deliverPrice,
-            TotalAmount = order.TotalAmount,
-        }, cancellationToken);
-        return mapper.Map<OrderResponse>(order);
+
+        return mapper.Map<List<OrderResponseForCustomer>>(orders);
     }
 }
