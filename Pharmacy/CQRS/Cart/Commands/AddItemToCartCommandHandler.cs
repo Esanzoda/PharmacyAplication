@@ -1,19 +1,17 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Cart.Models;
+using Pharmacy.CQRS.Cart.Models.DTOs.Request;
+using Pharmacy.CQRS.Cart.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Cart.Commands;
 
 public record AddItemToCartCommand(
-    long PharmacyId,
     long CustomerId,
-    CartItemRequest ItemRequest
-) : IRequest<CartResponse>;
+    CartItemRequest ItemRequest) : IRequest<CartResponse>;
 
 public class AddItemToCartCommandHandler(
     IMapper mapper,
@@ -33,8 +31,8 @@ public class AddItemToCartCommandHandler(
         }
 
         var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Id == request.ItemRequest.ProductId,
+            .FirstOrDefaultAsync(x => x.Id == request.ItemRequest.ProductId &&
+                                      x.IsDeleted == false,
                 cancellationToken);
         if (product == null)
         {
@@ -44,22 +42,18 @@ public class AddItemToCartCommandHandler(
         var existingCartItem = cart.CartItems
             .FirstOrDefault(x => x.ProductId == request.ItemRequest.ProductId);
 
-
-        var existQuantity = existingCartItem?.Quantity ?? 0;
-        var totalRequestedQuantity = existQuantity + request.ItemRequest.Quantity;
-
         if (existingCartItem != null)
         {
-            existingCartItem.Quantity = totalRequestedQuantity;
-            existingCartItem.TotalPrice = totalRequestedQuantity * existingCartItem.Price;
+            existingCartItem.Quantity += request.ItemRequest.Quantity;
+            existingCartItem.TotalPrice = existingCartItem.Quantity * existingCartItem.Price;
         }
         else
         {
             var cartItem = mapper.Map<CartItem>(request.ItemRequest);
             cartItem.CustomerId = request.CustomerId;
             cartItem.Cart = cart;
-            cartItem.Price = product.Price;
-            cartItem.TotalPrice = product.Price * request.ItemRequest.Quantity;
+            cartItem.Price = product.SalePrice;
+            cartItem.TotalPrice = cartItem.Price * cartItem.Quantity;
 
             cart.CartItems.Add(cartItem);
         }

@@ -1,22 +1,17 @@
 using FluentValidation;
-using Pharmacy.Models.Dto.Request;
+using Pharmacy.CQRS.Cart.Models.DTOs.Request;
 
-namespace Pharmacy.CQRS.Cart.CartValidators;
+namespace Pharmacy.CQRS.Cart.Validators;
 
 public class CartItemRequestValidator : AbstractValidator<CartItemRequest>
 {
     public CartItemRequestValidator()
     {
         RuleFor(x => x.ProductId)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("Product id is required")
             .GreaterThan(0)
             .WithMessage("Product id must be greater than 0");
+
         RuleFor(x => x.Quantity)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("Quantity is required")
             .GreaterThan(0)
             .WithMessage("Quantity must be greater than 0");
     }
