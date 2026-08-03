@@ -2,9 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Deliver.Commands;
+using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
 using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.Controllers;
 
@@ -13,13 +12,21 @@ namespace Pharmacy.Controllers;
 public class DeliverController(
     IMediator mediator) : ControllerBase
 {
-    // [Authorize(Roles = nameof(Role.Admin))]
+    // [Authorize(Roles = nameof(Role.Deliver))]
     [HttpPut]
-    public async Task<ActionResult<DeliverResponse>> UpdateDeliver(long id, [FromBody] DeliverRequest request)
+    public async Task<ActionResult<DeliverResponse>> Update([FromBody] UpdateDeliverRequest request)
     {
-        var pharmacyId = 1;
-        var response = await mediator.Send(new UpdateDeliverCommand(pharmacyId, 1, request));
+        var deliverId = 2;
+        var response = await mediator.Send(new UpdateDeliverCommand(deliverId, request));
         return Ok(response);
+    }
+
+    [HttpPatch]
+    public async Task<ActionResult<string>> UpdatePassword(string oldPassword, string newPassword)
+    {
+        var deliverId = 1;
+        var response = await mediator.Send(new UpdateDeliverPasswordCommand(deliverId, oldPassword, newPassword));
+        return response;
     }
 
     // [Authorize(Roles = nameof(Role.Admin))]
@@ -27,9 +34,12 @@ public class DeliverController(
     public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long orderId, OrderStatus newOrderStatus)
     {
         var deliverId = 1;
-        var pharmacyId = 1;
         var response =
-            await mediator.Send(new UpdateOrderStatusCommand(pharmacyId, deliverId, orderId, newOrderStatus));
+            await mediator.Send(new UpdateOrderStatusCommand(deliverId, orderId, newOrderStatus));
         return Ok(response);
     }
+}
+
+public class DeliverResponse
+{
 }
