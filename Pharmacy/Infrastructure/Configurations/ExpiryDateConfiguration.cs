@@ -8,6 +8,7 @@ public class ExpiryDateConfiguration : IEntityTypeConfiguration<ExpiryDate>
 {
     public void Configure(EntityTypeBuilder<ExpiryDate> builder)
     {
+       
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TotalSalePrice)
