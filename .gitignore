@@ -8,7 +8,7 @@ obj/
 *.user
 *.sln.DotSettings.user
 
-appsettings.Local.json
+appsettings.json
 
 Migrations/
 
