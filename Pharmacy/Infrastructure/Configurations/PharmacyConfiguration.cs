@@ -7,6 +7,7 @@ public class PharmacyConfiguration : IEntityTypeConfiguration<CQRS.Pharmacy.Mode
 {
     public void Configure(EntityTypeBuilder<CQRS.Pharmacy.Models.Pharmacy> builder)
     {
+        builder.ToTable("Pharmacies");
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Name)

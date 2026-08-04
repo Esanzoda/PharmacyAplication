@@ -8,6 +8,7 @@ public class ExpiryDateItemsConfiguration : IEntityTypeConfiguration<ExpiryDateI
 {
     public void Configure(EntityTypeBuilder<ExpiryDateItems> builder)
     {
+        builder.ToTable("ExpiryDateItems");
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TotalSalePrice)
