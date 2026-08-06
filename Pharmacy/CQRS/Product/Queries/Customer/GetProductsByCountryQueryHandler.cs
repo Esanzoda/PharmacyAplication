@@ -20,18 +20,22 @@ public class GetProductsByCountryQueryHandler(
     public async Task<List<ProductResponse>> Handle(GetProductsByCountryQuery request,
         CancellationToken cancellationToken)
     {
-        var products = await dbContext.Products
+        var productBatch = await dbContext.ProductBatches
             .Where(x => x.Country == request.Country)
+            .ToListAsync(cancellationToken);
+        var productIds = productBatch
+            .Select(x => x.ProductId)
+            .ToList();
+
+        var products = await dbContext.Products
+            .Where(x => productIds.Contains(x.Id))
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (!products.Any())
-        {
             throw new RecourseNotFoundException($"Product from this country[{request.Country}] not found");
-        }
-
         return mapper.Map<List<ProductResponse>>(products);
     }
 }

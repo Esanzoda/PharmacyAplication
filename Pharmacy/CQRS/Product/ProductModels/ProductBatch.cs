@@ -1,19 +1,18 @@
 using Pharmacy.Models.Domain;
 using Pharmacy.Models.Domain.Enum;
 
-namespace Pharmacy.CQRS.Purchase.Models;
+namespace Pharmacy.CQRS.Product.ProductModels;
 
-public class PurchaseItem : BaseEntity
+public class ProductBatch : BaseEntity
 {
     public long PharmacyId { get; set; }
-    public long PurchaseId { get; set; }
     public long ProductId { get; set; }
-    public Product.ProductModels.Product Product { get; set; }= null!;
+    public int Quantity { get; set; }
+    public long PurchaseItemId { get; set; }
+    public required Product Product { get; set; }
     public decimal PurchasePrice { get; set; }
     public CountryEnum Country { get; set; }
-    public int Quantity { get; set; }
-    public string Barcode { get; set; } = string.Empty;
-    public decimal TotalPrice { get; set; }
     public DateTime ProductionDate { get; set; }
     public DateTime ExpiryDate { get; set; }
+    public bool IsActive { get; set; }
 }

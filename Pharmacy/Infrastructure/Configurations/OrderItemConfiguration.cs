@@ -11,7 +11,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.ToTable("OrderItems");
 
         builder.HasKey(x => x.Id);
-        
+
         builder.HasOne(x => x.Product)
             .WithMany()
             .HasForeignKey(x => x.ProductId);

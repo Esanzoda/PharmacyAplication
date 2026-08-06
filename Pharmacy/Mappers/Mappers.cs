@@ -38,7 +38,7 @@ public class Mappers : Profile
         CreateMap<CartItemRequest, CartItem>()
             .ForMember(x => x.Cart, x => x.Ignore())
             .ForMember(x => x.CustomerId, x => x.Ignore())
-            .ForMember(x => x.Price, x => x.Ignore())
+            .ForMember(x => x.SalePrice, x => x.Ignore())
             .ForMember(x => x.TotalPrice, x => x.Ignore());
         CreateMap<CartItem, CartItemResponse>();
 
@@ -90,6 +90,11 @@ public class Mappers : Profile
         CreateMap<ProductRequest, Product>()
             .ForMember(x => x.PharmacyId, opt => opt.Ignore());
         CreateMap<Product, ProductResponse>();
+        CreateMap<ProductBatch, ProductBatchResponse>();
+
+        CreateMap<Product, ProductWithBatchResponse>()
+            .ForMember(x => x.ProductBatchResponses,
+                x => x.MapFrom(o => o.ProductBatches));
 
         CreateMap<DeliverRequest, Deliver>()
             .ForMember(x => x.Shot, opt => opt.Ignore())

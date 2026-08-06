@@ -17,7 +17,7 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
             .HasForeignKey(x => x.CustomerId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(x => x.Price)
+        builder.Property(x => x.SalePrice)
             .HasColumnType("decimal(18,2)");
 
         builder.Property(x => x.TotalPrice)

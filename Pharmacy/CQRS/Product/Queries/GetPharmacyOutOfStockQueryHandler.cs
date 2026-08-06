@@ -4,20 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
 public record GetOutOfStockQuery(
     long PharmacyId,
     int Page,
-    int PageSize) : IRequest<List<ProductResponse>>;
+    int PageSize) : IRequest<List<ProductWithBatchResponse>>;
 
 public class GetPharmacyOutOfStockQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetOutOfStockQuery, List<ProductResponse>>
+    IMapper mapper) : IRequestHandler<GetOutOfStockQuery, List<ProductWithBatchResponse>>
 {
-    public async Task<List<ProductResponse>> Handle(GetOutOfStockQuery request, CancellationToken cancellationToken)
+    public async Task<List<ProductWithBatchResponse>> Handle(GetOutOfStockQuery request,
+        CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
             .Where(x => x.PharmacyId == request.PharmacyId &&
@@ -30,6 +30,6 @@ public class GetPharmacyOutOfStockQueryHandler(
         if (!product.Any())
             throw new RecourseNotFoundException("Product  not found");
 
-        return mapper.Map<List<ProductResponse>>(product);
+        return mapper.Map<List<ProductWithBatchResponse>>(product);
     }
 }

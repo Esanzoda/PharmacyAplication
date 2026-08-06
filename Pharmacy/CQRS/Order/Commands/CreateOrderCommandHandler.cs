@@ -31,10 +31,18 @@ public class CreateOrderCommandHandler(
     public async Task<List<OrderResponseForCustomer>> Handle(CreateOrderCommand request,
         CancellationToken cancellationToken)
     {
+        var customer = await dbContext.Customers
+            .FirstOrDefaultAsync(x => x.Id == request.CustomerId, cancellationToken);
+        if (customer is null)
+        {
+            throw new RecourseNotFoundException("Customer not found");
+        }
+
         var productIds = request.Request.OrderItems
             .Select(x => x.ProductId)
             .ToList();
         var products = await dbContext.Products
+            .Include(x => x.ProductBatches)
             .Where(x => productIds.Contains(x.Id))
             .ToDictionaryAsync(x => x.Id, cancellationToken);
         var preparedOrderItems = new List<PreparedOrderItem>();
@@ -62,7 +70,8 @@ public class CreateOrderCommandHandler(
         var pharmacyGroup = preparedOrderItems
             .GroupBy(x => x.Product.PharmacyId)
             .ToList();
-        var pharmacyIds = pharmacyGroup.Select(x => x.Key).ToList();
+        var pharmacyIds = pharmacyGroup.Select(x => x.Key)
+            .ToList();
         var pharmacies = await dbContext.Pharmacies
             .Where(x => pharmacyIds.Contains(x.Id))
             .ToDictionaryAsync(x => x.Id, cancellationToken);
@@ -73,6 +82,7 @@ public class CreateOrderCommandHandler(
             order.OrderStatus = OrderStatus.Pending;
             order.CustomerId = request.CustomerId;
             order.PharmacyId = pharmacy.Key;
+            order.Address = customer.Address;
             await dbContext.Orders
                 .AddAsync(order, cancellationToken);
 
@@ -96,6 +106,32 @@ public class CreateOrderCommandHandler(
                         TotalPrice = preparedOrderItem.Quantity * preparedOrderItem.Product.SalePrice,
                     };
                     order.OrderItems.Add(orderItem);
+                }
+
+                var productBatches = preparedOrderItem.Product.ProductBatches
+                    .Where(x => x.ProductId == preparedOrderItem.Product.PharmacyId &&
+                                x.Quantity > 0 &&
+                                !x.IsActive
+                    )
+                    .OrderBy(x => x.ExpiryDate)
+                    .ToList();
+                var requestQuantity = preparedOrderItem.Quantity;
+                foreach (var productBatch in productBatches)
+                {
+                    if (requestQuantity != 0)
+                    {
+                        var branchQuantity = productBatch.Quantity;
+                        if (requestQuantity > branchQuantity)
+                        {
+                            productBatch.Quantity -= branchQuantity;
+                            requestQuantity -= branchQuantity;
+                        }
+                        else
+                        {
+                            productBatch.Quantity -= requestQuantity;
+                            requestQuantity -= branchQuantity;
+                        }
+                    }
                 }
 
                 preparedOrderItem.Product.Stock -= preparedOrderItem.Quantity;

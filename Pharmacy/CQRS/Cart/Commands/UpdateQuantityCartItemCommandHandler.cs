@@ -33,7 +33,7 @@ public class UpdateQuantityCartItemCommandHandler(
         }
 
         cartItem.Quantity = request.Quantity;
-        cartItem.TotalPrice = cartItem.Price * request.Quantity;
+        cartItem.TotalPrice = cartItem.SalePrice * request.Quantity;
         cartItem.Cart.TotalAmount = cartItem.Cart.CartItems.Sum(x => x.TotalPrice);
         await dbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<CartItemResponse>(cartItem);
