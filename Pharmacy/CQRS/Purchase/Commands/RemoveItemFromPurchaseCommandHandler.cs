@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Dto.Response;
 
 namespace Pharmacy.CQRS.Purchase.Commands;
 
@@ -12,7 +11,7 @@ public record RemoveItemFromPurchaseCommand(
     long EmployeeId,
     long PharmacyId,
     long PurchaseId,
-    long ItemId) : IRequest<PurchaseResponse>;
+    long PurchaseItemId) : IRequest<PurchaseResponse>;
 
 public class RemoveItemFromPurchaseCommandHandler(
     IApplicationDbContext dbContext,
@@ -35,7 +34,7 @@ public class RemoveItemFromPurchaseCommandHandler(
         var purchaseItemToRemove = await dbContext.PurchaseItems
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.PurchaseId == request.PurchaseId &&
-                                      x.Id == request.ItemId,
+                                      x.Id == request.PurchaseItemId,
                 cancellationToken);
 
         if (purchaseItemToRemove == null)
@@ -52,11 +51,18 @@ public class RemoveItemFromPurchaseCommandHandler(
             throw new RecourseNotFoundException("Product not found");
         }
 
+        var productBatch = await dbContext.ProductBatches
+            .FirstOrDefaultAsync(x => x.PurchaseItemId == request.PurchaseItemId,
+                cancellationToken);
+        if (productBatch is null)
+        {
+            throw new RecourseNotFoundException("Product batch not found");
+        }
 
+        productBatch.IsActive = false;
         product.Stock -= purchaseItemToRemove.Quantity;
 
         purchase.PurchaseItems.Remove(purchaseItemToRemove);
-        // dbContext.PurchaseItems.Remove(purchaseItemToRemove);
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);

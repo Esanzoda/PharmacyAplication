@@ -26,20 +26,13 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasIndex(x => x.Barcode)
             .IsUnique();
-
-        builder.Property(x => x.PurchasePrice)
-            .IsRequired()
-            .HasColumnType("decimal(18,2)");
-
         builder.Property(x => x.SalePrice)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
         builder.Property(x => x.Stock)
             .IsRequired();
-
-        builder.Property(x => x.ExpiryDate)
-            .IsRequired();
+        
 
         builder.HasOne(x => x.Category)
             .WithMany(x => x.Products)

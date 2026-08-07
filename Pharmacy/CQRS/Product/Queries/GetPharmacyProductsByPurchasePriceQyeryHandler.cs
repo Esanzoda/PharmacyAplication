@@ -11,27 +11,36 @@ public record GetProductsByPurchasePriceQuery(
     long PharmacyId,
     decimal Price,
     int Page,
-    int PageSize) : IRequest<List<ProductResponse>>;
+    int PageSize) : IRequest<List<ProductWithBatchResponse>>;
 
 public class GetProductsByPurchasePriceQueryHandler(
     IApplicationDbContext dbContext,
     IMapper mapper)
-    : IRequestHandler<GetProductsByPurchasePriceQuery, List<ProductResponse>>
+    : IRequestHandler<GetProductsByPurchasePriceQuery, List<ProductWithBatchResponse>>
 {
-    public async Task<List<ProductResponse>> Handle(GetProductsByPurchasePriceQuery request,
+    public async Task<List<ProductWithBatchResponse>> Handle(GetProductsByPurchasePriceQuery request,
         CancellationToken cancellationToken)
     {
-        var product = await dbContext.Products
-            .Where(x => x.PharmacyId == request.PharmacyId &&
-                        x.PurchasePrice == request.Price)
+        var productBatch = await dbContext.ProductBatches
+            .Where(x => x.PurchasePrice == request.Price &&
+                        x.Product.PharmacyId == request.PharmacyId)
+            .ToListAsync(cancellationToken);
+
+        var productIds = productBatch
+            .Select(x => x.ProductId)
+            .ToList();
+        var products = await dbContext.Products
+            .Where(x => productIds.Contains(x.Id))
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (!product.Any())
+
+        if (!products.Any())
             throw new RecourseNotFoundException("Product with this purchase price  not found");
 
-        return mapper.Map<List<ProductResponse>>(product);
+
+        return mapper.Map<List<ProductWithBatchResponse>>(products);
     }
 }

@@ -24,6 +24,7 @@ public class GetPharmacyProductsBySalePriseQueryHandler(
         var product = await dbContext.Products
             .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.SalePrice == request.Price)
+            .Include(x => x.ProductBatches)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)

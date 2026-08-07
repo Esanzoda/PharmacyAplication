@@ -12,18 +12,19 @@ public record GetPharmacyProductsByNameQuery(
     long PharmacyId,
     string Name,
     int Page,
-    int PageSize) : IRequest<List<ProductResponse>>;
+    int PageSize) : IRequest<List<ProductWithBatchResponse>>;
 
 public class GetPharmacyProductsByNameQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPharmacyProductsByNameQuery, List<ProductResponse>>
+    IMapper mapper) : IRequestHandler<GetPharmacyProductsByNameQuery, List<ProductWithBatchResponse>>
 {
-    public async Task<List<ProductResponse>> Handle(GetPharmacyProductsByNameQuery request,
+    public async Task<List<ProductWithBatchResponse>> Handle(GetPharmacyProductsByNameQuery request,
         CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
             .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.Name.Contains(request.Name))
+            .Include(x => x.ProductBatches)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
@@ -32,6 +33,6 @@ public class GetPharmacyProductsByNameQueryHandler(
         if (!product.Any())
             throw new RecourseNotFoundException("Product with this name not found");
 
-        return mapper.Map<List<ProductResponse>>(product);
+        return mapper.Map<List<ProductWithBatchResponse>>(product);
     }
 }

@@ -9,16 +9,18 @@ namespace Pharmacy.CQRS.Product.Queries;
 
 public record GetPharmacyLowOfStockQuery(
     long PharmacyId,
-    long Id) : IRequest<ProductResponse>;
+    long Id) : IRequest<ProductWithBatchResponse>;
 
 public class GetPharmacyProductsByIdQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPharmacyLowOfStockQuery, ProductResponse>
+    IMapper mapper) : IRequestHandler<GetPharmacyLowOfStockQuery, ProductWithBatchResponse>
 {
-    public async Task<ProductResponse> Handle(GetPharmacyLowOfStockQuery request, CancellationToken cancellationToken)
+    public async Task<ProductWithBatchResponse> Handle(GetPharmacyLowOfStockQuery request,
+        CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
             .AsNoTracking()
+            .Include(x => x.ProductBatches)
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id,
                 cancellationToken);
@@ -27,6 +29,6 @@ public class GetPharmacyProductsByIdQueryHandler(
             throw new RecourseNotFoundException("Product not found");
         }
 
-        return mapper.Map<ProductResponse>(product);
+        return mapper.Map<ProductWithBatchResponse>(product);
     }
 }
