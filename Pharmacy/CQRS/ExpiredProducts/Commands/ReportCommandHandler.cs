@@ -2,9 +2,9 @@ using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.Data;
+using Pharmacy.Event.Events;
 using Pharmacy.Jobs;
-using Pharmacy.Messages.Events;
-using Pharmacy.Models.Domain.Enum;
+
 
 namespace Pharmacy.CQRS.ExpiredProducts.Commands;
 
@@ -18,45 +18,55 @@ public class ReportCommandHandler(
     public async Task Handle(ReportCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting check to repo");
-        var yesterday = DateTime.UtcNow; //.AddDays(-1);
-        decimal totalAmount = 0;
+        var today = DateTime.UtcNow.Date.AddDays(1);
+        var yesterday = today.AddDays(-2);
+
         var completedOrders = await dbContext.Orders
-            .Where(x => x.OrderStatus == OrderStatus.Completed &&
-                        x.CreatedAt==yesterday)
+            .Where(x => //x.OrderStatus == OrderStatus.Completed &&
+                x.CreatedAt >= yesterday &&
+                x.CreatedAt < today)
             .OrderBy(x => x.Id)
             .ToListAsync(cancellationToken);
-        foreach (var order in completedOrders)
+        if (completedOrders.Count == 0)
         {
-            totalAmount += order.TotalAmount;
+            return;
         }
 
-        await publishEndpoint.Publish(new OrderCompletedEventReportToCeo()
+        var pharmacyGroup = completedOrders
+            .GroupBy(x => x.PharmacyId)
+            .ToList();
+
+        var pharmacyIds = pharmacyGroup
+            .Select(x => x.Key)
+            .ToList();
+
+        var pharmacies = await dbContext.Pharmacies
+            .Where(x => pharmacyIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id,
+                cancellationToken);
+
+        foreach (var pharmacy in pharmacyGroup)
         {
-            To = "orashesanov05@gmail.com",
-            Count = completedOrders.Count,
-            Day = DateTime.UtcNow,
-            TotalAmount = totalAmount
-        }, cancellationToken);
-        logger.LogInformation("OrderCompletedEventReportToCeo published");
-        var cancelledOrders = await dbContext.Orders
-            .Where(x => x.OrderStatus == OrderStatus.Cancelled
-                        && x.CreatedAt == yesterday)
-            .OrderBy(x => x.Id)
-            .ToListAsync(cancellationToken);
-        await publishEndpoint.Publish(new OrderCancelledEventToCeo()
-        {
-            DateTime = yesterday,
-            Count = cancelledOrders.Count
-        }, cancellationToken);
-        var sheepadOrders = await dbContext.Orders
-            .Where(x => x.OrderStatus == OrderStatus.Shipped && 
-                        x.CreatedAt == yesterday)
-            .OrderBy(x => x.Id)
-            .ToListAsync(cancellationToken);
-        await publishEndpoint.Publish(new OrderShippedEventToCeo
-        {
-            Count = sheepadOrders.Count,
-            DateTime = yesterday
-        }, cancellationToken);
+            if (!pharmacies.TryGetValue(pharmacy.Key, out var pharmacyInfo))
+            {
+                logger.LogWarning(
+                    "Pharmacy {PharmacyId} not found.",
+                    pharmacy.Key);
+                continue;
+            }
+
+            var totalAmount = pharmacy.Sum(x => x.TotalAmount);
+
+            await publishEndpoint.Publish(new OrderCompletedEventReportToCeo()
+                {
+                    To = pharmacyInfo.Email,
+                    Count = pharmacy.Count(),
+                    Day = DateTime.UtcNow,
+                    TotalAmount = totalAmount
+                },
+                cancellationToken);
+
+            logger.LogInformation("OrderCompletedEventReportToCeo published");
+        }
     }
 }

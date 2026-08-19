@@ -17,17 +17,19 @@ public class RemoveItemFromOrderHandler(
     IApplicationDbContext dbContext,
     IMapper mapper) : IRequestHandler<RemoveItemFromOrderCommand, OrderResponseForCustomer>
 {
-    public async Task<OrderResponseForCustomer> Handle(RemoveItemFromOrderCommand request,
+    public async Task<OrderResponseForCustomer> Handle(
+        RemoveItemFromOrderCommand request,
         CancellationToken cancellationToken)
     {
         var order = await dbContext.Orders
             .Include(x => x.OrderItems)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId &&
-                                      x.CustomerId == request.CustomerId,
+                                      x.CustomerEntityId == request.CustomerId,
                 cancellationToken);
+
         if (order == null)
         {
-            throw new RecourseNotFoundException("Order not found");
+            throw new ResourceNotFoundException("Order not found");
         }
 
         if (order.OrderStatus is OrderStatus.Completed or OrderStatus.Cancelled or OrderStatus.Shipped)
@@ -35,18 +37,21 @@ public class RemoveItemFromOrderHandler(
             throw new BusinessException("Items cannot be removed from completed, shipped, or cancelled orders");
         }
 
-        var itemToRemove = order.OrderItems.FirstOrDefault(x => x.ProductId == request.ProductId);
+        var itemToRemove = order.OrderItems.FirstOrDefault(x => x.ProductEntityId == request.ProductId);
+
         if (itemToRemove == null)
         {
-            throw new RecourseNotFoundException($"OrderItem not found");
+            throw new ResourceNotFoundException($"OrderItem not found");
         }
 
         var product = await dbContext.Products
             .FirstOrDefaultAsync(x => x.PharmacyId == order.PharmacyId &&
-                                      x.Id == itemToRemove.ProductId, cancellationToken);
+                                      x.Id == itemToRemove.ProductEntityId,
+                cancellationToken);
+
         if (product == null)
         {
-            throw new RecourseNotFoundException($"Product not found");
+            throw new ResourceNotFoundException($"Product not found");
         }
 
         product.Stock += itemToRemove.Quantity;
@@ -54,9 +59,11 @@ public class RemoveItemFromOrderHandler(
 
         order.OrderItems.Remove(itemToRemove);
         dbContext.OrderItems.Remove(itemToRemove);
+
         if (order.OrderItems.Count == 0)
         {
             dbContext.Orders.Remove(order);
+            //todo when order is finished
         }
 
         order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);

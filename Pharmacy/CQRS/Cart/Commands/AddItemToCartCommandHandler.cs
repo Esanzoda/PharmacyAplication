@@ -15,19 +15,18 @@ public record AddItemToCartCommand(
 
 public class AddItemToCartCommandHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext)
-    : IRequestHandler<AddItemToCartCommand, CartResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<AddItemToCartCommand, CartResponse>
 {
     public async Task<CartResponse> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
     {
         var cart = await dbContext.Carts
             .Include(x => x.CartItems)
-            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId,
+            .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId,
                 cancellationToken);
 
         if (cart is null)
         {
-            throw new RecourseNotFoundException("Cart not found");
+            throw new ResourceNotFoundException("Cart not found");
         }
 
         var product = await dbContext.Products
@@ -36,30 +35,32 @@ public class AddItemToCartCommandHandler(
                 cancellationToken);
         if (product == null)
         {
-            throw new RecourseNotFoundException("Product not found");
+            throw new ResourceNotFoundException("Product not found");
         }
 
         var existingCartItem = cart.CartItems
-            .FirstOrDefault(x => x.ProductId == request.ItemRequest.ProductId);
+            .FirstOrDefault(x => x.ProductEntityId == request.ItemRequest.ProductId);
 
         if (existingCartItem != null)
         {
             existingCartItem.Quantity += request.ItemRequest.Quantity;
-            existingCartItem.TotalPrice = existingCartItem.Quantity * existingCartItem.Price;
+            existingCartItem.TotalPrice = existingCartItem.Quantity * existingCartItem.SalePrice;
         }
         else
         {
-            var cartItem = mapper.Map<CartItem>(request.ItemRequest);
-            cartItem.CustomerId = request.CustomerId;
-            cartItem.Cart = cart;
-            cartItem.Price = product.SalePrice;
-            cartItem.TotalPrice = cartItem.Price * cartItem.Quantity;
+            var cartItem = mapper.Map<CartItemEntity>(request.ItemRequest);
+            cartItem.CustomerEntityId = request.CustomerId;
+            cartItem.ProductEntityId = request.ItemRequest.ProductId;
+            cartItem.CartEntity = cart;
+            cartItem.SalePrice = product.SalePrice;
+            cartItem.TotalPrice = cartItem.SalePrice * cartItem.Quantity;
 
             cart.CartItems.Add(cartItem);
         }
 
         cart.TotalAmount = cart.CartItems.Sum(x => x.TotalPrice);
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<CartResponse>(cart);
     }
 }

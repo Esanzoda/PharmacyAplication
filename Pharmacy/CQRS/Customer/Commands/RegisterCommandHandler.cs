@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Cart.Models;
 using Pharmacy.CQRS.Customer.Models.DTOs.Request;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -20,7 +21,9 @@ public class RegisterHandler(
     IGeocodingService geocodingService,
     IPasswordService passwordService) : IRequestHandler<RegisterCommand, CustomerResponse>
 {
-    public async Task<CustomerResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<CustomerResponse> Handle(
+        RegisterCommand request,
+        CancellationToken cancellationToken)
     {
         var customerExist = await dbContext.Customers
             .AnyAsync(x => x.Email == request.Request.Email ||
@@ -28,7 +31,7 @@ public class RegisterHandler(
                 cancellationToken);
         if (customerExist)
         {
-            throw new RecourseIsAlreadyExistException(
+            throw new ResourceIsAlreadyExistException(
                 $"Customer already exists with this email {request.Request.Email} or number {request.Request.PhoneNumber}");
         }
 
@@ -38,23 +41,27 @@ public class RegisterHandler(
         }
 
         var passwordHash = await passwordService.PasswordHash(request.Request.Password);
+
         var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
-        var newCustomer = mapper.Map<Models.Customer>(request.Request);
+
+        var newCustomer = mapper.Map<Models.CustomerEntity>(request.Request);
         newCustomer.PasswordHash = passwordHash;
         newCustomer.Latitude = geocoding.Lat;
         newCustomer.Longitude = geocoding.Lng;
 
-
-        var cart = new Cart.Models.Cart
+        var cart = new CartEntity
         {
-            Customer = newCustomer,
+            CustomerEntity = newCustomer,
             TotalAmount = 0
         };
         await dbContext.Customers
             .AddAsync(newCustomer, cancellationToken);
+
         await dbContext.Carts
             .AddAsync(cart, cancellationToken);
+
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<CustomerResponse>(newCustomer);
     }
 }

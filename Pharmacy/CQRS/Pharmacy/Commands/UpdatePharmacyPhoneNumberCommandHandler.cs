@@ -15,28 +15,32 @@ public class UpdatePharmacyPhoneNumberCommandHandler(
     IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<UpdatePharmacyPhoneNumberCommand, PharmacyResponse>
 {
-    public async Task<PharmacyResponse> Handle(UpdatePharmacyPhoneNumberCommand request,
+    public async Task<PharmacyResponse> Handle(
+        UpdatePharmacyPhoneNumberCommand request,
         CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
 
         if (pharmacy is null)
         {
-            throw new RecourseNotFoundException("Pharmacy not found.");
+            throw new ResourceNotFoundException("Pharmacy not found.");
         }
 
         var pharmacyExist = await dbContext.Pharmacies
             .AnyAsync(x => x.Id != request.Id
                            && x.PhoneNumber == request.NewNumber,
                 cancellationToken);
+
         if (pharmacyExist)
         {
-            throw new RecourseIsAlreadyExistException(" Pharmacy with this number already exist ");
+            throw new ResourceIsAlreadyExistException(" Pharmacy with this number already exist ");
         }
 
         pharmacy.PhoneNumber = request.NewNumber;
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<PharmacyResponse>(pharmacy);
     }
 }

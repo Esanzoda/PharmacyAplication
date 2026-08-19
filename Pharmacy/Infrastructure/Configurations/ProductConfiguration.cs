@@ -4,9 +4,9 @@ using Pharmacy.CQRS.Product.ProductModels;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class ProductConfiguration : IEntityTypeConfiguration<Product>
+public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
 {
-    public void Configure(EntityTypeBuilder<Product> builder)
+    public void Configure(EntityTypeBuilder<ProductEntity> builder)
     {
         builder.ToTable("Products");
 
@@ -22,21 +22,20 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(x => x.Barcode)
             .IsRequired()
+            .IsUnicode()
             .HasMaxLength(100);
 
-        builder.HasIndex(x => x.Barcode)
-            .IsUnique();
         builder.Property(x => x.SalePrice)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
         builder.Property(x => x.Stock)
             .IsRequired();
-        
 
-        builder.HasOne(x => x.Category)
+
+        builder.HasOne(x => x.CategoryEntity)
             .WithMany(x => x.Products)
-            .HasForeignKey(x => x.CategoryId)
+            .HasForeignKey(x => x.CategoryEntityId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

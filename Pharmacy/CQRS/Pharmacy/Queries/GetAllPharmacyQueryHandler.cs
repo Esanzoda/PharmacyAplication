@@ -14,14 +14,18 @@ public class GetAllPharmacyQueryHandler(
     IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<GetAllPharmacyQuery, List<PharmacyResponse>>
 {
-    public async Task<List<PharmacyResponse>> Handle(GetAllPharmacyQuery request, CancellationToken cancellationToken)
+    public async Task<List<PharmacyResponse>> Handle(
+        GetAllPharmacyQuery request,
+        CancellationToken cancellationToken)
     {
         var pharmacies = await dbContext.Pharmacies
+            .AsNoTracking()
             .OrderBy(x => x.Id)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+
         return mapper.Map<List<PharmacyResponse>>(pharmacies);
     }
 }

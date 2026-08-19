@@ -4,17 +4,17 @@ using Pharmacy.CQRS.Cart.Models;
 
 namespace Pharmacy.CQRS.Cart.Configuration;
 
-public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
+public class CartItemConfiguration : IEntityTypeConfiguration<CartItemEntity>
 {
-    public void Configure(EntityTypeBuilder<CartItem> builder)
+    public void Configure(EntityTypeBuilder<CartItemEntity> builder)
     {
         builder.ToTable("CartItems");
 
         builder.HasKey(x => x.Id);
 
-        builder.HasOne<Models.Cart>()
+        builder.HasOne<Models.CartEntity>()
             .WithMany(x => x.CartItems)
-            .HasForeignKey(x => x.CustomerId)
+            .HasForeignKey(x => x.CustomerEntityId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(x => x.SalePrice)

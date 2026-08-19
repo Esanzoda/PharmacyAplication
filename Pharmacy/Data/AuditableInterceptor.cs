@@ -8,7 +8,7 @@ public class AuditableInterceptor : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
         InterceptionResult<int> result,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken)
     {
         if (eventData.Context is not null)
         {
@@ -29,6 +29,7 @@ public class AuditableInterceptor : SaveChangesInterceptor
 
                 if (entityEntry.State is EntityState.Deleted)
                 {
+                    entityEntry.State = EntityState.Modified;
                     entityEntry.Entity.IsDeleted = true;
                 }
             }

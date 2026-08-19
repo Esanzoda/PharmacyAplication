@@ -60,32 +60,25 @@ public class RoutesApiService(HttpClient httpClient, IConfiguration configuratio
         var result = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
         using var doc = JsonDocument.Parse(result);
-        try
-        {
-            if (!doc.RootElement.TryGetProperty("routes", out var routes))
-            {
-                throw new System.Exception($"Property 'routes' not found.\nResponse:\n{result}");
-            }
 
-            var route = routes[0];
-            var meters = route.GetProperty("distanceMeters").GetDouble();
-            var durationStr = route.GetProperty("duration").GetString() ?? "0s";
-            double seconds = 0;
-            if (double.TryParse(durationStr.TrimEnd('s'), CultureInfo.InvariantCulture, out double parsedSeconds))
-            {
-                seconds = parsedSeconds;
-            }
-
-            return new RoutesApiResponse
-            {
-                DistanceKm = Math.Round(meters / 1000.0, 2),
-                DurationMinutes = (int)Math.Ceiling(seconds / 60.0)
-            };
-        }
-        catch (System.Exception e)
+        if (!doc.RootElement.TryGetProperty("routes", out var routes))
         {
-            Console.WriteLine(e);
-            throw;
+            throw new System.Exception($"Property 'routes' not found.\nResponse:\n{result}");
         }
+
+        var route = routes[0];
+        var meters = route.GetProperty("distanceMeters").GetDouble();
+        var durationStr = route.GetProperty("duration").GetString() ?? "0s";
+        double seconds = 0;
+        if (double.TryParse(durationStr.TrimEnd('s'), CultureInfo.InvariantCulture, out double parsedSeconds))
+        {
+            seconds = parsedSeconds;
+        }
+
+        return new RoutesApiResponse
+        {
+            DistanceKm = Math.Round(meters / 1000.0, 2),
+            DurationMinutes = (int)Math.Ceiling(seconds / 60.0)
+        };
     }
 }

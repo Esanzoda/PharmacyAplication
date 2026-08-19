@@ -7,28 +7,34 @@ using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Pharmacy.Commands;
 
-public record UpdatePharmacyEmailCommand(long Id, string NewEmail) : IRequest<PharmacyResponse>;
+public record UpdatePharmacyEmailCommand(
+    long Id,
+    string NewEmail) : IRequest<PharmacyResponse>;
 
 public class UpdatePharmacyEmailCommandHandler(
     IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<UpdatePharmacyEmailCommand, PharmacyResponse>
 {
-    public async Task<PharmacyResponse> Handle(UpdatePharmacyEmailCommand request, CancellationToken cancellationToken)
+    public async Task<PharmacyResponse> Handle(
+        UpdatePharmacyEmailCommand request,
+        CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
         if (pharmacy is null)
         {
-            throw new RecourseNotFoundException("Pharmacy not found");
+            throw new ResourceNotFoundException("Pharmacy not found");
         }
 
         var pharmacyExist = await dbContext.Pharmacies
             .AnyAsync(x => x.Id != request.Id &&
                            x.Email == request.NewEmail,
                 cancellationToken);
+
         if (pharmacyExist)
         {
-            throw new RecourseIsAlreadyExistException("Pharmacy with this email already exist");
+            throw new ResourceIsAlreadyExistException("Pharmacy with this email already exist");
         }
 
         pharmacy.Email = request.NewEmail;

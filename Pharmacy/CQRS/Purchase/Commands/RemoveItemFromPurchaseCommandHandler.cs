@@ -15,52 +15,46 @@ public record RemoveItemFromPurchaseCommand(
 
 public class RemoveItemFromPurchaseCommandHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper)
-    : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
+    IMapper mapper) : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
 {
-    public async Task<PurchaseResponse> Handle(RemoveItemFromPurchaseCommand request,
+    public async Task<PurchaseResponse> Handle(
+        RemoveItemFromPurchaseCommand request,
         CancellationToken cancellationToken)
     {
         var purchase = await dbContext.Purchases
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.PurchaseId &&
-                                      x.EmployeeId == request.EmployeeId,
+                                      x.EmployeeEntityId == request.EmployeeId,
                 cancellationToken);
+
         if (purchase == null)
         {
-            throw new RecourseNotFoundException("Purchase not found");
+            throw new ResourceNotFoundException("Purchase not found");
         }
 
         var purchaseItemToRemove = await dbContext.PurchaseItems
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.PurchaseId == request.PurchaseId &&
+                                      x.PurchaseEntityId == request.PurchaseId &&
                                       x.Id == request.PurchaseItemId,
                 cancellationToken);
 
         if (purchaseItemToRemove == null)
         {
-            throw new RecourseNotFoundException("Purchase item not found");
-        }
-
-        var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Id == purchaseItemToRemove.ProductId,
-                cancellationToken);
-        if (product == null)
-        {
-            throw new RecourseNotFoundException("Product not found");
+            throw new ResourceNotFoundException("Purchase item not found");
         }
 
         var productBatch = await dbContext.ProductBatches
             .FirstOrDefaultAsync(x => x.PurchaseItemId == request.PurchaseItemId,
                 cancellationToken);
+
         if (productBatch is null)
         {
-            throw new RecourseNotFoundException("Product batch not found");
+            throw new ResourceNotFoundException("Product batch not found");
         }
 
         productBatch.IsActive = false;
-        product.Stock -= purchaseItemToRemove.Quantity;
+        productBatch.Quantity -= purchaseItemToRemove.Quantity;
+        productBatch.ProductEntity.Stock -= purchaseItemToRemove.Quantity;
 
         purchase.PurchaseItems.Remove(purchaseItemToRemove);
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);

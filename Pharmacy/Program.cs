@@ -8,16 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<ConnectionStringsOption>(
     builder.Configuration.GetSection(ConnectionStringsOption.SettingName));
-builder.Services.Configure<RabbitMqOption>(
-    builder.Configuration.GetSection(RabbitMqOption.SettingName));
 builder.Services.Configure<JwtOption>(
     builder.Configuration.GetSection(JwtOption.SettingName));
-builder.Services.Configure<EmailOption>(
-    builder.Configuration.GetSection(EmailOption.SettingName));
+
 builder.Services.Configure<GoogleMap>(
     builder.Configuration.GetSection(GoogleMap.SettingName));
 
-builder.Services.AddConsumers(builder.Configuration);
 builder.Services.AddAppDbContext(builder.Configuration);
 builder.Services.AddHangfire(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -25,6 +21,7 @@ builder.Services.AddRedis(builder.Configuration);
 builder.AddSeriaLogger();
 builder.Services.AddInfrastructure();
 builder.Services.AddSwagger();
+builder.Services.AddMassTransit(builder.Configuration);
 
 
 var app = builder.Build();

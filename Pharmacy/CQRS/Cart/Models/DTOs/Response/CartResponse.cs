@@ -9,8 +9,8 @@ public record CartResponse
 
 public record CartItemResponse
 {
-    public long ProductId { get; init; }
+    public long ProductEntityId { get; init; }
     public int Quantity { get; init; }
-    public decimal Price { get; init; }
+    public decimal SalePrice { get; init; }
     public decimal TotalPrice { get; init; }
 }

@@ -4,16 +4,16 @@ using Pharmacy.CQRS.Order.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
+public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItemEntity>
 {
-    public void Configure(EntityTypeBuilder<OrderItem> builder)
+    public void Configure(EntityTypeBuilder<OrderItemEntity> builder)
     {
         builder.ToTable("OrderItems");
 
         builder.HasKey(x => x.Id);
 
-        builder.HasOne(x => x.Product)
+        builder.HasOne(x => x.ProductEntity)
             .WithMany()
-            .HasForeignKey(x => x.ProductId);
+            .HasForeignKey(x => x.ProductEntityId);
     }
 }

@@ -11,9 +11,9 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
         builder.ToTable("Purchases");
 
         builder.HasKey(x => x.Id);
-     
-        builder.HasOne(x => x.Employee)
+
+        builder.HasOne(x => x.EmployeeEntity)
             .WithMany()
-            .HasForeignKey(x => x.EmployeeId);
+            .HasForeignKey(x => x.EmployeeEntityId);
     }
 }

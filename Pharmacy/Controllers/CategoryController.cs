@@ -5,8 +5,7 @@ using Pharmacy.CQRS.Category.Commands;
 using Pharmacy.CQRS.Category.Models.DTOs.Request;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.CQRS.Category.Queries;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
-using Pharmacy.CQRS.Product.Queries;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 using Pharmacy.CQRS.Product.Queries.Customer;
 using Pharmacy.Models.Domain.Enum;
 
@@ -14,9 +13,9 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[Authorize(Roles = nameof(Role.Admin))]
 public class CategoryController(IMediator mediator) : ControllerBase
 {
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> Add([FromBody] CreateCategoryRequest request)
     {
@@ -24,7 +23,6 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpPut]
     public async Task<ActionResult<CategoryResponse>> Update(long id, [FromBody] UpdateCategoryRequest request)
     {
@@ -32,7 +30,6 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<CategoryResponse>> GetById(long id,
         CancellationToken cancellationToken = default)
@@ -41,7 +38,6 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<List<CategoryResponse>>> GetAll(int page, int pageSize)
     {
@@ -49,7 +45,6 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpDelete]
     public async Task<IActionResult> DeleteById(long id)
     {
@@ -57,23 +52,22 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    // [Authorize]
+    [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<ProductResponse>>> GetProducts(int categoryId, int page, int pageSize)
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetProducts(int categoryId, int page,
+        int pageSize)
     {
         var response = await mediator.Send(new GetProductsByCategoryIdQuery(categoryId, page, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
-    public async Task<ActionResult<List<CategoryResponse>>> GetByName(string name)
+    public async Task<ActionResult<CategoryResponse>> GetByName(string name)
     {
         var response = await mediator.Send(new GetCategoryByNameQuery(name));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.SuperAdmin))]
     [HttpGet]
     public async Task<ActionResult<List<CategoryResponse>>> GetByStatus(CategoryStatus categoryStatus, int pageNumber,
         int pageSize)

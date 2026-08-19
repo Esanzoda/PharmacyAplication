@@ -10,7 +10,6 @@ public static class SwaggerExtensions
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pharmacy API", Version = "v1" });
 
-
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -20,7 +19,6 @@ public static class SwaggerExtensions
                 BearerFormat = "JWT",
                 Description = "Enter JWT Token (dont need 'Bearer')"
             });
-
 
             options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {

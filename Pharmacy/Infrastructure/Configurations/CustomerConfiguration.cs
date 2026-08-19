@@ -6,9 +6,9 @@ using Pharmacy.CQRS.Order.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
+public class CustomerConfiguration : IEntityTypeConfiguration<CustomerEntity>
 {
-    public void Configure(EntityTypeBuilder<Customer> builder)
+    public void Configure(EntityTypeBuilder<CustomerEntity> builder)
     {
         builder.ToTable("Customers");
 
@@ -29,12 +29,12 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(x => x.PasswordHash)
             .HasMaxLength(500);
 
-        builder.HasOne(x => x.Cart)
-            .WithOne(x => x.Customer)
-            .HasForeignKey<Cart>(x => x.CustomerId);
+        builder.HasOne(x => x.CartEntity)
+            .WithOne(x => x.CustomerEntity)
+            .HasForeignKey<CartEntity>(x => x.CustomerEntityId);
 
-        builder.HasMany<Order>()
-            .WithOne(x => x.Customer)
-            .HasForeignKey(x => x.CustomerId);
+        builder.HasMany<OrderEntity>()
+            .WithOne(x => x.CustomerEntity)
+            .HasForeignKey(x => x.CustomerEntityId);
     }
 }

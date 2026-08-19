@@ -9,23 +9,25 @@ namespace Pharmacy.CQRS.Product.Queries;
 public record GetAllPharmacyProductsQuery(
     long PharmacyId,
     int Page,
-    int PageSize) : IRequest<List<ProductWithBatchResponse>>;
+    int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetAllPharmacyProductsQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetAllPharmacyProductsQuery, List<ProductWithBatchResponse>>
+    IMapper mapper) : IRequestHandler<GetAllPharmacyProductsQuery, List<ProductForPharmacyResponse>>
 {
-    public async Task<List<ProductWithBatchResponse>> Handle(GetAllPharmacyProductsQuery request,
+    public async Task<List<ProductForPharmacyResponse>> Handle(
+        GetAllPharmacyProductsQuery request,
         CancellationToken cancellationToken)
     {
         var products = await dbContext.Products
+            .AsNoTracking()
             .Include(x => x.ProductBatches)
             .Where(x => x.PharmacyId == request.PharmacyId)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
-        return mapper.Map<List<ProductWithBatchResponse>>(products);
+
+        return mapper.Map<List<ProductForPharmacyResponse>>(products);
     }
 }

@@ -13,20 +13,21 @@ public record GetOrderByIdQuery(
 
 public class GetOrderByIdQueryHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<GetOrderByIdQuery, OrderResponseForCustomer>
+    IApplicationDbContext dbContext) : IRequestHandler<GetOrderByIdQuery,
+    OrderResponseForCustomer>
 {
-    public async Task<OrderResponseForCustomer> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
+    public async Task<OrderResponseForCustomer> Handle(
+        GetOrderByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var order = await dbContext.Orders
             .Include(x => x.OrderItems)
-            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId &&
+            .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId &&
                                       x.Id == request.Id,
                 cancellationToken);
-        if (order == null)
-        {
-            throw new RecourseNotFoundException("Order not found");
-        }
 
-        return mapper.Map<OrderResponseForCustomer>(order);
+        return order == null
+            ? throw new ResourceNotFoundException("Order not found")
+            : mapper.Map<OrderResponseForCustomer>(order);
     }
 }

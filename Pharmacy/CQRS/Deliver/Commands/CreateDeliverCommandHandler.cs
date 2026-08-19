@@ -1,8 +1,8 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.Controllers;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
+using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Services.Password;
@@ -17,7 +17,9 @@ public class CreateDeliverCommandHandler(
     IApplicationDbContext dbContext,
     IPasswordService passwordService) : IRequestHandler<CreateDeliverCommand, DeliverResponse>
 {
-    public async Task<DeliverResponse> Handle(CreateDeliverCommand request, CancellationToken cancellationToken)
+    public async Task<DeliverResponse> Handle(
+        CreateDeliverCommand request,
+        CancellationToken cancellationToken)
     {
         var deliverExists = await dbContext.Delivers
             .AnyAsync(x => x.Email == request.Request.Email ||
@@ -25,12 +27,14 @@ public class CreateDeliverCommandHandler(
 
         if (deliverExists)
         {
-            throw new RecourseIsAlreadyExistException("Deliver already exists");
+            throw new ResourceIsAlreadyExistException("Deliver already exists");
         }
 
         var passwordHash = await passwordService.PasswordHash(request.Request.Password);
-        var newDeliver = mapper.Map<Models.Deliver>(request.Request);
+
+        var newDeliver = mapper.Map<Models.DeliverEntity>(request.Request);
         newDeliver.PasswordHash = passwordHash;
+
         await dbContext.Delivers
             .AddAsync(newDeliver, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -15,17 +15,18 @@ public class GetEmployeeByEmailHandler(
     IApplicationDbContext dbContext,
     IMapper mapper) : IRequestHandler<GetEmployeeByEmailQuery, EmployeeResponse>
 {
-    public async Task<EmployeeResponse> Handle(GetEmployeeByEmailQuery request, CancellationToken cancellationToken)
+    public async Task<EmployeeResponse> Handle(
+        GetEmployeeByEmailQuery request,
+        CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.Email == request.Email, cancellationToken);
-        if (employee == null)
-        {
-            throw new RecourseNotFoundException($"Employee with this email {request.Email} not found ");
-        }
+                                      x.Email == request.Email,
+                cancellationToken);
 
-        return mapper.Map<EmployeeResponse>(employee);
+        return employee == null
+            ? throw new ResourceNotFoundException($"Employee with this email {request.Email} not found ")
+            : mapper.Map<EmployeeResponse>(employee);
     }
 }

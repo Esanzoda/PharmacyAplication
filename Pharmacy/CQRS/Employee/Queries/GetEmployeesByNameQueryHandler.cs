@@ -2,7 +2,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Employee.Queries;
@@ -15,10 +14,10 @@ public record GetEmployeesByNameQuery(
 
 public class GetEmployeesByNameQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper
-) : IRequestHandler<GetEmployeesByNameQuery, List<EmployeeResponse>>
+    IMapper mapper) : IRequestHandler<GetEmployeesByNameQuery, List<EmployeeResponse>>
 {
-    public async Task<List<EmployeeResponse>> Handle(GetEmployeesByNameQuery request,
+    public async Task<List<EmployeeResponse>> Handle(
+        GetEmployeesByNameQuery request,
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
@@ -31,11 +30,6 @@ public class GetEmployeesByNameQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-
-        if (employees.Count == 0)
-        {
-            throw new RecourseNotFoundException($"Employee with this name {request.Name} not found ");
-        }
 
         return mapper.Map<List<EmployeeResponse>>(employees);
     }

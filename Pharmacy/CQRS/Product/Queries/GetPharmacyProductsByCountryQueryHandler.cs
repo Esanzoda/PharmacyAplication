@@ -12,13 +12,14 @@ public record GetPharmacyProductsByCountryQuery(
     long PharmacyId,
     CountryEnum Country,
     int Page,
-    int PageSize) : IRequest<List<ProductWithBatchResponse>>;
+    int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetPharmacyProductsByCountryQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPharmacyProductsByCountryQuery, List<ProductWithBatchResponse>>
+    IMapper mapper) : IRequestHandler<GetPharmacyProductsByCountryQuery, List<ProductForPharmacyResponse>>
 {
-    public async Task<List<ProductWithBatchResponse>> Handle(GetPharmacyProductsByCountryQuery request,
+    public async Task<List<ProductForPharmacyResponse>> Handle(
+        GetPharmacyProductsByCountryQuery request,
         CancellationToken cancellationToken)
     {
         var productBatch = await dbContext.ProductBatches
@@ -27,18 +28,17 @@ public class GetPharmacyProductsByCountryQueryHandler(
             .ToListAsync(cancellationToken);
 
         var productIds = productBatch
-            .Select(x => x.ProductId)
+            .Select(x => x.ProductEntityId)
             .ToList();
 
         var products = await dbContext.Products
+            .AsNoTracking()
             .Where(x => productIds.Contains(x.Id))
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (!products.Any())
-            throw new RecourseNotFoundException($"Product from this country[{request.Country}] not found");
-        return mapper.Map<List<ProductWithBatchResponse>>(products);
+
+        return mapper.Map<List<ProductForPharmacyResponse>>(products);
     }
 }

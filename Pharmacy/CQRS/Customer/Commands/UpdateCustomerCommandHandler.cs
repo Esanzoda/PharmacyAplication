@@ -14,19 +14,22 @@ public record UpdateCustomerCommand(
     long Id,
     UpdateCustomerRequest Request) : IRequest<CustomerResponse>;
 
-public class UpdateCustomerHandler(
+public class UpdateCustomerCommandHandler(
     IMapper mapper,
     IDistributedCache cache,
     IApplicationDbContext dbContext,
     IGeocodingService geocodingService) : IRequestHandler<UpdateCustomerCommand, CustomerResponse>
 {
-    public async Task<CustomerResponse> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
+    public async Task<CustomerResponse> Handle(
+        UpdateCustomerCommand request,
+        CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
         if (customer == null)
         {
-            throw new RecourseNotFoundException($"Customer not found with id {request.Id}");
+            throw new ResourceNotFoundException($"Customer not found with id {request.Id}");
         }
 
         var customerExist = await dbContext.Customers
@@ -38,18 +41,24 @@ public class UpdateCustomerHandler(
 
         if (customerExist)
         {
-            throw new RecourseIsAlreadyExistException(
+            throw new ResourceIsAlreadyExistException(
                 $"Customer already exists with this phone number{request.Request.PhoneNumber} or with email{request.Request.Email} ");
         }
 
-        var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
+
         var updateCustomer = mapper.Map(request.Request, customer);
-        updateCustomer.Latitude = geocoding.Lat;
-        updateCustomer.Longitude = geocoding.Lng;
+        if (customer.Address != request.Request.Address)
+        {
+            var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
+            updateCustomer.Latitude = geocoding.Lat;
+            updateCustomer.Longitude = geocoding.Lng;
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"CustomerById-{customer.Id}";
         await cache.RemoveAsync(key, cancellationToken);
+
         return mapper.Map<CustomerResponse>(customer);
     }
 }

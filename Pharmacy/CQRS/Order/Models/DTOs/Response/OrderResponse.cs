@@ -5,11 +5,11 @@ namespace Pharmacy.CQRS.Order.Models.DTOs.Response;
 public record OrderResponse
 {
     public long Id { get; init; }
-    public long CustomerId { get; init; }
+    public long CustomerEntityId { get; init; }
     public long PharmacyId { get; init; }
     public OrderType OrderType { get; init; }
     public string Address { get; init; } = string.Empty;
-    public Deliver.Models.Deliver? Deliver { get; init; }
+    public Deliver.Models.DeliverEntity? Deliver { get; init; }
     public OrderStatus OrderStatus { get; init; }
     public DateTime PicKupTime { get; init; }
     public decimal DeliveryFee { get; init; }

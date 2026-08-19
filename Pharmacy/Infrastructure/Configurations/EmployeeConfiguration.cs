@@ -4,9 +4,9 @@ using Pharmacy.CQRS.Employee.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
+public class EmployeeConfiguration : IEntityTypeConfiguration<EmployeeEntity>
 {
-    public void Configure(EntityTypeBuilder<Employee> builder)
+    public void Configure(EntityTypeBuilder<EmployeeEntity> builder)
     {
         builder.ToTable("Employees");
 

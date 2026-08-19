@@ -1,14 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.Models.Domain;
+using Pharmacy.CQRS.ExpiredProducts.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class ExpiryDateConfiguration : IEntityTypeConfiguration<ExpiryDate>
+public class ExpiryDateConfiguration : IEntityTypeConfiguration<ExpiryDateEntity>
 {
-    public void Configure(EntityTypeBuilder<ExpiryDate> builder)
+    public void Configure(EntityTypeBuilder<ExpiryDateEntity> builder)
     {
-       
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.TotalSalePrice)

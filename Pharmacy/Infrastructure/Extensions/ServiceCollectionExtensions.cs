@@ -1,12 +1,11 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Pharmacy.CQRS;
 using Pharmacy.Data;
 using Pharmacy.Interfaces;
 using Pharmacy.Jobs;
+using Pharmacy.Services.Auth;
 using Pharmacy.Services.DeliveryFee;
 using Pharmacy.Services.GoogleMaps;
-using Pharmacy.Services.Message;
 using Pharmacy.Services.Password;
 
 namespace Pharmacy.Infrastructure.Extensions;
@@ -21,10 +20,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddFluentValidationAutoValidation();
         serviceCollection.AddValidatorsFromAssemblyContaining<Program>();
-        serviceCollection.AddAutoMapper(
-            _ => { },
-            AppDomain.CurrentDomain.GetAssemblies());
-        serviceCollection.AddScoped<IMessageService, MessageService>();
+        serviceCollection.AddAutoMapper(_ => { }, AppDomain.CurrentDomain.GetAssemblies());
         serviceCollection.AddScoped<IApplicationDbContext, AppDbContext>();
         serviceCollection.AddScoped<CheckExpiredProductsJob>();
         serviceCollection.AddScoped<Report>();
@@ -34,5 +30,6 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddHttpClient<IRoutesService, RoutesApiService>();
         serviceCollection.AddScoped<IPasswordService, PasswordService>();
         serviceCollection.AddScoped<IDeliveryFeeByDistance, DeliveryFeeByDistance>();
+        serviceCollection.AddScoped<IAuthService, AuthService>();
     }
 }

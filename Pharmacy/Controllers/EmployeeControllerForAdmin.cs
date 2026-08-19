@@ -12,97 +12,88 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[Authorize(Roles = nameof(Position.AdminPharmacy))]
 public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
 {
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpPost]
     public async Task<ActionResult<EmployeeResponse>> Add([FromBody] EmployeeRequest request)
     {
-        var pharmacyId = 2;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new CreateEmployeeCommand(pharmacyId, request));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
     public async Task<ActionResult<ActionResult<EmployeeResponse>>> GetById(long id)
     {
-        var pharmacyId = 2;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeeByIdQuery(pharmacyId, id));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
     public async Task<ActionResult<List<EmployeeResponse>>> GetAll(int pageNumber, int pageSize)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetAllEmployeeByPaginationQuery(pharmacyId, pageNumber, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpDelete]
     public async Task<IActionResult> DeleteById(long id)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new DeleteEmployeeCommand(pharmacyId, id));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByNameAsync(string name, int page, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(string name, int page, int pageSize)
     {
-        var pharmacyId = 2;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesByNameQuery(pharmacyId, name, page, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddressAsync(string address, int page,
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(string address, int page,
         int pageSize)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesByAddressQuery(pharmacyId, address, page, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByNumberAsync(string number)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByNumber(string number)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeeByNumberQuery(pharmacyId, number));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<EmployeeResponse>> GetByEmailAsync(string email)
+    public async Task<ActionResult<EmployeeResponse>> GetByEmail(string email)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeeByEmailQuery(pharmacyId, email));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalaryAsync(decimal salary, int page,
+    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(decimal salary, int page,
         int pageSize)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesBySalaryQuery(pharmacyId, salary, page, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(Role role, int page, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(Position position, int page, int pageSize)
     {
-        var pharmacyId = 1;
-        var response = await mediator.Send(new GetEmployeesByRoleQuery(pharmacyId, role, page, pageSize));
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var response = await mediator.Send(new GetEmployeesByRoleQuery(pharmacyId, position, page, pageSize));
         return Ok(response);
     }
 }

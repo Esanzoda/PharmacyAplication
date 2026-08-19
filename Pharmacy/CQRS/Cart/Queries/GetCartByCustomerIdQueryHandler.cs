@@ -12,20 +12,20 @@ public record GetCartByCustomerIdQuery(
 
 public class GetCartByCustomerIdQueryHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<GetCartByCustomerIdQuery, CartResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<
+    GetCartByCustomerIdQuery,
+    CartResponse>
 {
-    public async Task<CartResponse> Handle(GetCartByCustomerIdQuery request, CancellationToken cancellationToken)
+    public async Task<CartResponse> Handle(
+        GetCartByCustomerIdQuery request,
+        CancellationToken cancellationToken)
     {
         var cart = await dbContext.Carts
             .Include(x => x.CartItems)
-            .ThenInclude(x => x.Product)
-            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId,
+            .ThenInclude(x => x.ProductEntity)
+            .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId,
                 cancellationToken);
-        if (cart is null)
-        {
-            throw new RecourseNotFoundException("Cart not found");
-        }
 
-        return mapper.Map<CartResponse>(cart);
+        return cart is null ? throw new ResourceNotFoundException("Cart not found") : mapper.Map<CartResponse>(cart);
     }
 }

@@ -11,24 +11,28 @@ public record RemoveItemFromCartCommand(
     long CustomerId,
     long ProductId) : IRequest<CartResponse>;
 
-public class RemoveItemFromCartCommandHandler(IApplicationDbContext dbContext, IMapper mapper)
-    : IRequestHandler<RemoveItemFromCartCommand, CartResponse>
+public class RemoveItemFromCartCommandHandler(
+    IApplicationDbContext dbContext,
+    IMapper mapper) : IRequestHandler<RemoveItemFromCartCommand, CartResponse>
 {
-    public async Task<CartResponse> Handle(RemoveItemFromCartCommand request, CancellationToken cancellationToken)
+    public async Task<CartResponse> Handle(
+        RemoveItemFromCartCommand request,
+        CancellationToken cancellationToken)
     {
         var cart = await dbContext.Carts
             .Include(x => x.CartItems)
-            .FirstOrDefaultAsync(x => x.CustomerId == request.CustomerId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId,
+                cancellationToken);
 
         if (cart is null)
         {
-            throw new RecourseNotFoundException("Cart not found");
+            throw new ResourceNotFoundException("Cart not found");
         }
 
-        var item = cart.CartItems.FirstOrDefault(x => x.ProductId == request.ProductId);
+        var item = cart.CartItems.FirstOrDefault(x => x.ProductEntityId == request.ProductId);
         if (item is null)
         {
-            throw new RecourseNotFoundException("Cart item not found");
+            throw new ResourceNotFoundException("Cart item not found");
         }
 
         cart.CartItems.Remove(item);

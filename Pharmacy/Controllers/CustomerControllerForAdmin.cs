@@ -1,39 +1,39 @@
+using System.Security.Claims;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.CQRS.Customer.Queries;
+using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[Authorize(Roles = nameof(Position.AdminPharmacy))]
 public class CustomerControllerForAdmin(IMediator mediator) : ControllerBase
 {
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
     public async Task<ActionResult<List<CustomerResponse>>> GetAll(int pageNumber, int pageSize)
     {
-        var pharmacyId = 1;
-        var response = await mediator.Send(new GetAllCustomerByPaginationQuery(pageNumber, pageSize, pharmacyId),
-            HttpContext.RequestAborted);
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var response = await mediator.Send(new GetAllCustomerByPaginationQuery(pageNumber, pageSize, pharmacyId));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<CustomerResponse>> GetByPhoneAsync(string phone)
+    public async Task<ActionResult<CustomerResponse>> GetByPhoneAsync(string phone, int page, int pageSize)
     {
-        var pharmacyId = 1;
-        var response = await mediator.Send(new GetCustomerByPhoneNumberQuery(pharmacyId, phone));
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var response = await mediator.Send(new GetCustomerByPhoneNumberQuery(pharmacyId, phone, page, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet]
-    public async Task<ActionResult<List<CustomerResponse>>> GetByNameAsync(string name)
+    public async Task<ActionResult<List<CustomerResponse>>> GetByNameAsync(string name, int page, int pageSize)
     {
-        var pharmacyId = 1;
-        var response = await mediator.Send(new GetCustomerByNameQuery(pharmacyId, name));
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var response = await mediator.Send(new GetCustomerByNameQuery(pharmacyId, name, page, pageSize));
         return Ok(response);
     }
 }

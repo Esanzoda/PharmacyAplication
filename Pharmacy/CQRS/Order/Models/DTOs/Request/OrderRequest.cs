@@ -6,6 +6,5 @@ public record OrderRequest
 {
     public OrderType OrderType { get; init; }
     public DateTime? PicKupTime { get; set; }
-
     public List<OrderItemRequest> OrderItems { get; init; }
 }

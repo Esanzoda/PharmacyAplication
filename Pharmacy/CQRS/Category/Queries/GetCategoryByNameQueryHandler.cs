@@ -8,25 +8,24 @@ using Pharmacy.Interfaces;
 namespace Pharmacy.CQRS.Category.Queries;
 
 public record GetCategoryByNameQuery(
-    string Name) : IRequest<List<CategoryResponse>>;
+    string Name) : IRequest<CategoryResponse>;
 
 public class GetCategoryByNameQueryHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByNameQuery, List<CategoryResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByNameQuery, CategoryResponse>
 {
-    public async Task<List<CategoryResponse>> Handle(GetCategoryByNameQuery request,
+    public async Task<CategoryResponse> Handle(
+        GetCategoryByNameQuery request,
         CancellationToken cancellationToken)
     {
         var categories = await dbContext.Categories
-            .Where(x => x.Name.Contains(request.Name))
+            .Where(x => x.Name.ToLower().Contains(request.Name.ToLower()))
             .OrderBy(x => x.Id)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (categories.Count == 0)
-        {
-            throw new RecourseNotFoundException("Category not found");
-        }
 
-        return mapper.Map<List<CategoryResponse>>(categories);
+        return categories.Count == 0
+            ? throw new ResourceNotFoundException("Category not found")
+            : mapper.Map<CategoryResponse>(categories);
     }
 }

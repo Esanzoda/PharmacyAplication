@@ -11,14 +11,17 @@ public class PharmacyRequestValidator : AbstractValidator<PharmacyRequest>
             .NotEmpty()
             .NotNull()
             .WithMessage("Address is required");
+
         RuleFor(x => x.Name)
             .NotEmpty()
             .NotNull()
             .WithMessage("Address is required");
+
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
             .NotNull()
             .WithMessage("Address is required");
+
         RuleFor(x => x.Email)
             .NotEmpty()
             .NotNull()

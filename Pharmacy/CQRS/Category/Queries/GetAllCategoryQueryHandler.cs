@@ -10,10 +10,12 @@ public record GetAllCategoriesByPaginationQuery(
     int PageNumber,
     int PageSize) : IRequest<List<CategoryResponse>>;
 
-public class GetAllCategoryQueryHandler(IMapper mapper, IApplicationDbContext dbContext)
-    : IRequestHandler<GetAllCategoriesByPaginationQuery, List<CategoryResponse>>
+public class GetAllCategoryQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext dbContext) : IRequestHandler<GetAllCategoriesByPaginationQuery, List<CategoryResponse>>
 {
-    public async Task<List<CategoryResponse>> Handle(GetAllCategoriesByPaginationQuery request,
+    public async Task<List<CategoryResponse>> Handle(
+        GetAllCategoriesByPaginationQuery request,
         CancellationToken cancellationToken)
     {
         var categories = await dbContext.Categories
@@ -22,6 +24,7 @@ public class GetAllCategoryQueryHandler(IMapper mapper, IApplicationDbContext db
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+
         return mapper.Map<List<CategoryResponse>>(categories);
     }
 }

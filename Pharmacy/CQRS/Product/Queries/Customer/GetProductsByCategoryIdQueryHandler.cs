@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -10,35 +10,33 @@ namespace Pharmacy.CQRS.Product.Queries.Customer;
 public record GetProductsByCategoryIdQuery(
     long CategoryId,
     int Page,
-    int PageSize) : IRequest<List<ProductResponse>>;
+    int PageSize) : IRequest<List<ProductForCustomerResponse>>;
 
 public class GetProductsByCategoryIdQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetProductsByCategoryIdQuery, List<ProductResponse>>
+    IMapper mapper) : IRequestHandler<GetProductsByCategoryIdQuery, List<ProductForCustomerResponse>>
 {
-    public async Task<List<ProductResponse>> Handle(GetProductsByCategoryIdQuery request,
+    public async Task<List<ProductForCustomerResponse>> Handle(
+        GetProductsByCategoryIdQuery request,
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .AsNoTracking()
-            .AnyAsync(x => x.Id == request.CategoryId, cancellationToken);
+            .AnyAsync(x => x.Id == request.CategoryId,
+                cancellationToken);
         if (!category)
         {
-            throw new RecourseNotFoundException("Category with this id  not found");
+            throw new ResourceNotFoundException("Category with this id  not found");
         }
 
         var product = await dbContext.Products
-            .Where(x => x.CategoryId == request.CategoryId)
+            .AsNoTracking()
+            .Include(x => x.ProductBatches)
+            .Where(x => x.CategoryEntityId == request.CategoryId)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (!product.Any())
-        {
-            throw new RecourseNotFoundException("We dont have product  with categoryId ");
-        }
 
-        return mapper.Map<List<ProductResponse>>(product);
+        return mapper.Map<List<ProductForCustomerResponse>>(product);
     }
 }

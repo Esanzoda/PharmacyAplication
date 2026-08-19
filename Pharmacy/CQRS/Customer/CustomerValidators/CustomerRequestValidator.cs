@@ -33,10 +33,12 @@ public class CustomerRequestValidator : AbstractValidator<CustomerRequest>
         RuleFor(x => x.Role)
             .Equal(Role.Customer)
             .WithMessage("You can create only customer role.");
-    }
-/*
-        RuleFor(x => x.Password)
+
+        /*
+         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required")
-            .MinimumLength(8).WithMessage("Password must be at least 8 characters");*/
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters");*/
+    }
 }

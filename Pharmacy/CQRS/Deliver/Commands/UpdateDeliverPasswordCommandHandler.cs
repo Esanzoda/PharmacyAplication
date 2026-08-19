@@ -17,13 +17,17 @@ public class UpdateDeliverPasswordCommandHandler(
     IApplicationDbContext dbContext,
     IPasswordService passwordService) : IRequestHandler<UpdateDeliverPasswordCommand, string>
 {
-    public async Task<string> Handle(UpdateDeliverPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(
+        UpdateDeliverPasswordCommand request,
+        CancellationToken cancellationToken)
     {
         var deliver = await dbContext.Delivers
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.Id,
+                cancellationToken);
+
         if (deliver is null)
         {
-            throw new RecourseNotFoundException("Deliver not found");
+            throw new ResourceNotFoundException("Deliver not found");
         }
 
         var passwordCheck = await passwordService.PasswordVerify(request.Password, deliver.PasswordHash);
@@ -33,6 +37,7 @@ public class UpdateDeliverPasswordCommandHandler(
         }
 
         deliver.PasswordHash = await passwordService.PasswordHash(request.NewPassword);
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"DeliverById-{request.Id}";
