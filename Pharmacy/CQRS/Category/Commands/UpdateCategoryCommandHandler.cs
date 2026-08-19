@@ -18,22 +18,27 @@ public class UpdateCategoryCommandHandler(
     IApplicationDbContext dbContext,
     IDistributedCache cache) : IRequestHandler<UpdateCategoryCommand, UpdateCategoryResponse>
 {
-    public async Task<UpdateCategoryResponse> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<UpdateCategoryResponse> Handle(
+        UpdateCategoryCommand request,
+        CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
+
         if (category is null)
         {
-            throw new RecourseNotFoundException("Category not found");
+            throw new ResourceNotFoundException("Category not found");
         }
 
         var existCategory = await dbContext.Categories
             .AnyAsync(x => x.Id != request.Id &&
                            x.Name == request.Request.Name,
                 cancellationToken);
+
         if (existCategory)
         {
-            throw new RecourseIsAlreadyExistException("Category  with this name already exist");
+            throw new ResourceIsAlreadyExistException("Category  with this name already exist");
         }
 
         mapper.Map(request.Request, category);

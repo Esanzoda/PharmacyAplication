@@ -2,6 +2,7 @@ namespace Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 
 public class PharmacyResponse
 {
+    public long Id { get; set; }
     public required string Name { get; init; }
     public required string Address { get; init; }
     public required string PhoneNumber { get; init; }

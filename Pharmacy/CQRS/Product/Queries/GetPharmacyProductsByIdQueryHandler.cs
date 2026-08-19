@@ -2,20 +2,20 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
 public record GetPharmacyLowOfStockQuery(
     long PharmacyId,
-    long Id) : IRequest<ProductWithBatchResponse>;
+    long Id) : IRequest<ProductForPharmacyResponse>;
 
 public class GetPharmacyProductsByIdQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPharmacyLowOfStockQuery, ProductWithBatchResponse>
+    IMapper mapper) : IRequestHandler<GetPharmacyLowOfStockQuery, ProductForPharmacyResponse>
 {
-    public async Task<ProductWithBatchResponse> Handle(GetPharmacyLowOfStockQuery request,
+    public async Task<ProductForPharmacyResponse> Handle(
+        GetPharmacyLowOfStockQuery request,
         CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
@@ -24,11 +24,7 @@ public class GetPharmacyProductsByIdQueryHandler(
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id,
                 cancellationToken);
-        if (product == null)
-        {
-            throw new RecourseNotFoundException("Product not found");
-        }
 
-        return mapper.Map<ProductWithBatchResponse>(product);
+        return mapper.Map<ProductForPharmacyResponse>(product);
     }
 }

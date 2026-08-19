@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Pharmacy.Controllers;
+using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -17,7 +17,9 @@ public class GetDeliverByIdHandler(
     IDistributedCache cache,
     IApplicationDbContext dbContext) : IRequestHandler<GetDeliverByIdQuery, DeliverResponse>
 {
-    public async Task<DeliverResponse> Handle(GetDeliverByIdQuery request, CancellationToken cancellationToken)
+    public async Task<DeliverResponse> Handle(
+        GetDeliverByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var key = $"DeliverById-{request.DeliverId}";
         var cached = await cache.GetStringAsync(key, cancellationToken);
@@ -32,11 +34,12 @@ public class GetDeliverByIdHandler(
 
         var deliver = await dbContext.Delivers
             .FirstOrDefaultAsync(
-                x => x.Id == request.DeliverId,
+                x => x.Id == request.DeliverId &&
+                     x.IsDeleted == false,
                 cancellationToken);
         if (deliver is null)
         {
-            throw new RecourseNotFoundException("Deliver not found");
+            throw new ResourceNotFoundException("Deliver not found");
         }
 
         var response = mapper.Map<DeliverResponse>(deliver);
@@ -45,7 +48,9 @@ public class GetDeliverByIdHandler(
             new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
-            }, cancellationToken);
+            },
+            cancellationToken);
+
         return response;
     }
 }

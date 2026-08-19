@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Category.Models;
 using Pharmacy.CQRS.Category.Models.DTOs.Request;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -14,24 +15,27 @@ public record CreateCategoryCommand(
 
 public class CreateCategoryCommandHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext)
-    : IRequestHandler<CreateCategoryCommand, CategoryResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<CreateCategoryCommand, CategoryResponse>
 {
-    public async Task<CategoryResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<CategoryResponse> Handle(
+        CreateCategoryCommand request,
+        CancellationToken cancellationToken)
     {
         var exist = await dbContext.Categories
-            .AnyAsync(x => x.Name.ToLower() == request.Request.Name.ToLower(), 
+            .AnyAsync(x => x.Name.ToLower() == request.Request.Name.ToLower(),
                 cancellationToken);
 
         if (exist)
         {
-            throw new RecourseIsAlreadyExistException("Category already exists");
+            throw new ResourceIsAlreadyExistException("Category already exists");
         }
 
-        var category = mapper.Map<Models.Category>(request.Request);
+        var category = mapper.Map<CategoryEntity>(request.Request);
         category.CategoryStatus = CategoryStatus.Active;
+
         await dbContext.Categories
             .AddAsync(category, cancellationToken);
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return mapper.Map<CategoryResponse>(category);

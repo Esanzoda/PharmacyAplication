@@ -9,24 +9,24 @@ namespace Pharmacy.CQRS.Employee.Queries;
 
 public record GetEmployeeByNumberQuery(
     long PharmacyId,
-    string Number
-) : IRequest<EmployeeResponse>;
+    string Number) : IRequest<EmployeeResponse>;
 
 public class GetEmployeeByNumberQueryHandler(
     IApplicationDbContext dbContext,
     IMapper mapper) : IRequestHandler<GetEmployeeByNumberQuery, EmployeeResponse>
 {
-    public async Task<EmployeeResponse> Handle(GetEmployeeByNumberQuery request, CancellationToken cancellationToken)
+    public async Task<EmployeeResponse> Handle(
+        GetEmployeeByNumberQuery request,
+        CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
-                                      x.PhoneNumber == request.Number, cancellationToken);
-        if (employee is null)
-        {
-            throw new RecourseNotFoundException($"Employee with this number {request.Number}  not found ");
-        }
+                                      x.PhoneNumber == request.Number,
+                cancellationToken);
 
-        return mapper.Map<EmployeeResponse>(employee);
+        return employee is null
+            ? throw new ResourceNotFoundException($"Employee with this number {request.Number}  not found ")
+            : mapper.Map<EmployeeResponse>(employee);
     }
 }

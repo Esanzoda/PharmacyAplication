@@ -14,7 +14,9 @@ public class DeleteEmployeeHandler(
     IDistributedCache cache,
     IApplicationDbContext dbContext) : IRequestHandler<DeleteEmployeeCommand, bool>
 {
-    public async Task<bool> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(
+        DeleteEmployeeCommand request,
+        CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
             .FirstOrDefaultAsync(
@@ -23,7 +25,7 @@ public class DeleteEmployeeHandler(
                 cancellationToken);
         if (employee is null)
         {
-            throw new RecourseNotFoundException($"Employee with id {request.EmployeeId} not found");
+            throw new ResourceNotFoundException($"Employee with id {request.EmployeeId} not found");
         }
 
         dbContext.Employees.Remove(employee);
@@ -31,6 +33,7 @@ public class DeleteEmployeeHandler(
 
         var key = $"Employee-{request.PharmacyId}-{employee.Id}";
         await cache.RemoveAsync(key, cancellationToken);
+
         return true;
     }
 }

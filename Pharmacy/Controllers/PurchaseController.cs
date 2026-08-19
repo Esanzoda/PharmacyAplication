@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,71 +12,66 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+//[Authorize(Roles = nameof(Position.ManagerPharmacy))]
 public class PurchaseController(IMediator mediator) : ControllerBase
 {
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpPost]
     public async Task<ActionResult<PurchaseResponse>> Add([FromBody] PurchaseRequest request)
     {
-        var pharmacyId = 1;
-        var response = await mediator.Send(new CreatePurchaseCommand(pharmacyId, request));
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var response = await mediator.Send(new CreatePurchaseCommand(pharmacyId, employeeId, request));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpPut]
     public async Task<ActionResult<PurchaseResponse>> Update(long id, [FromBody] PurchaseRequest request)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new UpdatePurchaseCommand(pharmacyId, id, request));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpGet]
     public async Task<ActionResult<PurchaseResponse>> GetById(long id)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetPurchaseBuIdQuery(pharmacyId, id));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpGet]
     public async Task<ActionResult<List<PurchaseResponse>>> GetAll(int pageNumber, int pageSize)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetAllPurchaseQuery(pharmacyId, pageNumber, pageSize));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpDelete]
     public async Task<IActionResult> DeleteById(long id)
     {
-        var pharmacyId = 1;
-        var employeeId = 1; //long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new DeletePurchaseCommand(pharmacyId, employeeId, id));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpPost]
     public async Task<ActionResult<PurchaseItemResponse>> AddItem(long purchaseId,
         PurchaseItemRequest purchaseItemRequest)
     {
-        var pharmacyId = 1;
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new AddItemToPurchaseCommand(pharmacyId, purchaseId, purchaseItemRequest));
         return Ok(response);
     }
 
-    // [Authorize(Roles = nameof(Role.PurchasingManager))]
     [HttpDelete]
     public async Task<ActionResult<PurchaseItemResponse>> RemoveItem(long purchaseId,
         long purchaseItemId)
     {
-        var pharmacyId = 1;
-        var employeeId = 1; //long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
+        var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
             await mediator.Send(new RemoveItemFromPurchaseCommand(employeeId, pharmacyId, purchaseId, purchaseItemId));
         return Ok(response);

@@ -1,7 +1,9 @@
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.ExpiredProducts.Models;
+using Pharmacy.Event.Events;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain;
 
 namespace Pharmacy.CQRS.ExpiredProducts.Commands;
 
@@ -9,47 +11,103 @@ public record CreateExpiredProductsCommand : IRequest;
 
 public class CheckExpiredProductsHandler(
     IApplicationDbContext dbContext,
-    ILogger<CheckExpiredProductsHandler> logger
-) : IRequestHandler<CreateExpiredProductsCommand>
+    ILogger<CheckExpiredProductsHandler> logger,
+    IPublishEndpoint publishEndpoint) : IRequestHandler<CreateExpiredProductsCommand>
+
 {
-    public async Task Handle(CreateExpiredProductsCommand request,
+    public async Task Handle(
+        CreateExpiredProductsCommand request,
         CancellationToken cancellationToken)
     {
-        var today = DateTime.UtcNow.Date;
+        var tomorrow = DateOnly.FromDateTime(DateTime.UtcNow.Date.AddDays(1));
+        var now = DateTime.UtcNow;
 
-        var expiredProducts = await dbContext.Products
-            .Where(x => x.ExpiryDate.Date <= today && x.Stock > 0)
+        var expiredProducts = await dbContext.ProductBatches
+            .Include(x => x.ProductEntity)
+            .Where(x => x.ExpiryDate <= tomorrow &&
+                        x.IsActive)
             .ToListAsync(cancellationToken);
 
-        if (!expiredProducts.Any())
+        if (expiredProducts.Count == 0)
             return;
 
-        var report = new ExpiryDate();
+        var pharmacyGroup = expiredProducts
+            .GroupBy(x => x.PharmacyId)
+            .ToList();
 
-        foreach (var product in expiredProducts)
+        var pharmacyIds = pharmacyGroup
+            .Select(x => x.Key)
+            .ToList();
+
+        var pharmacies = await dbContext.Pharmacies
+            .Where(x => pharmacyIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, cancellationToken);
+
+        foreach (var pharmacy in pharmacyGroup)
         {
-            var item = new ExpiryDateItems
+            if (!pharmacies.TryGetValue(pharmacy.Key, out var pharmacyInfo))
             {
-                PharmacyId = product.PharmacyId,
-                Product = product,
-                TotalSalePrice = product.Stock * product.SalePrice,
-                TotalPurchasePrice = product.Stock * product.PurchasePrice
+                logger.LogWarning(
+                    "Pharmacy {PharmacyId} not found.",
+                    pharmacy.Key);
+
+                continue;
+            }
+
+            var expiryDate = new ExpiryDateEntity()
+            {
+                PharmacyId = pharmacy.Key
             };
+            var expiryProducts = new List<ExpiryDateItem>();
 
-            report.ExpiryDateItemsList.Add(item);
+            foreach (var productBatch in pharmacy)
+            {
+                var item = new ExpiryDateItemsEntity
+                {
+                    PharmacyId = productBatch.PharmacyId,
+                    ProductBatch = productBatch,
+                    ProductBatchId = productBatch.Id,
+                    TotalSalePrice = productBatch.Quantity * productBatch.ProductEntity.SalePrice,
+                    TotalPurchasePrice = productBatch.Quantity * productBatch.PurchasePrice
+                };
 
-            report.TotalSalePrice += item.TotalSalePrice;
-            report.TotalPurchasePrice += item.TotalPurchasePrice;
+                expiryDate.ExpiryDateItemsList.Add(item);
 
-            product.Stock = 0;
+                expiryDate.TotalSalePrice += item.TotalSalePrice;
+                expiryDate.TotalPurchasePrice += item.TotalPurchasePrice;
+
+                productBatch.IsActive = false;
+                productBatch.ProductEntity.Stock -= productBatch.Quantity;
+                productBatch.IsDeleted = true;
+                var expiryProduct = new ExpiryDateItem
+                {
+                    ProductName = productBatch.Name,
+                    ProductBatchId = item.ProductBatchId,
+                    Quantity = productBatch.Quantity,
+                    TotalPurchasePrice = item.TotalPurchasePrice,
+                    TotalSalePrice = item.TotalSalePrice
+                };
+
+                expiryProducts.Add(expiryProduct);
+            }
+
+            await dbContext.ExpireDateProducts.AddAsync(expiryDate, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+
+            logger.LogInformation(
+                "Created expired products report with {Count} items.",
+                expiryDate.ExpiryDateItemsList.Count);
+
+            await publishEndpoint.Publish(new CheckExpiryDateProductEvent
+            {
+                To = pharmacyInfo.Email,
+                Day = now,
+                Count = expiryProducts.Count,
+                TotalPurchasePrice = expiryDate.TotalPurchasePrice,
+                TotalSalePrice = expiryDate.TotalSalePrice,
+                ExpiryDateItems = expiryProducts
+            }, cancellationToken);
         }
-
-        await dbContext.ExpireDateProducts.AddAsync(report, cancellationToken);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        logger.LogInformation(
-            "Created expired products report with {Count} items.",
-            report.ExpiryDateItemsList.Count);
     }
 }

@@ -4,7 +4,7 @@ namespace Pharmacy.Services.DeliveryFee;
 
 public interface IDeliveryFeeByDistance
 {
-    decimal CalCulateDeliveryFee(double distanceKm);
+    decimal CalculateDeliveryFee(double distanceKm);
 }
 
 public class DeliveryFeeByDistance : IDeliveryFeeByDistance
@@ -13,7 +13,7 @@ public class DeliveryFeeByDistance : IDeliveryFeeByDistance
     private readonly decimal _ratePerKm = 2;
     private readonly decimal _maxDistanceKm = 100;
 
-    public decimal CalCulateDeliveryFee(double distanceKm)
+    public decimal CalculateDeliveryFee(double distanceKm)
     {
         if (_maxDistanceKm < (decimal)distanceKm)
         {

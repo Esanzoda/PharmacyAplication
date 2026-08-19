@@ -16,8 +16,7 @@ public record GetEmployeeByIdQuery(
 public class GetEmployeeByIdQueryHandler(
     IApplicationDbContext dbContext,
     IMapper mapper,
-    IDistributedCache cache
-) : IRequestHandler<GetEmployeeByIdQuery, EmployeeResponse>
+    IDistributedCache cache) : IRequestHandler<GetEmployeeByIdQuery, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(GetEmployeeByIdQuery request, CancellationToken cancellationToken)
     {
@@ -28,23 +27,22 @@ public class GetEmployeeByIdQueryHandler(
             var redis = JsonConvert.DeserializeObject<EmployeeResponse>(cachedEmployee);
 
             if (redis is not null)
-            {
                 return redis;
-            }
         }
+
 
         var employee = await dbContext.Employees
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id,
                 cancellationToken);
-
         if (employee is null)
         {
-            throw new RecourseNotFoundException("Employee not found");
+            throw new ResourceNotFoundException("Employee not found");
         }
 
         var response = mapper.Map<EmployeeResponse>(employee);
+
         await cache.SetStringAsync(
             key,
             JsonConvert.SerializeObject(response),

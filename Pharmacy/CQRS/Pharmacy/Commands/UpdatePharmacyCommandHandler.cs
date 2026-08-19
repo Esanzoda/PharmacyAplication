@@ -18,13 +18,17 @@ public class UpdatePharmacyCommandHandler(
     IApplicationDbContext dbContext,
     IGeocodingService geocodingService) : IRequestHandler<UpdatePharmacyCommand, PharmacyResponse>
 {
-    public async Task<PharmacyResponse> Handle(UpdatePharmacyCommand request, CancellationToken cancellationToken)
+    public async Task<PharmacyResponse> Handle(
+        UpdatePharmacyCommand request,
+        CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
+
         if (pharmacy is null)
         {
-            throw new RecourseNotFoundException("Pharmacy not found");
+            throw new ResourceNotFoundException("Pharmacy not found");
         }
 
         var pharmacyExists = await dbContext.Pharmacies
@@ -39,7 +43,7 @@ public class UpdatePharmacyCommandHandler(
 
         if (pharmacyExists)
         {
-            throw new RecourseIsAlreadyExistException("Pharmacy with this information already exist");
+            throw new ResourceIsAlreadyExistException("Pharmacy with this information already exist");
         }
 
         if (pharmacy.Address != request.Request.Address)
@@ -52,6 +56,7 @@ public class UpdatePharmacyCommandHandler(
 
         mapper.Map(request.Request, pharmacy);
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<PharmacyResponse>(pharmacy);
     }
 }

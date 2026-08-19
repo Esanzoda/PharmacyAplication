@@ -15,10 +15,10 @@ public record GetEmployeesBySalaryQuery(
 
 public class GetEmployeesBySalaryQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper
-) : IRequestHandler<GetEmployeesBySalaryQuery, List<EmployeeResponse>>
+    IMapper mapper) : IRequestHandler<GetEmployeesBySalaryQuery, List<EmployeeResponse>>
 {
-    public async Task<List<EmployeeResponse>> Handle(GetEmployeesBySalaryQuery request,
+    public async Task<List<EmployeeResponse>> Handle(
+        GetEmployeesBySalaryQuery request,
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
@@ -29,10 +29,6 @@ public class GetEmployeesBySalaryQueryHandler(
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (employees.Count == 0)
-        {
-            throw new RecourseNotFoundException($"Employee with this salary {request.Salary} not found");
-        }
 
         return mapper.Map<List<EmployeeResponse>>(employees);
     }

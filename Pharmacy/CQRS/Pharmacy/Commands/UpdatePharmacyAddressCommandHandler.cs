@@ -17,23 +17,27 @@ public class UpdatePharmacyAddressCommandHandler(
     IApplicationDbContext dbContext,
     IGeocodingService geocodingService) : IRequestHandler<UpdatePharmacyAddressCommand, PharmacyResponse>
 {
-    public async Task<PharmacyResponse> Handle(UpdatePharmacyAddressCommand request,
+    public async Task<PharmacyResponse> Handle(
+        UpdatePharmacyAddressCommand request,
         CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
+
         if (pharmacy is null)
         {
-            throw new RecourseNotFoundException("Pharmacy not found");
+            throw new ResourceNotFoundException("Pharmacy not found");
         }
 
         var pharmacyExists = await dbContext.Pharmacies
             .AnyAsync(x => x.Id != request.Id &&
                            x.Address == request.NewAddress,
                 cancellationToken);
+
         if (pharmacyExists)
         {
-            throw new RecourseIsAlreadyExistException("Pharmacy with this address already exist");
+            throw new ResourceIsAlreadyExistException("Pharmacy with this address already exist");
         }
 
         var geoCoding = await geocodingService.GetCoordinatesAsync(pharmacy.Address);
@@ -43,6 +47,7 @@ public class UpdatePharmacyAddressCommandHandler(
 
         pharmacy.Address = request.NewAddress;
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return mapper.Map<PharmacyResponse>(pharmacy);
     }
 }

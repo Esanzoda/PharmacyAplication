@@ -17,27 +17,29 @@ public class GetCategoryByIdHandler(
     IDistributedCache cache,
     IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByIdQuery, CategoryResponse>
 {
-    public async Task<CategoryResponse> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+    public async Task<CategoryResponse> Handle(
+        GetCategoryByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var key = $"CategoryById-{request.CategoryId}";
 
         var cachedCategory = await cache.GetStringAsync(key, cancellationToken);
         if (cachedCategory is not null)
         {
-            var entity = JsonConvert.DeserializeObject<Models.Category>(cachedCategory);
+            var entity = JsonConvert.DeserializeObject<Models.CategoryEntity>(cachedCategory);
             if (entity is not null)
             {
                 return mapper.Map<CategoryResponse>(entity);
             }
         }
 
-
         var category = await dbContext.Categories
             .FirstOrDefaultAsync(x => x.Id == request.CategoryId,
                 cancellationToken);
+
         if (category is null)
         {
-            throw new RecourseNotFoundException("Category not found");
+            throw new ResourceNotFoundException("Category not found");
         }
 
         await cache.SetStringAsync(key,
@@ -45,6 +47,7 @@ public class GetCategoryByIdHandler(
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
             }, cancellationToken);
+
         return mapper.Map<CategoryResponse>(category);
     }
 }

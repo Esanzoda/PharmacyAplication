@@ -18,14 +18,16 @@ public class UpdateEmployeePasswordCommandHandler(
     IApplicationDbContext dbContext,
     IPasswordService passwordService) : IRequestHandler<UpdateEmployeePasswordCommand, string>
 {
-    public async Task<string> Handle(UpdateEmployeePasswordCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(
+        UpdateEmployeePasswordCommand request,
+        CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id, cancellationToken);
         if (employee is null)
         {
-            throw new RecourseNotFoundException("Employee not found");
+            throw new ResourceNotFoundException("Employee not found");
         }
 
         var passwordCheck = await passwordService.PasswordVerify(request.Password, employee.PasswordHash);

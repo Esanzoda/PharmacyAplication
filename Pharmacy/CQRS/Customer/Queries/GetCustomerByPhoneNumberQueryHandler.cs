@@ -2,21 +2,22 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Customer.Queries;
 
 public record GetCustomerByPhoneNumberQuery(
     long PharmacyId,
-    string PhoneNumber) : IRequest<CustomerResponse>;
+    string PhoneNumber,
+    int PageNumber,
+    int PageSize) : IRequest<CustomerResponse>;
 
 public class GetCustomerByPhoneNumberQueryHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext
-) : IRequestHandler<GetCustomerByPhoneNumberQuery, CustomerResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<GetCustomerByPhoneNumberQuery, CustomerResponse>
 {
-    public async Task<CustomerResponse> Handle(GetCustomerByPhoneNumberQuery request,
+    public async Task<CustomerResponse> Handle(
+        GetCustomerByPhoneNumberQuery request,
         CancellationToken cancellationToken)
     {
         var orders = await dbContext.Orders
@@ -24,20 +25,20 @@ public class GetCustomerByPhoneNumberQueryHandler(
             .OrderBy(x => x.Id)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+
         var customerIds = orders
-            .Select(x => x.CustomerId)
+            .Select(x => x.CustomerEntityId)
             .ToList();
+
         var customers = await dbContext.Customers
-            .Where(x => customerIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.PhoneNumber, cancellationToken);
+            .Where(x => customerIds.Contains(x.Id) &&
+                        x.PhoneNumber == request.PhoneNumber)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
 
+        var customerList = customers.ToList();
 
-        if (!customers.TryGetValue(request.PhoneNumber, out var customer))
-        {
-            throw new RecourseNotFoundException("Customer not found");
-        }
-
-
-        return mapper.Map<CustomerResponse>(customer);
+        return mapper.Map<CustomerResponse>(customerList);
     }
 }

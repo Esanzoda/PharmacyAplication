@@ -19,14 +19,16 @@ public class UpdateCustomerPasswordHandler(
     IMapper mapper,
     IPasswordService passwordService) : IRequestHandler<UpdateCustomerPasswordCommand, CustomerResponse>
 {
-    public async Task<CustomerResponse> Handle(UpdateCustomerPasswordCommand request,
+    public async Task<CustomerResponse> Handle(
+        UpdateCustomerPasswordCommand request,
         CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
-            .FindAsync(request.Id, cancellationToken);
+            .FindAsync(request.Id,
+                cancellationToken);
         if (customer is null)
         {
-            throw new RecourseNotFoundException("Customer not found");
+            throw new ResourceNotFoundException("Customer not found");
         }
 
         var passwordCheck = await passwordService.PasswordVerify(request.Password, customer.PasswordHash);

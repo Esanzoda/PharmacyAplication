@@ -16,7 +16,8 @@ public class GetActiveCategoriesHandler(
     IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<GetCategoriesByStatusQuery, List<CategoryResponse>>
 {
-    public async Task<List<CategoryResponse>> Handle(GetCategoriesByStatusQuery request,
+    public async Task<List<CategoryResponse>> Handle(
+        GetCategoriesByStatusQuery request,
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories

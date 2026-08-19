@@ -32,7 +32,7 @@ public class GeocodingService(
             });
         if (result == null || result.Status != "OK")
         {
-            throw new RecourseNotFoundException("Address not found");
+            throw new ResourceNotFoundException("Address not found");
         }
 
         return result.Results[0].Geometry.Location;

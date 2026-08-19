@@ -2,20 +2,22 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Product.Queries;
 
 public record GetProductByBarcodeQuery(
     long PharmacyId,
-    string Barcode) : IRequest<ProductWithBatchResponse>;
+    string Barcode) : IRequest<ProductForPharmacyResponse>;
 
 public class GetPharmacyProductByBarcodeQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetProductByBarcodeQuery, ProductWithBatchResponse>
+    IMapper mapper) : IRequestHandler<
+    GetProductByBarcodeQuery,
+    ProductForPharmacyResponse>
 {
-    public async Task<ProductWithBatchResponse> Handle(GetProductByBarcodeQuery request,
+    public async Task<ProductForPharmacyResponse> Handle(
+        GetProductByBarcodeQuery request,
         CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
@@ -24,9 +26,7 @@ public class GetPharmacyProductByBarcodeQueryHandler(
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Barcode == request.Barcode,
                 cancellationToken);
-        if (product == null)
-            throw new RecourseNotFoundException("Product with this barcode not found");
 
-        return mapper.Map<ProductWithBatchResponse>(product);
+        return mapper.Map<ProductForPharmacyResponse>(product);
     }
 }

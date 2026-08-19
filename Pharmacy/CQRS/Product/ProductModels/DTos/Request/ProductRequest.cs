@@ -11,5 +11,4 @@ public record ProductRequest
     public CountryEnum Country { get; init; }
     public decimal SalePrice { get; init; }
     public required string Barcode { get; init; }
-    public DateTime ExpiryDate { get; init; }
 }

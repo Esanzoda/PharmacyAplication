@@ -13,11 +13,11 @@ public static class JobExtensions
             recurringJob.AddOrUpdate<CheckExpiredProductsJob>(
                 "check-expiry-data-products",
                 job => job.CheckExpiredProductsAsync(),
-                Cron.Daily(0));
+                Cron.MinuteInterval(3));
             recurringJob.AddOrUpdate<Report>(
                 "report-to-ceo",
                 job => job.ReportToCeo(),
-                Cron.MinuteInterval(3));
+                Cron.Daily(1));
         }
     }
 }

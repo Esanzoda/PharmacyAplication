@@ -1,11 +1,11 @@
-using Pharmacy.CQRS.Customer.Models;
+using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.Models.Domain;
 
 public class RefreshToken : BaseEntity
 {
-    public long CustomerId { get; set; }
-    public string Token { get; set; } = string.Empty;
+    public long UserId { get; set; }
+    public Role Role { get; set; }
+    public required string Token { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
-    public Customer Customer { get; set; } = null!;
 }

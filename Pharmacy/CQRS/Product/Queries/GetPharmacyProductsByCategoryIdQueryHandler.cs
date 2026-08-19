@@ -11,34 +11,38 @@ public record GetPharmacyProductsByCategoryIdQuery(
     long PharmacyId,
     long CategoryId,
     int Page,
-    int PageSize) : IRequest<List<ProductWithBatchResponse>>;
+    int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetPharmacyProductsByCategoryIdQueryHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPharmacyProductsByCategoryIdQuery, List<ProductWithBatchResponse>>
+    IMapper mapper) : IRequestHandler<
+    GetPharmacyProductsByCategoryIdQuery,
+    List<ProductForPharmacyResponse>>
 {
-    public async Task<List<ProductWithBatchResponse>> Handle(GetPharmacyProductsByCategoryIdQuery request,
+    public async Task<List<ProductForPharmacyResponse>> Handle(
+        GetPharmacyProductsByCategoryIdQuery request,
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
             .AsNoTracking()
-            .AnyAsync(x => x.Id == request.CategoryId, cancellationToken);
+            .AnyAsync(x => x.Id == request.CategoryId,
+                cancellationToken);
+
         if (!category)
         {
-            throw new RecourseNotFoundException("Category with this id  not found");
+            throw new ResourceNotFoundException("Category with this id  not found");
         }
 
         var product = await dbContext.Products
+            .AsNoTracking()
             .Where(x => x.PharmacyId == request.PharmacyId &&
-                        x.CategoryId == request.CategoryId)
+                        x.CategoryEntityId == request.CategoryId)
             .Include(x => x.ProductBatches)
             .OrderBy(x => x.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
-        if (!product.Any())
-            throw new RecourseNotFoundException("We dont have product  with categoryId ");
-        return mapper.Map<List<ProductWithBatchResponse>>(product);
+
+        return mapper.Map<List<ProductForPharmacyResponse>>(product);
     }
 }

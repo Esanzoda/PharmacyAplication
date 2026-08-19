@@ -18,10 +18,9 @@
         <PackageReference Include="Hangfire.Core" Version="1.8.23" />
         <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
         <PackageReference Include="MailKit" Version="4.17.0" />
-        <PackageReference Include="MassTransit" Version="9.1.2" />
-        <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="9.1.2" />
-        <PackageReference Include="MediatR" Version="14.2.0" />
+        <PackageReference Include="MassTransit" Version="8.5.10" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
+        <PackageReference Include="MediatR" Version="12.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8"/>
@@ -44,6 +43,14 @@
         <PackageReference Include="Serilog.Sinks.File" Version="8.0.0-nblumhardt-02322" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Pharmacy.Event\Pharmacy.Event.csproj" />
     </ItemGroup>
 
 </Project>

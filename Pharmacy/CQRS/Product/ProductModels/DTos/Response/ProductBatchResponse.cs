@@ -1,4 +1,3 @@
-using Pharmacy.Models.Domain;
 using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Product.ProductModels.DTos.Response;

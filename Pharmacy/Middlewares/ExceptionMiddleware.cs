@@ -10,13 +10,13 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         {
             await next(context);
         }
-        catch (RecourseIsAlreadyExistException ex)
+        catch (ResourceIsAlreadyExistException ex)
         {
             logger.LogError(ex, ex.Message);
             context.Response.StatusCode = StatusCodes.Status409Conflict;
             await context.Response.WriteAsync(ex.Message);
         }
-        catch (RecourseNotFoundException ex)
+        catch (ResourceNotFoundException ex)
         {
             logger.LogError(ex, ex.Message);
             context.Response.StatusCode = StatusCodes.Status404NotFound;

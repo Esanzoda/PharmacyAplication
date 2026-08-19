@@ -2,7 +2,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Request;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -11,21 +11,23 @@ namespace Pharmacy.CQRS.Product.Commands;
 public record UpdateProductCommand(
     long PharmacyId,
     long Id,
-    UpdateProductRequest Request) : IRequest<ProductResponse>;
+    UpdateProductRequest Request) : IRequest<ProductForCustomerResponse>;
 
 public class UpdateProductCommandHandler(
     IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<UpdateProductCommand, ProductResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<UpdateProductCommand, ProductForCustomerResponse>
 {
-    public async Task<ProductResponse> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    public async Task<ProductForCustomerResponse> Handle(
+        UpdateProductCommand request,
+        CancellationToken cancellationToken)
     {
         var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.Id == request.Id &&
-                                      x.PharmacyId == request.PharmacyId,
+            .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
+                                      x.Id == request.Id,
                 cancellationToken);
         if (product == null)
         {
-            throw new RecourseNotFoundException($"Product with this id {request.Id} not found");
+            throw new ResourceNotFoundException($"Product with this id {request.Id} not found");
         }
 
         var categoryExists = await dbContext.Categories
@@ -33,23 +35,24 @@ public class UpdateProductCommandHandler(
                 cancellationToken);
         if (!categoryExists)
         {
-            throw new RecourseNotFoundException($"Category with this id {request.Request.CategoryId} not found");
+            throw new ResourceNotFoundException($"Category with this id {request.Request.CategoryId} not found");
         }
 
         var productExist = await dbContext.Products
-            .AnyAsync(x => x.Id != request.Id &&
-                           x.PharmacyId == request.PharmacyId &&
+            .AnyAsync(x => x.PharmacyId == request.PharmacyId &&
+                           x.Id != request.Id &&
                            x.Barcode == product.Barcode,
                 cancellationToken);
         if (productExist)
         {
-            throw new RecourseIsAlreadyExistException(
-                $"Product already exists with Name {request.Request.Name} or with Barcode {product.Barcode} ");
+            throw new ResourceIsAlreadyExistException(
+                $"Product already exists with  Barcode {product.Barcode} ");
         }
 
         mapper.Map(request.Request, product);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        return mapper.Map<ProductResponse>(product);
+
+        return mapper.Map<ProductForCustomerResponse>(product);
     }
 }
