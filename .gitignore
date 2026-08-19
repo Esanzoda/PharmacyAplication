@@ -10,7 +10,5 @@ obj/
 
 appsettings.json
 
-Migrations/
-
 .env
 
