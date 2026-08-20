@@ -8,7 +8,5 @@ obj/
 *.user
 *.sln.DotSettings.user
 
-appsettings.json
-
 .env
 
