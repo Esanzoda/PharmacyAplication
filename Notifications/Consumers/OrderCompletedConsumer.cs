@@ -13,9 +13,8 @@ public class OrderCompletedConsumer(
         var message = context.Message;
 
         logger.LogInformation(
-            "Order completed: OrderId={OrderId},  CustomerId={CustomerId}",
-            message.OrderId,
-            message.CustomerId);
+            "Order completed: OrderId={OrderId}",
+            message.OrderId);
 
         await notificationService.ToCustomerOrderCompleted(
             message.Email,

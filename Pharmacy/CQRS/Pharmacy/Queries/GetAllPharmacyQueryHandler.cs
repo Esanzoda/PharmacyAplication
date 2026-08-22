@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Pharmacy.Mapper;
 using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -11,7 +11,6 @@ public record GetAllPharmacyQuery(
     int PageSize) : IRequest<List<PharmacyResponse>>;
 
 public class GetAllPharmacyQueryHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<GetAllPharmacyQuery, List<PharmacyResponse>>
 {
     public async Task<List<PharmacyResponse>> Handle(
@@ -26,6 +25,6 @@ public class GetAllPharmacyQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<PharmacyResponse>>(pharmacies);
+        return PharmacyMappers.ToListPharmacyResponse(pharmacies);
     }
 }

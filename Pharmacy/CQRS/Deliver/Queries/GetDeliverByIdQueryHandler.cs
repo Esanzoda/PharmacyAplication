@@ -1,8 +1,8 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -13,7 +13,6 @@ public record GetDeliverByIdQuery(
     long DeliverId) : IRequest<DeliverResponse>;
 
 public class GetDeliverByIdHandler(
-    IMapper mapper,
     IDistributedCache cache,
     IApplicationDbContext dbContext) : IRequestHandler<GetDeliverByIdQuery, DeliverResponse>
 {
@@ -42,7 +41,7 @@ public class GetDeliverByIdHandler(
             throw new ResourceNotFoundException("Deliver not found");
         }
 
-        var response = mapper.Map<DeliverResponse>(deliver);
+        var response = DeliverMappers.ToDeliverResponse(deliver);
         await cache.SetStringAsync(key,
             JsonConvert.SerializeObject(response),
             new DistributedCacheEntryOptions()

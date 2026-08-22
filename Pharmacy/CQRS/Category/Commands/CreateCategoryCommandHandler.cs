@@ -1,12 +1,10 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Category.Models;
+using Pharmacy.CQRS.Category.Mapper;
 using Pharmacy.CQRS.Category.Models.DTOs.Request;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Category.Commands;
 
@@ -14,7 +12,6 @@ public record CreateCategoryCommand(
     CreateCategoryRequest Request) : IRequest<CategoryResponse>;
 
 public class CreateCategoryCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<CreateCategoryCommand, CategoryResponse>
 {
     public async Task<CategoryResponse> Handle(
@@ -30,14 +27,13 @@ public class CreateCategoryCommandHandler(
             throw new ResourceIsAlreadyExistException("Category already exists");
         }
 
-        var category = mapper.Map<CategoryEntity>(request.Request);
-        category.CategoryStatus = CategoryStatus.Active;
+        var newcategory = CategoryMappers.ToCategory(request.Request);
 
         await dbContext.Categories
-            .AddAsync(category, cancellationToken);
+            .AddAsync(newcategory, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<CategoryResponse>(category);
+        return CategoryMappers.ToCategoryResponse(newcategory);
     }
 }

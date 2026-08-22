@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -13,16 +13,14 @@ public record UpdateDeliverCommand(
     UpdateDeliverRequest Request) : IRequest<DeliverResponse>;
 
 public class UpdateDeliverHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<UpdateDeliverCommand, DeliverResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<UpdateDeliverCommand, DeliverResponse>
 {
     public async Task<DeliverResponse> Handle(
         UpdateDeliverCommand request,
         CancellationToken cancellationToken)
     {
         var deliver = await dbContext.Delivers
-            .FirstOrDefaultAsync(
-                x => x.Id == request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
 
         if (deliver is null)
@@ -42,8 +40,8 @@ public class UpdateDeliverHandler(
             throw new BusinessException("Deliver with this number or email  already exists");
         }
 
-        mapper.Map(request.Request, deliver);
+        DeliverMappers.ToDeliver(deliver, request.Request);
         await dbContext.SaveChangesAsync(cancellationToken);
-        return mapper.Map<DeliverResponse>(deliver);
+        return DeliverMappers.ToDeliverResponse(deliver);
     }
 }

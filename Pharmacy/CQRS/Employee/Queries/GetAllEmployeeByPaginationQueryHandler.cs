@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Mapper;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -12,11 +12,9 @@ public record GetAllEmployeeByPaginationQuery(
     int PageSize) : IRequest<List<EmployeeResponse>>;
 
 public class GetAllEmployeeByPaginationQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetAllEmployeeByPaginationQuery, List<EmployeeResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetAllEmployeeByPaginationQuery, List<EmployeeResponse>>
 {
-    public async Task<List<EmployeeResponse>> Handle(
-        GetAllEmployeeByPaginationQuery request,
+    public async Task<List<EmployeeResponse>> Handle(GetAllEmployeeByPaginationQuery request,
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
@@ -27,6 +25,6 @@ public class GetAllEmployeeByPaginationQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<EmployeeResponse>>(employees);
+        return EmployeeMappers.ToListEmployeeResponse(employees);
     }
 }

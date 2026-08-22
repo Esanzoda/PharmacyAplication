@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain.Enum;
@@ -14,7 +14,6 @@ public record GetOrderByOrderStatusQuery(
     int PageSize) : IRequest<List<OrderResponseForCustomer>>;
 
 public class GetOrderByOrderStatusQueryHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<GetOrderByOrderStatusQuery, List<OrderResponseForCustomer>>
 {
     public async Task<List<OrderResponseForCustomer>> Handle(
@@ -30,6 +29,6 @@ public class GetOrderByOrderStatusQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<OrderResponseForCustomer>>(orders);
+        return OrderMappers.ToListOrderResponseForCustomers(orders);
     }
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Interfaces;
 
@@ -19,7 +20,7 @@ public class GetPharmacyOutOfStockQueryHandler(
         GetOutOfStockQuery request,
         CancellationToken cancellationToken)
     {
-        var product = await dbContext.Products
+        var products = await dbContext.Products
             .AsNoTracking()
             .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.Stock == 0)
@@ -28,6 +29,6 @@ public class GetPharmacyOutOfStockQueryHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<ProductForPharmacyResponse>>(product);
+        return ProductMappers.ToListProductForPharmacyResponse(products);
     }
 }

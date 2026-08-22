@@ -11,5 +11,4 @@ public record EmployeeRequest
     public required string Address { get; init; }
     public decimal Salary { get; init; }
     public Position Position { get; init; }
-    public Role Role { get; set; }
 }

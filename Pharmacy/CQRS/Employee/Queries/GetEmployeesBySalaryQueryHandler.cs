@@ -1,8 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Mapper;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Employee.Queries;
@@ -14,8 +13,7 @@ public record GetEmployeesBySalaryQuery(
     int PageSize) : IRequest<List<EmployeeResponse>>;
 
 public class GetEmployeesBySalaryQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetEmployeesBySalaryQuery, List<EmployeeResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetEmployeesBySalaryQuery, List<EmployeeResponse>>
 {
     public async Task<List<EmployeeResponse>> Handle(
         GetEmployeesBySalaryQuery request,
@@ -30,6 +28,6 @@ public class GetEmployeesBySalaryQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<EmployeeResponse>>(employees);
+        return EmployeeMappers.ToListEmployeeResponse(employees);
     }
 }

@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -12,7 +12,6 @@ public record GetOrderByIdQuery(
     long Id) : IRequest<OrderResponseForCustomer>;
 
 public class GetOrderByIdQueryHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<GetOrderByIdQuery,
     OrderResponseForCustomer>
 {
@@ -28,6 +27,6 @@ public class GetOrderByIdQueryHandler(
 
         return order == null
             ? throw new ResourceNotFoundException("Order not found")
-            : mapper.Map<OrderResponseForCustomer>(order);
+            : OrderMappers.ToOrderResponseForCustomer(order);
     }
 }

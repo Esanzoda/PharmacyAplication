@@ -1,7 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Employee.Mapper;
 using Pharmacy.CQRS.Employee.Models.DTOs.Request;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -16,8 +16,7 @@ public record UpdateEmployeeCommand(
 
 public class UpdateEmployeeHandler(
     IApplicationDbContext dbContext,
-    IDistributedCache cache,
-    IMapper mapper) : IRequestHandler<UpdateEmployeeCommand, EmployeeResponse>
+    IDistributedCache cache) : IRequestHandler<UpdateEmployeeCommand, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(
         UpdateEmployeeCommand request,
@@ -47,11 +46,11 @@ public class UpdateEmployeeHandler(
                 $"Email: {request.Request.Email} or Number{request.Request.PhoneNumber} already exists");
         }
 
-        mapper.Map(request.Request, employee);
+        EmployeeMappers.ToEmployee(employee, request.Request);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"Employee-{request.PharmacyId}-{employee.Id}";
         await cache.RemoveAsync(key, cancellationToken);
-        return mapper.Map<EmployeeResponse>(employee);
+        return EmployeeMappers.ToEmployeeResponse(employee);
     }
 }

@@ -1,6 +1,7 @@
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Deliver.Models;
 using Pharmacy.Event.Events;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -11,8 +12,7 @@ namespace Pharmacy.CQRS.Deliver.Commands;
 public record UpdateOrderStatusCommand(
     long DeliverId,
     long OrderId,
-    OrderStatus NewOrderStatus)
-    : IRequest<OrderStatus>;
+    DeliverUpdateOrderStatus NewOrderStatus) : IRequest<OrderStatus>;
 
 public class UpdateOrderStatusCommandHandler(
     IApplicationDbContext dbContext,
@@ -22,11 +22,10 @@ public class UpdateOrderStatusCommandHandler(
         UpdateOrderStatusCommand request,
         CancellationToken cancellationToken)
     {
-        TimeOnly timeOnly = TimeOnly.FromDateTime(DateTime.UtcNow);
         var deliver = await dbContext.Delivers
-            .FirstOrDefaultAsync(x => x.Id == request.DeliverId,
+            .FindAsync([request.DeliverId],
                 cancellationToken);
-        if (deliver == null)
+        if (deliver is null)
         {
             throw new ResourceNotFoundException("Deliver not found");
         }
@@ -38,19 +37,15 @@ public class UpdateOrderStatusCommandHandler(
                                           x.OrderStatus == OrderStatus.ReadyForPickup ||
                                           x.OrderStatus == OrderStatus.Shipped
                                       ) &&
-                                      x.Deliver != null && x.Deliver.Id == request.DeliverId,
+                                      x.Deliver != null &&
+                                      x.Deliver.Id == request.DeliverId,
                 cancellationToken);
         if (order is null)
         {
             throw new ResourceNotFoundException("Order not found");
         }
 
-        if (request.NewOrderStatus is not (OrderStatus.Shipped or OrderStatus.Completed))
-        {
-            throw new BusinessException("Deliver can only update the status to Shipped or Completed");
-        }
-
-        order.OrderStatus = request.NewOrderStatus;
+        order.OrderStatus = (OrderStatus)request.NewOrderStatus;
         await dbContext.SaveChangesAsync(cancellationToken);
         if (order.OrderStatus == OrderStatus.Completed)
         {
@@ -58,7 +53,6 @@ public class UpdateOrderStatusCommandHandler(
             {
                 Email = order.CustomerEntity.Email,
                 OrderId = order.Id,
-                CustomerId = order.CustomerEntityId,
                 TotalAmount = order.TotalAmount,
                 CompletedAt = order.UpdateAt,
             }, cancellationToken);
@@ -76,7 +70,6 @@ public class UpdateOrderStatusCommandHandler(
                 DeliverName = deliver.Name
             }, cancellationToken);
         }
-
 
         return order.OrderStatus;
     }

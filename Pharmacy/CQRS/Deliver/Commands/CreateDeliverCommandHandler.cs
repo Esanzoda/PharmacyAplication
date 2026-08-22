@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -13,7 +13,6 @@ public record CreateDeliverCommand(
     DeliverRequest Request) : IRequest<DeliverResponse>;
 
 public class CreateDeliverCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext,
     IPasswordService passwordService) : IRequestHandler<CreateDeliverCommand, DeliverResponse>
 {
@@ -32,13 +31,13 @@ public class CreateDeliverCommandHandler(
 
         var passwordHash = await passwordService.PasswordHash(request.Request.Password);
 
-        var newDeliver = mapper.Map<Models.DeliverEntity>(request.Request);
+        var newDeliver = DeliverMappers.ToDeliver(request.Request);
         newDeliver.PasswordHash = passwordHash;
 
         await dbContext.Delivers
             .AddAsync(newDeliver, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<DeliverResponse>(newDeliver);
+        return DeliverMappers.ToDeliverResponse(newDeliver);
     }
 }

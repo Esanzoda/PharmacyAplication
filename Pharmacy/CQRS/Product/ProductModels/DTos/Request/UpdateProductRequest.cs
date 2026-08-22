@@ -8,5 +8,4 @@ public class UpdateProductRequest
     public ProductType ProductType { get; init; }
     public long CategoryId { get; init; }
     public string Description { get; init; } = string.Empty;
-    public CountryEnum Country { get; init; }
 }

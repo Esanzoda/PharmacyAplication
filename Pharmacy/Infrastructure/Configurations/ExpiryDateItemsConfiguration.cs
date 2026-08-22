@@ -4,9 +4,9 @@ using Pharmacy.CQRS.ExpiredProducts.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class ExpiryDateItemsConfiguration : IEntityTypeConfiguration<ExpiryDateItemsEntity>
+public class ExpiryDateItemsConfiguration : IEntityTypeConfiguration<ExpiredItemsEntity>
 {
-    public void Configure(EntityTypeBuilder<ExpiryDateItemsEntity> builder)
+    public void Configure(EntityTypeBuilder<ExpiredItemsEntity> builder)
     {
         builder.HasKey(x => x.Id);
 
@@ -18,7 +18,7 @@ public class ExpiryDateItemsConfiguration : IEntityTypeConfiguration<ExpiryDateI
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
-        builder.HasOne(x => x.ExpiryDateEntity)
+        builder.HasOne(x => x.ExpiredProductsEntity)
             .WithMany(x => x.ExpiryDateItemsList)
             .HasForeignKey(x => x.ExpiryDateEntityId);
     }

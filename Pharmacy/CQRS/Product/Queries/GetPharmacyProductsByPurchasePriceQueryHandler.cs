@@ -1,8 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Product.Queries;
@@ -14,8 +13,8 @@ public record GetProductsByPurchasePriceQuery(
     int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetProductsByPurchasePriceQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetProductsByPurchasePriceQuery, List<ProductForPharmacyResponse>>
+    IApplicationDbContext dbContext)
+    : IRequestHandler<GetProductsByPurchasePriceQuery, List<ProductForPharmacyResponse>>
 {
     public async Task<List<ProductForPharmacyResponse>> Handle(
         GetProductsByPurchasePriceQuery request,
@@ -39,6 +38,6 @@ public class GetProductsByPurchasePriceQueryHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<ProductForPharmacyResponse>>(products);
+        return ProductMappers.ToListProductForPharmacyResponse(products);
     }
 }

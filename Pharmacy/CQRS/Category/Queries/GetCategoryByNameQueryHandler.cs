@@ -1,20 +1,18 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Category.Mapper;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
-using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Category.Queries;
 
 public record GetCategoryByNameQuery(
-    string Name) : IRequest<CategoryResponse>;
+    string Name) : IRequest<List<CategoryResponse>>;
 
 public class GetCategoryByNameQueryHandler(
-    IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByNameQuery, CategoryResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByNameQuery, List<CategoryResponse>>
 {
-    public async Task<CategoryResponse> Handle(
+    public async Task<List<CategoryResponse>> Handle(
         GetCategoryByNameQuery request,
         CancellationToken cancellationToken)
     {
@@ -24,8 +22,6 @@ public class GetCategoryByNameQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return categories.Count == 0
-            ? throw new ResourceNotFoundException("Category not found")
-            : mapper.Map<CategoryResponse>(categories);
+        return CategoryMappers.ToCategoriesResponse(categories);
     }
 }

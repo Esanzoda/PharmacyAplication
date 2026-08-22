@@ -1,8 +1,8 @@
-using AutoMapper;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Cart.Commands;
+using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.CQRS.Order.Models;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Event.Events;
@@ -22,7 +22,6 @@ public record CreateOrderFromCartCommand(
     double CustomerLongitude) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreatOrderFromCartHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext,
     IMediator mediator,
     IPublishEndpoint publishEndpoint,
@@ -170,6 +169,6 @@ public class CreatOrderFromCartHandler(
 
         await mediator.Send(new ClearCartCommand(request.CustomerId), cancellationToken);
 
-        return mapper.Map<List<OrderResponseForCustomer>>(orders);
+        return OrderMappers.ToListOrderResponseForCustomers(orders);
     }
 }

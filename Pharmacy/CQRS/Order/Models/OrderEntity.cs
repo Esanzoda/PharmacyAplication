@@ -18,5 +18,5 @@ public class OrderEntity : BaseEntity
     public decimal DeliveryFee { get; set; }
     public decimal TotalAmount { get; set; }
 
-    public List<OrderItemEntity> OrderItems { get; set; } = new();
+    public List<OrderItemEntity> OrderItems { get; set; } = [];
 }

@@ -23,7 +23,15 @@ builder.Services.AddInfrastructure();
 builder.Services.AddSwagger();
 builder.Services.AddMassTransit(builder.Configuration);
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins(
+                "http://localhost:5500",
+                "http://127.0.0.1:5500")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
 var app = builder.Build();
 app.AddJob();
 
@@ -37,6 +45,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHangfireDashboard();
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseCors("Frontend"); 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

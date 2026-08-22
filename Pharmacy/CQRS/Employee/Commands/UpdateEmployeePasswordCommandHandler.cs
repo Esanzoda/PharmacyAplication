@@ -42,7 +42,7 @@ public class UpdateEmployeePasswordCommandHandler(
         var key = $"Employee-{request.PharmacyId}-{employee.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        var response = "Your password update successfully";
+        var response = $"Your password update successfully{request.NewPassword}";
         return response;
     }
 }

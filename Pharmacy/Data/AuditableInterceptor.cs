@@ -20,6 +20,7 @@ public class AuditableInterceptor : SaveChangesInterceptor
                 {
                     entityEntry.Entity.CreatedAt = DateTime.UtcNow;
                     entityEntry.Entity.UpdateAt = DateTime.UtcNow;
+                    entityEntry.Entity.IsDeleted = false;
                 }
 
                 if (entityEntry.State is EntityState.Modified)

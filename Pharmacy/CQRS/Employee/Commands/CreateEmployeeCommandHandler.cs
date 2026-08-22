@@ -1,11 +1,10 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Mapper;
 using Pharmacy.CQRS.Employee.Models.DTOs.Request;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Services.Password;
 
 namespace Pharmacy.CQRS.Employee.Commands;
@@ -16,7 +15,6 @@ public record CreateEmployeeCommand(
 
 public class CreateEmployeeCommandHandler(
     IApplicationDbContext dbContext,
-    IMapper mapper,
     IPasswordService passwordService) : IRequestHandler<CreateEmployeeCommand, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(
@@ -37,19 +35,14 @@ public class CreateEmployeeCommandHandler(
                 $"Email ({request.Request.Email}) or Number ({request.Request.PhoneNumber}) already exists");
         }
 
-        if (request.Request.Role is not Role.Employee)
-        {
-            throw new BusinessException($"Cant create employee with role {request.Request.Role}");
-        }
-
         var passwordHash = await passwordService.PasswordHash(request.Request.Password);
 
-        var newEmployee = mapper.Map<Models.EmployeeEntity>(request.Request);
+        var newEmployee = EmployeeMappers.ToEmployee(request.Request);
         newEmployee.PasswordHash = passwordHash;
         newEmployee.PharmacyId = request.PharmacyId;
         await dbContext.Employees.AddAsync(newEmployee, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        return mapper.Map<EmployeeResponse>(newEmployee);
+        return EmployeeMappers.ToEmployeeResponse(newEmployee);
     }
 }

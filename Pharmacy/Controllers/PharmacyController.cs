@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.ExpiredProducts.Query;
 using Pharmacy.CQRS.Pharmacy.Commands;
-using Pharmacy.CQRS.Pharmacy.Models.DTOs.Request;
 using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Models.Domain.Enum;
@@ -13,7 +12,7 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-//[Authorize(Roles = nameof(Position.AdminPharmacy))]
+[Authorize(Roles = nameof(Position.AdminPharmacy))]
 public class PharmacyController(IMediator mediator) : ControllerBase
 {
     [HttpPatch]
@@ -48,16 +47,9 @@ public class PharmacyController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut]
-    public async Task<ActionResult<PharmacyResponse>> Update([FromBody] PharmacyRequest request)
-    {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
-        var response = await mediator.Send(new UpdatePharmacyCommand(pharmacyId, request));
-        return Ok(response);
-    }
 
     [HttpGet]
-    public async Task<ActionResult<List<ExpireDateProductResponse>>> GetExpiryProducts(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiryProducts(int pageNumber, int pageSize)
     {
         var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetExpiryProductsQuery(pharmacyId, pageNumber, pageSize));

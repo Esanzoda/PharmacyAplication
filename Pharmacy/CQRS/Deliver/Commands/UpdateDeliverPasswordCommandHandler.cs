@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -22,7 +21,7 @@ public class UpdateDeliverPasswordCommandHandler(
         CancellationToken cancellationToken)
     {
         var deliver = await dbContext.Delivers
-            .FirstOrDefaultAsync(x => x.Id == request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
 
         if (deliver is null)
@@ -43,7 +42,7 @@ public class UpdateDeliverPasswordCommandHandler(
         var key = $"DeliverById-{request.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        var response = "Your password update successfully";
+        var response = $"Your password update successfully {request.NewPassword}";
         return response;
     }
 }

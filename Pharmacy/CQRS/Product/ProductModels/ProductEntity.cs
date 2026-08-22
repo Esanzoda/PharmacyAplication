@@ -15,5 +15,5 @@ public class ProductEntity : BaseEntity
     public ProductType ProductType { get; set; }
     public long CategoryEntityId { get; set; }
     public CategoryEntity CategoryEntity { get; set; } = null!;
-    public List<ProductBatch> ProductBatches { get; set; } = new();
+    public List<ProductBatch> ProductBatches { get; set; } = [];
 }

@@ -1,7 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Employee.Models;
+using Pharmacy.CQRS.Pharmacy.Mapper;
 using Pharmacy.CQRS.Pharmacy.Models.DTOs.Request;
 using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -16,7 +16,6 @@ public record CreatePharmacyCommand(
     PharmacyRequest Request) : IRequest<PharmacyResponse>;
 
 public class CreatePharmacyCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext,
     IGeocodingService geocodingService,
     IPasswordService passwordService) : IRequestHandler<CreatePharmacyCommand, PharmacyResponse>
@@ -39,35 +38,36 @@ public class CreatePharmacyCommandHandler(
             throw new ResourceIsAlreadyExistException("Pharmacy with this information already exist");
         }
 
-        var pharmacy = mapper.Map<Models.PharmacyEntity>(request.Request);
-        var geoCoding = await geocodingService.GetCoordinatesAsync(pharmacy.Address);
+        var newpharmacy = PharmacyMappers.ToPharmacy(request.Request);
+        var geoCoding = await geocodingService.GetCoordinatesAsync(newpharmacy.Address);
 
         if (geoCoding == null)
         {
             throw new BusinessException("Cannot found coordinates for this address");
         }
 
-        pharmacy.Latitude = geoCoding.Lat;
-        pharmacy.Longitude = geoCoding.Lng;
+        newpharmacy.Latitude = geoCoding.Lat;
+        newpharmacy.Longitude = geoCoding.Lng;
         var password = "string";
 
         await dbContext.Pharmacies
-            .AddAsync(pharmacy, cancellationToken);
+            .AddAsync(newpharmacy, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         var employee = new EmployeeEntity
         {
             Name = "AdminPharmacy",
-            Address = pharmacy.Address,
-            Email = pharmacy.Email,
+            Address = newpharmacy.Address,
+            Email = newpharmacy.Email,
             Role = Role.Employee,
             PasswordHash = await passwordService.PasswordHash(password),
             Position = Position.AdminPharmacy,
             Salary = 0,
-            PharmacyId = pharmacy.Id
+            PharmacyId = newpharmacy.Id,
+            PhoneNumber = newpharmacy.PhoneNumber
         };
         await dbContext.Employees
             .AddAsync(employee, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        return mapper.Map<PharmacyResponse>(pharmacy);
+        return PharmacyMappers.ToPharmacyResponse(newpharmacy);
     }
 }

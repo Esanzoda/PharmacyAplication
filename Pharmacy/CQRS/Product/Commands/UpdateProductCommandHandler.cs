@@ -1,8 +1,8 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Request;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -11,13 +11,12 @@ namespace Pharmacy.CQRS.Product.Commands;
 public record UpdateProductCommand(
     long PharmacyId,
     long Id,
-    UpdateProductRequest Request) : IRequest<ProductForCustomerResponse>;
+    UpdateProductRequest Request) : IRequest<ProductForPharmacyResponse>;
 
 public class UpdateProductCommandHandler(
-    IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<UpdateProductCommand, ProductForCustomerResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<UpdateProductCommand, ProductForPharmacyResponse>
 {
-    public async Task<ProductForCustomerResponse> Handle(
+    public async Task<ProductForPharmacyResponse> Handle(
         UpdateProductCommand request,
         CancellationToken cancellationToken)
     {
@@ -49,10 +48,10 @@ public class UpdateProductCommandHandler(
                 $"Product already exists with  Barcode {product.Barcode} ");
         }
 
-        mapper.Map(request.Request, product);
+        product = ProductMappers.ToProduct(request.Request);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<ProductForCustomerResponse>(product);
+        return ProductMappers.ToProductForPharmacyResponse(product);
     }
 }

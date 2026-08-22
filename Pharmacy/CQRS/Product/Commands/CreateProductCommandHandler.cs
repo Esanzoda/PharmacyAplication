@@ -1,8 +1,8 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Request;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -10,18 +10,17 @@ namespace Pharmacy.CQRS.Product.Commands;
 
 public record CreateProductCommand(
     long PharmacyId,
-    ProductRequest Request) : IRequest<ProductForCustomerResponse>;
+    ProductRequest Request) : IRequest<ProductForPharmacyResponse>;
 
 public class CreateProductCommandHandler(
-    IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<CreateProductCommand, ProductForCustomerResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<CreateProductCommand, ProductForPharmacyResponse>
 {
-    public async Task<ProductForCustomerResponse> Handle(
+    public async Task<ProductForPharmacyResponse> Handle(
         CreateProductCommand request,
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .FirstOrDefaultAsync(x => x.Id == request.Request.CategoryId,
+            .FindAsync([request.Request.CategoryId],
                 cancellationToken);
 
         if (category == null)
@@ -40,7 +39,7 @@ public class CreateProductCommandHandler(
                 $"Product already exists with  barcode {request.Request.Barcode}");
         }
 
-        var product = mapper.Map<ProductModels.ProductEntity>(request.Request);
+        var product = ProductMappers.ToProduct(request.Request);
         product.PharmacyId = request.PharmacyId;
         product.CategoryEntity = category;
 
@@ -48,6 +47,6 @@ public class CreateProductCommandHandler(
             cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<ProductForCustomerResponse>(product);
+        return ProductMappers.ToProductForPharmacyResponse(product);
     }
 }

@@ -14,7 +14,7 @@ public class DeletePharmacyCommandHandler(IApplicationDbContext dbContext)
     public async Task<bool> Handle(DeletePharmacyCommand request, CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FirstOrDefaultAsync(x => x.Id == request.PharmacyId,
+            .FindAsync([request.PharmacyId],
                 cancellationToken);
         if (pharmacy == null)
         {

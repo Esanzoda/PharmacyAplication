@@ -13,24 +13,24 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-//[Authorize(Roles = nameof(Role.Customer))]
+[Authorize(Roles = nameof(Role.Customer))]
 public class OrderController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<OrderResponse>> Create([FromBody] OrderRequest request)
+    public async Task<ActionResult<OrderResponseForCustomer>> Create([FromBody] CreateOrderRequest request)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var customerLat = double.Parse(User.FindFirstValue("Latitude")!, CultureInfo.InvariantCulture);
         var customerLong = double.Parse(User.FindFirstValue("Longitude")!, CultureInfo.InvariantCulture);
         var customerEmail = User.FindFirstValue(ClaimTypes.Email);
         var customerAddress = User.FindFirstValue(ClaimTypes.StreetAddress);
-        var response = await mediator.Send(new CreateOrderCommand(customerId, customerLat, customerLong, request,
-            customerEmail!, customerAddress!));
+        var response = await mediator.Send(new CreateOrderCommand(customerId, customerLat, customerLong,
+            customerEmail!, customerAddress!, request));
         return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<OrderResponse>> CreateFromCart(OrderType orderType)
+    public async Task<ActionResult<OrderResponseForCustomer>> CreateFromCart(OrderType orderType)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var customerLat = double.Parse(User.FindFirstValue("Latitude")!);
@@ -41,7 +41,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<OrderResponse>> CancelOrder(long orderId)
+    public async Task<ActionResult<OrderResponseForCustomer>> CancelOrder(long orderId)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
         var customerEmail = User.FindFirstValue(ClaimTypes.Email);
@@ -50,7 +50,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<OrderResponse>> GetInfo(long id)
+    public async Task<ActionResult<OrderResponseForCustomer>> GetInfo(long id)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
         var response = await mediator.Send(new GetOrderByIdQuery(customerId, id));
@@ -58,7 +58,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderResponse>>> GetAllByPagination(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetAllByPagination(int pageNumber, int pageSize)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
         var response = await mediator.Send(new GetAllOrdersQuery(customerId, pageNumber, pageSize));
@@ -66,7 +66,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderResponse>>> GetByStatusAsync(OrderStatus status, int pageNumber,
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetByStatusAsync(OrderStatus status, int pageNumber,
         int pageSize)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
@@ -75,7 +75,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<OrderResponse>> RemoveItem(long orderId, long productId)
+    public async Task<ActionResult<OrderResponseForCustomer>> RemoveItem(long orderId, long productId)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new RemoveItemFromOrderCommand(customerId, orderId, productId));

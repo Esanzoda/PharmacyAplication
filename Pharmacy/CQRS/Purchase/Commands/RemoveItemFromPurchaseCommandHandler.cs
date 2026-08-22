@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Purchase.Mapper;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -14,8 +14,7 @@ public record RemoveItemFromPurchaseCommand(
     long PurchaseItemId) : IRequest<PurchaseResponse>;
 
 public class RemoveItemFromPurchaseCommandHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(
         RemoveItemFromPurchaseCommand request,
@@ -61,6 +60,6 @@ public class RemoveItemFromPurchaseCommandHandler(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<PurchaseResponse>(purchase);
+        return PurchaseMappers.ToPurchaseResponse(purchase);
     }
 }

@@ -1,24 +1,23 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Mapper;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Employee.Queries;
 
-public record GetEmployeesByRoleQuery(
+public record GetEmployeesByPositionQuery(
     long PharmacyId,
     Position Position,
     int Page,
     int PageSize) : IRequest<List<EmployeeResponse>>;
 
-public class GetEmployeesByRoleQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetEmployeesByRoleQuery, List<EmployeeResponse>>
+public class GetEmployeesByPositionQueryHandler(
+    IApplicationDbContext dbContext) : IRequestHandler<GetEmployeesByPositionQuery, List<EmployeeResponse>>
 {
     public async Task<List<EmployeeResponse>> Handle(
-        GetEmployeesByRoleQuery request,
+        GetEmployeesByPositionQuery request,
         CancellationToken cancellationToken)
     {
         var employees = await dbContext.Employees
@@ -31,6 +30,6 @@ public class GetEmployeesByRoleQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<EmployeeResponse>>(employees);
+        return EmployeeMappers.ToListEmployeeResponse(employees);
     }
 }

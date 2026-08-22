@@ -1,3 +1,4 @@
+using Pharmacy.CQRS.Deliver.Models;
 using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Order.Models.DTOs.Response;
@@ -9,9 +10,10 @@ public class OrderResponseForCustomer
     public OrderStatus OrderStatus { get; init; }
     public OrderType OrderType { get; init; }
     public DateTime CreatedAt { get; init; }
-    public string Address { get; init; } = string.Empty;
-    public Deliver.Models.DeliverEntity? Deliver { get; init; }
+    public required string Address { get; init; }
+    public DeliverEntity? Deliver { get; init; }
+    public DateTime? PicKupTime { get; set; }
     public decimal DeliveryFee { get; init; }
     public decimal TotalAmount { get; init; }
-    public List<OrderItemResponse> OrderItemResponses { get; init; }
+    public List<OrderItemResponse> OrderItemResponses { get; init; } = [];
 }

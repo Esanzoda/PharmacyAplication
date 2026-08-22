@@ -1,8 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.ProductModels;
-using Pharmacy.CQRS.Purchase.Models;
+using Pharmacy.CQRS.Purchase.Mapper;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -17,16 +16,17 @@ public record CreatePurchaseCommand(
 ) : IRequest<PurchaseResponse>;
 
 public class CreatePurchaseCommandHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<CreatePurchaseCommand, PurchaseResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<CreatePurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(
         CreatePurchaseCommand request,
         CancellationToken cancellationToken)
     {
-        var purchase = mapper.Map<Models.Purchase>(request.Request);
-        purchase.PharmacyId = request.PharmacyId;
-        purchase.EmployeeEntityId = request.EmployeeId;
+        var purchase = new Models.Purchase
+        {
+            PharmacyId = request.PharmacyId,
+            EmployeeEntityId = request.EmployeeId
+        };
 
         await dbContext.Purchases
             .AddAsync(purchase, cancellationToken);
@@ -47,14 +47,14 @@ public class CreatePurchaseCommandHandler(
                 throw new ResourceNotFoundException("Product not found");
             }
 
-            var purchaseItem = mapper.Map<PurchaseItem>(item);
+            var purchaseItem = PurchaseMappers.ToPurchaseItem(item);
             purchaseItem.PharmacyId = request.PharmacyId;
             purchaseItem.ProductEntityId = product.Id;
             purchaseItem.PurchaseEntity = purchase;
             purchaseItem.TotalPrice = item.Quantity * item.PurchasePrice;
 
             purchase.PurchaseItems.Add(purchaseItem);
-            var productBatch = new ProductBatch()
+            var productBatch = new ProductBatch
             {
                 PharmacyId = request.PharmacyId,
                 Name = product.Name,
@@ -76,7 +76,6 @@ public class CreatePurchaseCommandHandler(
         purchase.TotalAmount = purchase.PurchaseItems.Sum(x => x.TotalPrice);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-
-        return mapper.Map<PurchaseResponse>(purchase);
+        return PurchaseMappers.ToPurchaseResponse(purchase);
     }
 }

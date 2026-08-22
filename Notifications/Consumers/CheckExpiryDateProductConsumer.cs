@@ -5,9 +5,9 @@ using Pharmacy.Event.Events;
 namespace Notifications.Consumers;
 
 public class CheckExpiryDateProductConsumer(
-    INotificationService notificationService) : IConsumer<CheckExpiryDateProductEvent>
+    INotificationService notificationService) : IConsumer<CheckExpiredProductEvent>
 {
-    public async Task Consume(ConsumeContext<CheckExpiryDateProductEvent> context)
+    public async Task Consume(ConsumeContext<CheckExpiredProductEvent> context)
     {
         var message = context.Message;
         await notificationService.ToPharmacyExpiryProduct(
