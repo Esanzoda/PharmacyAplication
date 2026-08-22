@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Interfaces;
 
@@ -13,8 +13,7 @@ public record GetLowOfStockQuery(
     int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetPharmacyLowOfStockQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetLowOfStockQuery, List<ProductForPharmacyResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetLowOfStockQuery, List<ProductForPharmacyResponse>>
 {
     public async Task<List<ProductForPharmacyResponse>> Handle(
         GetLowOfStockQuery request,
@@ -30,6 +29,6 @@ public class GetPharmacyLowOfStockQueryHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<ProductForPharmacyResponse>>(products);
+        return ProductMappers.ToListProductForPharmacyResponse(products);
     }
 }

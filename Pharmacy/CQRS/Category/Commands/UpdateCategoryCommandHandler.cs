@@ -1,7 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Category.Mapper;
 using Pharmacy.CQRS.Category.Models.DTOs.Request;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -11,19 +11,18 @@ namespace Pharmacy.CQRS.Category.Commands;
 
 public record UpdateCategoryCommand(
     long Id,
-    UpdateCategoryRequest Request) : IRequest<UpdateCategoryResponse>;
+    UpdateCategoryRequest Request) : IRequest<CategoryResponse>;
 
 public class UpdateCategoryCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext,
-    IDistributedCache cache) : IRequestHandler<UpdateCategoryCommand, UpdateCategoryResponse>
+    IDistributedCache cache) : IRequestHandler<UpdateCategoryCommand, CategoryResponse>
 {
-    public async Task<UpdateCategoryResponse> Handle(
+    public async Task<CategoryResponse> Handle(
         UpdateCategoryCommand request,
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .FindAsync(request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
 
         if (category is null)
@@ -41,12 +40,12 @@ public class UpdateCategoryCommandHandler(
             throw new ResourceIsAlreadyExistException("Category  with this name already exist");
         }
 
-        mapper.Map(request.Request, category);
+        CategoryMappers.ToCategory(category, request.Request);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"CategoryById-{request.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        return mapper.Map<UpdateCategoryResponse>(category);
+        return CategoryMappers.ToCategoryResponse(category);
     }
 }

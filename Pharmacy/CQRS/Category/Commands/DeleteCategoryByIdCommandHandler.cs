@@ -18,7 +18,7 @@ public class DeleteCategoryByIdHandler(
         CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
-            .FindAsync(request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
 
         if (category is null)

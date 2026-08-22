@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain.Enum;
@@ -11,10 +11,11 @@ public record GetOrdersByStatusReadyForPickupQuery(int PageNumber, int PageSize)
     : IRequest<List<OrderResponseForDeliver>>;
 
 public class GetOrdersNotReserveQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetOrdersByStatusReadyForPickupQuery, List<OrderResponseForDeliver>>
+    IApplicationDbContext dbContext)
+    : IRequestHandler<GetOrdersByStatusReadyForPickupQuery, List<OrderResponseForDeliver>>
 {
-    public async Task<List<OrderResponseForDeliver>> Handle(GetOrdersByStatusReadyForPickupQuery request,
+    public async Task<List<OrderResponseForDeliver>> Handle(
+        GetOrdersByStatusReadyForPickupQuery request,
         CancellationToken cancellationToken)
     {
         var orders = await dbContext.Orders
@@ -26,6 +27,6 @@ public class GetOrdersNotReserveQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<OrderResponseForDeliver>>(orders);
+        return DeliverMappers.ToListReserveOrdersForDeliver(orders);
     }
 }

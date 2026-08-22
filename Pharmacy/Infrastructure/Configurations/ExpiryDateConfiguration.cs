@@ -4,9 +4,9 @@ using Pharmacy.CQRS.ExpiredProducts.Models;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class ExpiryDateConfiguration : IEntityTypeConfiguration<ExpiryDateEntity>
+public class ExpiryDateConfiguration : IEntityTypeConfiguration<ExpiredProductsEntity>
 {
-    public void Configure(EntityTypeBuilder<ExpiryDateEntity> builder)
+    public void Configure(EntityTypeBuilder<ExpiredProductsEntity> builder)
     {
         builder.HasKey(x => x.Id);
 

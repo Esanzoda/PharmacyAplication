@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -14,8 +14,7 @@ public record RemoveItemFromOrderCommand(
     long ProductId) : IRequest<OrderResponseForCustomer>;
 
 public class RemoveItemFromOrderHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<RemoveItemFromOrderCommand, OrderResponseForCustomer>
+    IApplicationDbContext dbContext) : IRequestHandler<RemoveItemFromOrderCommand, OrderResponseForCustomer>
 {
     public async Task<OrderResponseForCustomer> Handle(
         RemoveItemFromOrderCommand request,
@@ -37,7 +36,8 @@ public class RemoveItemFromOrderHandler(
             throw new BusinessException("Items cannot be removed from completed, shipped, or cancelled orders");
         }
 
-        var itemToRemove = order.OrderItems.FirstOrDefault(x => x.ProductEntityId == request.ProductId);
+        var itemToRemove = order.OrderItems
+            .FirstOrDefault(x => x.ProductEntityId == request.ProductId);
 
         if (itemToRemove == null)
         {
@@ -56,20 +56,20 @@ public class RemoveItemFromOrderHandler(
 
         product.Stock += itemToRemove.Quantity;
 
-
         order.OrderItems.Remove(itemToRemove);
         dbContext.OrderItems.Remove(itemToRemove);
 
         if (order.OrderItems.Count == 0)
         {
-            dbContext.Orders.Remove(order);
-            //todo when order is finished
+            order.OrderStatus = OrderStatus.Cancelled;
+            order.TotalAmount = 0;
+            return OrderMappers.ToOrderResponseForCustomer(order);
         }
 
         order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<OrderResponseForCustomer>(order);
+        return OrderMappers.ToOrderResponseForCustomer(order);
     }
 }

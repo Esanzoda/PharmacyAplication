@@ -1,7 +1,8 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
+using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Product.Queries;
@@ -11,8 +12,7 @@ public record GetProductByBarcodeQuery(
     string Barcode) : IRequest<ProductForPharmacyResponse>;
 
 public class GetPharmacyProductByBarcodeQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<
+    IApplicationDbContext dbContext) : IRequestHandler<
     GetProductByBarcodeQuery,
     ProductForPharmacyResponse>
 {
@@ -27,6 +27,8 @@ public class GetPharmacyProductByBarcodeQueryHandler(
                                       x.Barcode == request.Barcode,
                 cancellationToken);
 
-        return mapper.Map<ProductForPharmacyResponse>(product);
+        return product == null
+            ? throw new ResourceNotFoundException("Product not found")
+            : ProductMappers.ToProductForPharmacyResponse(product);
     }
 }

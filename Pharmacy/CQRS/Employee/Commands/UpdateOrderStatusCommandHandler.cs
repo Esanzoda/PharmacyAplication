@@ -45,7 +45,6 @@ public class UpdateOrderStatusCommandHandler(
         {
             Email = order.CustomerEntity.Email,
             OrderId = order.Id,
-            CustomerId = order.CustomerEntityId,
             TotalAmount = order.TotalAmount,
             CompletedAt = order.UpdateAt,
         }, cancellationToken);

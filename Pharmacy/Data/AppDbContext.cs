@@ -28,8 +28,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Purchase> Purchases { get; set; }
     public DbSet<PurchaseItem> PurchaseItems { get; set; }
     public DbSet<DeliverEntity> Delivers { get; set; }
-    public DbSet<ExpiryDateEntity> ExpireDateProducts { get; set; }
-    public DbSet<ExpiryDateItemsEntity> ExpireDateItems { get; set; }
+    public DbSet<ExpiredProductsEntity> ExpireDateProducts { get; set; }
+    public DbSet<ExpiredItemsEntity> ExpireDateItems { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<CQRS.Pharmacy.Models.PharmacyEntity> Pharmacies { get; set; }
     public DbSet<ProductBatch> ProductBatches { get; set; }

@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Customer.Mapper;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -16,7 +16,6 @@ public record UpdateCustomerPasswordCommand(
 public class UpdateCustomerPasswordHandler(
     IDistributedCache cache,
     IApplicationDbContext dbContext,
-    IMapper mapper,
     IPasswordService passwordService) : IRequestHandler<UpdateCustomerPasswordCommand, CustomerResponse>
 {
     public async Task<CustomerResponse> Handle(
@@ -24,7 +23,7 @@ public class UpdateCustomerPasswordHandler(
         CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
-            .FindAsync(request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
         if (customer is null)
         {
@@ -43,6 +42,6 @@ public class UpdateCustomerPasswordHandler(
         var key = $"CustomerById-{customer.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        return mapper.Map<CustomerResponse>(customer);
+        return CustomerMappers.ToCustomerResponse(customer);
     }
 }

@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -18,8 +17,7 @@ public class DeleteDeliverHandler(
         CancellationToken cancellationToken)
     {
         var deliver = await dbContext.Delivers
-            .FirstOrDefaultAsync(
-                x => x.Id == request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
         if (deliver is null)
         {

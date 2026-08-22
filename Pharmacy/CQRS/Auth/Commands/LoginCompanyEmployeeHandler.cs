@@ -22,7 +22,9 @@ public class LoginCompanyEmployeeHandler(
     IApplicationDbContext dbContext,
     IPasswordService passwordService) : IRequestHandler<LoginCompanyEmployeeCommand, LoginResponse>
 {
-    public async Task<LoginResponse> Handle(LoginCompanyEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResponse> Handle(
+        LoginCompanyEmployeeCommand request,
+        CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
 

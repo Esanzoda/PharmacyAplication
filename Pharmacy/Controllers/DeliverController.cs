@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Deliver.Commands;
+using Pharmacy.CQRS.Deliver.Models;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.CQRS.Deliver.Queries;
@@ -33,7 +34,8 @@ public class DeliverController(
     }
 
     [HttpPut]
-    public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long orderId, OrderStatus newOrderStatus)
+    public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long orderId,
+        DeliverUpdateOrderStatus newOrderStatus)
     {
         var deliverId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =

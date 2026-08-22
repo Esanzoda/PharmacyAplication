@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -11,8 +11,7 @@ public record GetDeliverByEmailQuery(
     string Email) : IRequest<DeliverResponse>;
 
 public class GetDeliverByEmailHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetDeliverByEmailQuery, DeliverResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<GetDeliverByEmailQuery, DeliverResponse>
 {
     public async Task<DeliverResponse> Handle(
         GetDeliverByEmailQuery request,
@@ -26,6 +25,6 @@ public class GetDeliverByEmailHandler(
 
         return deliver is null
             ? throw new ResourceNotFoundException("Deliver not found")
-            : mapper.Map<DeliverResponse>(deliver);
+            : DeliverMappers.ToDeliverResponse(deliver);
     }
 }

@@ -93,7 +93,7 @@ public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
     public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(Position position, int page, int pageSize)
     {
         var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
-        var response = await mediator.Send(new GetEmployeesByRoleQuery(pharmacyId, position, page, pageSize));
+        var response = await mediator.Send(new GetEmployeesByPositionQuery(pharmacyId, position, page, pageSize));
         return Ok(response);
     }
 }

@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Customer.Mapper;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -10,13 +10,12 @@ public record GetCustomerByPhoneNumberQuery(
     long PharmacyId,
     string PhoneNumber,
     int PageNumber,
-    int PageSize) : IRequest<CustomerResponse>;
+    int PageSize) : IRequest<List<CustomerResponse>>;
 
 public class GetCustomerByPhoneNumberQueryHandler(
-    IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<GetCustomerByPhoneNumberQuery, CustomerResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<GetCustomerByPhoneNumberQuery, List<CustomerResponse>>
 {
-    public async Task<CustomerResponse> Handle(
+    public async Task<List<CustomerResponse>> Handle(
         GetCustomerByPhoneNumberQuery request,
         CancellationToken cancellationToken)
     {
@@ -37,8 +36,6 @@ public class GetCustomerByPhoneNumberQueryHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var customerList = customers.ToList();
-
-        return mapper.Map<CustomerResponse>(customerList);
+        return CustomerMappers.ToListCustomerResponse(customers);
     }
 }

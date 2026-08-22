@@ -1,12 +1,11 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Cart.Models;
+using Pharmacy.CQRS.Customer.Mapper;
 using Pharmacy.CQRS.Customer.Models.DTOs.Request;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Services.GoogleMaps;
 using Pharmacy.Services.Password;
 
@@ -16,7 +15,6 @@ public record RegisterCommand(
     CustomerRequest Request) : IRequest<CustomerResponse>;
 
 public class RegisterHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext,
     IGeocodingService geocodingService,
     IPasswordService passwordService) : IRequestHandler<RegisterCommand, CustomerResponse>
@@ -35,16 +33,11 @@ public class RegisterHandler(
                 $"Customer already exists with this email {request.Request.Email} or number {request.Request.PhoneNumber}");
         }
 
-        if (request.Request.Role is not Role.Customer)
-        {
-            throw new BusinessException("You can create only customer role.");
-        }
-
         var passwordHash = await passwordService.PasswordHash(request.Request.Password);
 
         var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
 
-        var newCustomer = mapper.Map<Models.CustomerEntity>(request.Request);
+        var newCustomer = CustomerMappers.ToCustomer(request.Request);
         newCustomer.PasswordHash = passwordHash;
         newCustomer.Latitude = geocoding.Lat;
         newCustomer.Longitude = geocoding.Lng;
@@ -62,6 +55,6 @@ public class RegisterHandler(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<CustomerResponse>(newCustomer);
+        return CustomerMappers.ToCustomerResponse(newCustomer);
     }
 }

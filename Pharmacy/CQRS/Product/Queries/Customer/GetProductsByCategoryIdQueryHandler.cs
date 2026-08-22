@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Product.Mapper;
 using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -13,8 +13,7 @@ public record GetProductsByCategoryIdQuery(
     int PageSize) : IRequest<List<ProductForCustomerResponse>>;
 
 public class GetProductsByCategoryIdQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetProductsByCategoryIdQuery, List<ProductForCustomerResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetProductsByCategoryIdQuery, List<ProductForCustomerResponse>>
 {
     public async Task<List<ProductForCustomerResponse>> Handle(
         GetProductsByCategoryIdQuery request,
@@ -28,7 +27,7 @@ public class GetProductsByCategoryIdQueryHandler(
             throw new ResourceNotFoundException("Category with this id  not found");
         }
 
-        var product = await dbContext.Products
+        var products = await dbContext.Products
             .AsNoTracking()
             .Include(x => x.ProductBatches)
             .Where(x => x.CategoryEntityId == request.CategoryId)
@@ -37,6 +36,6 @@ public class GetProductsByCategoryIdQueryHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<ProductForCustomerResponse>>(product);
+        return ProductMappers.ToListProductForCustomerResponse(products);
     }
 }

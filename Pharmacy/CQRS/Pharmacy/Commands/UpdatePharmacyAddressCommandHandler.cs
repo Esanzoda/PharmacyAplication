@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Pharmacy.Mapper;
 using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -13,7 +13,6 @@ public record UpdatePharmacyAddressCommand(
     string NewAddress) : IRequest<PharmacyResponse>;
 
 public class UpdatePharmacyAddressCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext,
     IGeocodingService geocodingService) : IRequestHandler<UpdatePharmacyAddressCommand, PharmacyResponse>
 {
@@ -22,7 +21,7 @@ public class UpdatePharmacyAddressCommandHandler(
         CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FindAsync(request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
 
         if (pharmacy is null)
@@ -32,7 +31,7 @@ public class UpdatePharmacyAddressCommandHandler(
 
         var pharmacyExists = await dbContext.Pharmacies
             .AnyAsync(x => x.Id != request.Id &&
-                           x.Address == request.NewAddress,
+                           x.Address.ToLower() == request.NewAddress.ToLower(),
                 cancellationToken);
 
         if (pharmacyExists)
@@ -48,6 +47,6 @@ public class UpdatePharmacyAddressCommandHandler(
         pharmacy.Address = request.NewAddress;
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<PharmacyResponse>(pharmacy);
+        return PharmacyMappers.ToPharmacyResponse(pharmacy);
     }
 }

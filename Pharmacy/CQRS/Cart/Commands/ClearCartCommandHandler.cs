@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Cart.Mappers;
 using Pharmacy.CQRS.Cart.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -11,8 +11,7 @@ public record ClearCartCommand(
     long CustomerId) : IRequest<CartResponse>;
 
 public class ClearCartCommandHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<ClearCartCommand, CartResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<ClearCartCommand, CartResponse>
 {
     public async Task<CartResponse> Handle(
         ClearCartCommand request,
@@ -34,6 +33,6 @@ public class ClearCartCommandHandler(
         cart.TotalAmount = 0;
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<CartResponse>(cart);
+        return CartMappers.ToCartResponse(cart);
     }
 }

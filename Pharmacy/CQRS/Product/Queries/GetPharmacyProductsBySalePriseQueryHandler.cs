@@ -1,8 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
-using Pharmacy.Exception;
+using Pharmacy.CQRS.Product.Mapper;
+using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Product.Queries;
@@ -11,17 +10,17 @@ public record GetPharmacyProductsBySalePriceQuery(
     long PharmacyId,
     decimal Price,
     int Page,
-    int PageSize) : IRequest<List<ProductForCustomerResponse>>;
+    int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetPharmacyProductsBySalePriseQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPharmacyProductsBySalePriceQuery, List<ProductForCustomerResponse>>
+    IApplicationDbContext dbContext)
+    : IRequestHandler<GetPharmacyProductsBySalePriceQuery, List<ProductForPharmacyResponse>>
 {
-    public async Task<List<ProductForCustomerResponse>> Handle(
+    public async Task<List<ProductForPharmacyResponse>> Handle(
         GetPharmacyProductsBySalePriceQuery request,
         CancellationToken cancellationToken)
     {
-        var product = await dbContext.Products
+        var products = await dbContext.Products
             .AsNoTracking()
             .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.SalePrice == request.Price)
@@ -31,6 +30,6 @@ public class GetPharmacyProductsBySalePriseQueryHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<ProductForCustomerResponse>>(product);
+        return ProductMappers.ToListProductForPharmacyResponse(products);
     }
 }

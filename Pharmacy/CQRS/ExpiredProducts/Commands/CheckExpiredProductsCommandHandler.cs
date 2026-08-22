@@ -54,15 +54,15 @@ public class CheckExpiredProductsHandler(
                 continue;
             }
 
-            var expiryDate = new ExpiryDateEntity()
+            var expiryDate = new ExpiredProductsEntity
             {
                 PharmacyId = pharmacy.Key
             };
-            var expiryProducts = new List<ExpiryDateItem>();
+            var expiryProductsEvent = new List<ExpiredItemEvent>();
 
             foreach (var productBatch in pharmacy)
             {
-                var item = new ExpiryDateItemsEntity
+                var item = new ExpiredItemsEntity
                 {
                     PharmacyId = productBatch.PharmacyId,
                     ProductBatch = productBatch,
@@ -79,7 +79,7 @@ public class CheckExpiredProductsHandler(
                 productBatch.IsActive = false;
                 productBatch.ProductEntity.Stock -= productBatch.Quantity;
                 productBatch.IsDeleted = true;
-                var expiryProduct = new ExpiryDateItem
+                var expiryProductEvent = new ExpiredItemEvent
                 {
                     ProductName = productBatch.Name,
                     ProductBatchId = item.ProductBatchId,
@@ -88,7 +88,7 @@ public class CheckExpiredProductsHandler(
                     TotalSalePrice = item.TotalSalePrice
                 };
 
-                expiryProducts.Add(expiryProduct);
+                expiryProductsEvent.Add(expiryProductEvent);
             }
 
             await dbContext.ExpireDateProducts.AddAsync(expiryDate, cancellationToken);
@@ -99,14 +99,14 @@ public class CheckExpiredProductsHandler(
                 "Created expired products report with {Count} items.",
                 expiryDate.ExpiryDateItemsList.Count);
 
-            await publishEndpoint.Publish(new CheckExpiryDateProductEvent
+            await publishEndpoint.Publish(new CheckExpiredProductEvent
             {
                 To = pharmacyInfo.Email,
                 Day = now,
-                Count = expiryProducts.Count,
+                Count = expiryProductsEvent.Count,
                 TotalPurchasePrice = expiryDate.TotalPurchasePrice,
                 TotalSalePrice = expiryDate.TotalSalePrice,
-                ExpiryDateItems = expiryProducts
+                ExpiryDateItems = expiryProductsEvent
             }, cancellationToken);
         }
     }

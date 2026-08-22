@@ -1,7 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Cart.Models;
+using Pharmacy.CQRS.Cart.Mappers;
 using Pharmacy.CQRS.Cart.Models.DTOs.Request;
 using Pharmacy.CQRS.Cart.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -14,10 +13,11 @@ public record AddItemToCartCommand(
     CartItemRequest ItemRequest) : IRequest<CartResponse>;
 
 public class AddItemToCartCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<AddItemToCartCommand, CartResponse>
 {
-    public async Task<CartResponse> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
+    public async Task<CartResponse> Handle(
+        AddItemToCartCommand request,
+        CancellationToken cancellationToken)
     {
         var cart = await dbContext.Carts
             .Include(x => x.CartItems)
@@ -48,7 +48,7 @@ public class AddItemToCartCommandHandler(
         }
         else
         {
-            var cartItem = mapper.Map<CartItemEntity>(request.ItemRequest);
+            var cartItem = CartMappers.ToCartItem(request.ItemRequest);
             cartItem.CustomerEntityId = request.CustomerId;
             cartItem.ProductEntityId = request.ItemRequest.ProductId;
             cartItem.CartEntity = cart;
@@ -61,6 +61,6 @@ public class AddItemToCartCommandHandler(
         cart.TotalAmount = cart.CartItems.Sum(x => x.TotalPrice);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<CartResponse>(cart);
+        return CartMappers.ToCartResponse(cart);
     }
 }

@@ -14,7 +14,9 @@ public class ReGenerateTokenQuery(
     IAuthService authService,
     IApplicationDbContext dbContext) : IRequestHandler<ReGenerateRefreshTokenQuery, string>
 {
-    public async Task<string> Handle(ReGenerateRefreshTokenQuery request, CancellationToken cancellationToken)
+    public async Task<string> Handle(
+        ReGenerateRefreshTokenQuery request,
+        CancellationToken cancellationToken)
     {
         var dateNow = DateTime.UtcNow;
 

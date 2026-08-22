@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Purchase.Mapper;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -13,14 +13,13 @@ public record GetPurchaseByDateQuery(
     int PageSize) : IRequest<List<PurchaseResponse>>;
 
 public class GetPurchaseByDateHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetPurchaseByDateQuery, List<PurchaseResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetPurchaseByDateQuery, List<PurchaseResponse>>
 {
     public async Task<List<PurchaseResponse>> Handle(
         GetPurchaseByDateQuery request,
         CancellationToken cancellationToken)
     {
-        var purchase = await dbContext.Purchases
+        var purchases = await dbContext.Purchases
             .AsNoTracking()
             .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.CreatedAt == request.Date)
@@ -30,6 +29,6 @@ public class GetPurchaseByDateHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<PurchaseResponse>>(purchase);
+        return PurchaseMappers.ToListPurchaseResponse(purchases);
     }
 }

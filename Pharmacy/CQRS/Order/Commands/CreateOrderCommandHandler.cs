@@ -1,7 +1,7 @@
-using AutoMapper;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.CQRS.Order.Models;
 using Pharmacy.CQRS.Order.Models.DTOs.Request;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
@@ -19,12 +19,11 @@ public record CreateOrderCommand(
     long CustomerId,
     double CustomerLatitude,
     double CustomerLongitude,
-    OrderRequest Request,
     string CustomerEmail,
-    string CustomerAddress) : IRequest<List<OrderResponseForCustomer>>;
+    string CustomerAddress,
+    CreateOrderRequest Request) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreateOrderCommandHandler(
-    IMapper mapper,
     IPublishEndpoint publishEndpoint,
     IApplicationDbContext dbContext,
     IRoutesService routesService,
@@ -34,7 +33,7 @@ public class CreateOrderCommandHandler(
         CreateOrderCommand request,
         CancellationToken cancellationToken)
     {
-        var productIds = request.Request.OrderItems
+        var productIds = request.Request.OrderItemRequest
             .Select(x => x.ProductId)
             .ToList();
 
@@ -46,7 +45,7 @@ public class CreateOrderCommandHandler(
         var preparedOrderItems = new List<PreparedOrderItem>();
 
         var orders = new List<OrderEntity>();
-        foreach (var orderItemRequest in request.Request.OrderItems)
+        foreach (var orderItemRequest in request.Request.OrderItemRequest)
         {
             if (!products.TryGetValue(orderItemRequest.ProductId, out var product))
             {
@@ -79,12 +78,12 @@ public class CreateOrderCommandHandler(
 
         foreach (var pharmacy in pharmacyGroup)
         {
-            var order = mapper.Map<OrderEntity>(request.Request);
-
+            var order = OrderMappers.ToOrder(request.Request);
             order.OrderStatus = OrderStatus.Pending;
             order.CustomerEntityId = request.CustomerId;
             order.PharmacyId = pharmacy.Key;
             order.Address = request.CustomerAddress;
+
             await dbContext.Orders
                 .AddAsync(order, cancellationToken);
 
@@ -101,7 +100,7 @@ public class CreateOrderCommandHandler(
                 }
                 else
                 {
-                    var orderItem = new OrderItemEntity()
+                    var orderItem = new OrderItemEntity
                     {
                         ProductEntityId = preparedOrderItem.ProductEntity.Id,
                         Price = preparedOrderItem.ProductEntity.SalePrice,
@@ -160,7 +159,7 @@ public class CreateOrderCommandHandler(
                     throw new ResourceNotFoundException($"Pharmacy with id {pharmacy.Key} not found");
                 }
 
-                var routeRequest = new RoutesApiRequest()
+                var routeRequest = new RoutesApiRequest
                 {
                     StartLat = currentPharmacy.Latitude,
                     StartLng = currentPharmacy.Longitude,
@@ -192,6 +191,6 @@ public class CreateOrderCommandHandler(
                 cancellationToken);
         }
 
-        return mapper.Map<List<OrderResponseForCustomer>>(orders);
+        return OrderMappers.ToListOrderResponseForCustomers(orders);
     }
 }

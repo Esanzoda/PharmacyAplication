@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Category.Mapper;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -11,7 +11,6 @@ public record GetAllCategoriesByPaginationQuery(
     int PageSize) : IRequest<List<CategoryResponse>>;
 
 public class GetAllCategoryQueryHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<GetAllCategoriesByPaginationQuery, List<CategoryResponse>>
 {
     public async Task<List<CategoryResponse>> Handle(
@@ -25,6 +24,6 @@ public class GetAllCategoryQueryHandler(
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<CategoryResponse>>(categories);
+        return CategoryMappers.ToCategoriesResponse(categories);
     }
 }

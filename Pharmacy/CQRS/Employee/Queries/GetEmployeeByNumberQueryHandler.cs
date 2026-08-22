@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Employee.Mapper;
 using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -12,8 +12,7 @@ public record GetEmployeeByNumberQuery(
     string Number) : IRequest<EmployeeResponse>;
 
 public class GetEmployeeByNumberQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetEmployeeByNumberQuery, EmployeeResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<GetEmployeeByNumberQuery, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(
         GetEmployeeByNumberQuery request,
@@ -27,6 +26,6 @@ public class GetEmployeeByNumberQueryHandler(
 
         return employee is null
             ? throw new ResourceNotFoundException($"Employee with this number {request.Number}  not found ")
-            : mapper.Map<EmployeeResponse>(employee);
+            : EmployeeMappers.ToEmployeeResponse(employee);
     }
 }

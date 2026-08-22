@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Cart.Mappers;
 using Pharmacy.CQRS.Cart.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -11,10 +11,7 @@ public record GetCartByCustomerIdQuery(
     long CustomerId) : IRequest<CartResponse>;
 
 public class GetCartByCustomerIdQueryHandler(
-    IMapper mapper,
-    IApplicationDbContext dbContext) : IRequestHandler<
-    GetCartByCustomerIdQuery,
-    CartResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<GetCartByCustomerIdQuery, CartResponse>
 {
     public async Task<CartResponse> Handle(
         GetCartByCustomerIdQuery request,
@@ -26,6 +23,6 @@ public class GetCartByCustomerIdQueryHandler(
             .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId,
                 cancellationToken);
 
-        return cart is null ? throw new ResourceNotFoundException("Cart not found") : mapper.Map<CartResponse>(cart);
+        return cart is null ? throw new ResourceNotFoundException("Cart not found") : CartMappers.ToCartResponse(cart);
     }
 }

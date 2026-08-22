@@ -1,7 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.Controllers;
+using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -12,21 +11,19 @@ public record GetAllDeliverQuery(
     int PageSize) : IRequest<List<DeliverResponse>>;
 
 public class GetAllDeliversQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetAllDeliverQuery, List<DeliverResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetAllDeliverQuery, List<DeliverResponse>>
 {
     public async Task<List<DeliverResponse>> Handle(
         GetAllDeliverQuery request,
         CancellationToken cancellationToken)
     {
         var delivers = await dbContext.Delivers
-            .Where(x => x.IsDeleted == false)
             .OrderBy(x => x.Id)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return mapper.Map<List<DeliverResponse>>(delivers);
+        return DeliverMappers.ToListDeliverResponse(delivers);
     }
 }

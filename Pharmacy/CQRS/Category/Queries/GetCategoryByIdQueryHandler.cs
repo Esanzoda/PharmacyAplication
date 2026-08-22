@@ -1,8 +1,7 @@
-using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Pharmacy.CQRS.Category.Mapper;
 using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -13,7 +12,6 @@ public record GetCategoryByIdQuery(
     long CategoryId) : IRequest<CategoryResponse>;
 
 public class GetCategoryByIdHandler(
-    IMapper mapper,
     IDistributedCache cache,
     IApplicationDbContext dbContext) : IRequestHandler<GetCategoryByIdQuery, CategoryResponse>
 {
@@ -29,12 +27,12 @@ public class GetCategoryByIdHandler(
             var entity = JsonConvert.DeserializeObject<Models.CategoryEntity>(cachedCategory);
             if (entity is not null)
             {
-                return mapper.Map<CategoryResponse>(entity);
+                return CategoryMappers.ToCategoryResponse(entity);
             }
         }
 
         var category = await dbContext.Categories
-            .FirstOrDefaultAsync(x => x.Id == request.CategoryId,
+            .FindAsync([request.CategoryId],
                 cancellationToken);
 
         if (category is null)
@@ -48,6 +46,6 @@ public class GetCategoryByIdHandler(
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
             }, cancellationToken);
 
-        return mapper.Map<CategoryResponse>(category);
+        return CategoryMappers.ToCategoryResponse(category);
     }
 }

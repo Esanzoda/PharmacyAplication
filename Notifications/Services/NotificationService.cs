@@ -13,7 +13,7 @@ public interface INotificationService
     Task SendToEmail(EmailMessage emailMessage, CancellationToken cancellationToken);
 
     Task ToPharmacyExpiryProduct(string email, DateTime day, int count, decimal totalPurchasePrice,
-        decimal totalSalePrice, List<ExpiryDateItem> expiryDateItems, CancellationToken cancellationToken);
+        decimal totalSalePrice, List<ExpiredItemEvent> expiryDateItems, CancellationToken cancellationToken);
 
     Task ToCeoReportCompletedOrders(string toEmail, DateTime day, int count, decimal totalAmount,
         CancellationToken cancellationToken);
@@ -95,7 +95,7 @@ public class NotificationService(
 
     public async Task ToPharmacyExpiryProduct(string email, DateTime day, int count, decimal totalPurchasePrice,
         decimal totalSalePrice,
-        List<ExpiryDateItem> expiryDateItems, CancellationToken cancellationToken)
+        List<ExpiredItemEvent> expiryDateItems, CancellationToken cancellationToken)
     {
         var itemsHtml = string.Join(
             "",

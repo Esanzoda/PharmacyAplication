@@ -12,7 +12,7 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-//[Authorize(Roles = nameof(Position.ManagerPharmacy))]
+[Authorize(Roles = nameof(Position.ManagerPharmacy))]
 public class PurchaseController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
@@ -21,14 +21,6 @@ public class PurchaseController(IMediator mediator) : ControllerBase
         var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new CreatePurchaseCommand(pharmacyId, employeeId, request));
-        return Ok(response);
-    }
-
-    [HttpPut]
-    public async Task<ActionResult<PurchaseResponse>> Update(long id, [FromBody] PurchaseRequest request)
-    {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
-        var response = await mediator.Send(new UpdatePurchaseCommand(pharmacyId, id, request));
         return Ok(response);
     }
 

@@ -1,12 +1,11 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.CQRS.Customer.Mapper;
 using Pharmacy.CQRS.Customer.Models.DTOs.Request;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Services.GoogleMaps;
 
 namespace Pharmacy.CQRS.Customer.Commands;
 
@@ -15,17 +14,15 @@ public record UpdateCustomerCommand(
     UpdateCustomerRequest Request) : IRequest<CustomerResponse>;
 
 public class UpdateCustomerCommandHandler(
-    IMapper mapper,
     IDistributedCache cache,
-    IApplicationDbContext dbContext,
-    IGeocodingService geocodingService) : IRequestHandler<UpdateCustomerCommand, CustomerResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<UpdateCustomerCommand, CustomerResponse>
 {
     public async Task<CustomerResponse> Handle(
         UpdateCustomerCommand request,
         CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
-            .FindAsync(request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
         if (customer == null)
         {
@@ -46,19 +43,13 @@ public class UpdateCustomerCommandHandler(
         }
 
 
-        var updateCustomer = mapper.Map(request.Request, customer);
-        if (customer.Address != request.Request.Address)
-        {
-            var geocoding = await geocodingService.GetCoordinatesAsync(request.Request.Address);
-            updateCustomer.Latitude = geocoding.Lat;
-            updateCustomer.Longitude = geocoding.Lng;
-        }
+        CustomerMappers.ToCustomer(customer, request.Request);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var key = $"CustomerById-{customer.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        return mapper.Map<CustomerResponse>(customer);
+        return CustomerMappers.ToCustomerResponse(customer);
     }
 }

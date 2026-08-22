@@ -30,9 +30,6 @@ public class CustomerRequestValidator : AbstractValidator<CustomerRequest>
             .NotNull()
             .WithMessage("Invalid adress format");
 
-        RuleFor(x => x.Role)
-            .Equal(Role.Customer)
-            .WithMessage("You can create only customer role.");
 
         /*
          RuleFor(x => x.Password)

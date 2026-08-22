@@ -26,8 +26,8 @@ public interface IApplicationDbContext
     DbSet<Purchase> Purchases { get; }
     DbSet<PurchaseItem> PurchaseItems { get; }
     DbSet<DeliverEntity> Delivers { get; }
-    DbSet<ExpiryDateEntity> ExpireDateProducts { get; }
-    DbSet<ExpiryDateItemsEntity> ExpireDateItems { get; }
+    DbSet<ExpiredProductsEntity> ExpireDateProducts { get; }
+    DbSet<ExpiredItemsEntity> ExpireDateItems { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<PharmacyEntity> Pharmacies { get; }
     DbSet<ProductBatch> ProductBatches { get; set; }

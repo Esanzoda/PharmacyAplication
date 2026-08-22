@@ -22,7 +22,9 @@ public class LoginDeliverCommandHandler(
     IApplicationDbContext dbContext,
     IPasswordService passwordService) : IRequestHandler<LoginDeliverCommand, LoginResponse>
 {
-    public async Task<LoginResponse> Handle(LoginDeliverCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResponse> Handle(
+        LoginDeliverCommand request,
+        CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
 

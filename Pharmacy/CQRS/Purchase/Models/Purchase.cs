@@ -10,5 +10,5 @@ public class Purchase : BaseEntity
     public long EmployeeEntityId { get; set; }
     public EmployeeEntity EmployeeEntity { get; set; } = null!;
 
-    public List<PurchaseItem> PurchaseItems { get; set; } = new();
+    public List<PurchaseItem> PurchaseItems { get; set; } = [];
 }

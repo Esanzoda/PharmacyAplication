@@ -1,6 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Pharmacy.Mapper;
 using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
@@ -12,7 +12,6 @@ public record UpdatePharmacyEmailCommand(
     string NewEmail) : IRequest<PharmacyResponse>;
 
 public class UpdatePharmacyEmailCommandHandler(
-    IMapper mapper,
     IApplicationDbContext dbContext) : IRequestHandler<UpdatePharmacyEmailCommand, PharmacyResponse>
 {
     public async Task<PharmacyResponse> Handle(
@@ -20,7 +19,7 @@ public class UpdatePharmacyEmailCommandHandler(
         CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
-            .FindAsync(request.Id,
+            .FindAsync([request.Id],
                 cancellationToken);
         if (pharmacy is null)
         {
@@ -39,6 +38,6 @@ public class UpdatePharmacyEmailCommandHandler(
 
         pharmacy.Email = request.NewEmail;
         await dbContext.SaveChangesAsync(cancellationToken);
-        return mapper.Map<PharmacyResponse>(pharmacy);
+        return PharmacyMappers.ToPharmacyResponse(pharmacy);
     }
 }

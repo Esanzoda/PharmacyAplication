@@ -4,8 +4,8 @@ namespace Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 
 public class ProductBatchForCustomerResponse
 {
-    public int Quantity { get; set; }
-    public CountryEnum Country { get; set; }
-    public DateTime ProductionDate { get; set; }
-    public DateTime ExpiryDate { get; set; }
+    public int Quantity { get; init; }
+    public CountryEnum Country { get; init; }
+    public DateOnly ProductionDate { get; init; }
+    public DateOnly ExpiryDate { get; init; }
 }
