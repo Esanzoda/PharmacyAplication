@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Product.Mapper;
@@ -13,8 +12,7 @@ public record GetOutOfStockQuery(
     int PageSize) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetPharmacyOutOfStockQueryHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<GetOutOfStockQuery, List<ProductForPharmacyResponse>>
+    IApplicationDbContext dbContext) : IRequestHandler<GetOutOfStockQuery, List<ProductForPharmacyResponse>>
 {
     public async Task<List<ProductForPharmacyResponse>> Handle(
         GetOutOfStockQuery request,
