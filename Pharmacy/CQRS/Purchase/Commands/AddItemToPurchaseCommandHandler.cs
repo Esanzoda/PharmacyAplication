@@ -1,7 +1,6 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Purchase.Models;
+using Pharmacy.CQRS.Purchase.Mapper;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
 using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
 using Pharmacy.Exception;
@@ -15,8 +14,7 @@ public record AddItemToPurchaseCommand(
     PurchaseItemRequest Request) : IRequest<PurchaseResponse>;
 
 public class AddItemToPurchaseCommandHandler(
-    IApplicationDbContext dbContext,
-    IMapper mapper) : IRequestHandler<AddItemToPurchaseCommand, PurchaseResponse>
+    IApplicationDbContext dbContext) : IRequestHandler<AddItemToPurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(
         AddItemToPurchaseCommand request,
@@ -61,7 +59,7 @@ public class AddItemToPurchaseCommandHandler(
         }
         else
         {
-            var purchaseItem = mapper.Map<PurchaseItem>(request.Request);
+            var purchaseItem = PurchaseMappers.ToPurchaseItem(request.Request);
             purchaseItem.PurchaseEntityId = purchase.Id;
             purchaseItem.PharmacyId = request.PharmacyId;
             purchaseItem.ProductEntityId = product.Id;
@@ -75,6 +73,6 @@ public class AddItemToPurchaseCommandHandler(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<PurchaseResponse>(purchase);
+        return PurchaseMappers.ToPurchaseResponse(purchase);
     }
 }

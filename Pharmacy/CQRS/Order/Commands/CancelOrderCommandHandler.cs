@@ -1,7 +1,7 @@
-using AutoMapper;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.CQRS.Order.Models.DTOs.Response;
 using Pharmacy.Event.Events;
 using Pharmacy.Exception;
@@ -16,7 +16,6 @@ public record CancelOrderCommand(
     string CustomerEmail) : IRequest<OrderResponseForCustomer>;
 
 public class CancelOrderCommandHandler(
-    IMapper mapper,
     IPublishEndpoint publishEndpoint,
     IApplicationDbContext dbContext) : IRequestHandler<CancelOrderCommand, OrderResponseForCustomer>
 {
@@ -64,6 +63,6 @@ public class CancelOrderCommandHandler(
             UpdateTime = now
         }, cancellationToken);
 
-        return mapper.Map<OrderResponseForCustomer>(order);
+        return OrderMappers.ToOrderResponseForCustomer(order);
     }
 }
