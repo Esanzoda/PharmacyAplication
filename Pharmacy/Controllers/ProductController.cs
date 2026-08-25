@@ -52,9 +52,17 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetById(long productId)
+    public async Task<ActionResult<ProductForCustomerResponse>> GetById(long productId)
     {
         var response = await mediator.Send(new GetProductByIdQuery(productId));
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> SearchByProductNameFromPharmacy(long pharmacyId,
+        string name, int pageNumber, int pageSize)
+    {
+        var response = await mediator.Send(new GetPharmacyProductsByNameQuery(pharmacyId, name, pageNumber, pageSize));
         return Ok(response);
     }
 }
