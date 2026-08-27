@@ -8,28 +8,5 @@ public class DeliverConfiguration : IEntityTypeConfiguration<DeliverEntity>
 {
     public void Configure(EntityTypeBuilder<DeliverEntity> builder)
     {
-        builder.ToTable("Delivers");
-
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.Name)
-            .IsRequired()
-            .HasMaxLength(50);
-
-        builder.Property(x => x.Address)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.Email)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.PasswordHash)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.PhoneNumber)
-            .IsRequired()
-            .HasMaxLength(50);
     }
 }

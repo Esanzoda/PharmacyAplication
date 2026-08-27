@@ -7,15 +7,15 @@ using Pharmacy.Services.Auth;
 
 namespace Pharmacy.CQRS.Auth.Query;
 
-public record ReGenerateRefreshTokenQuery(
+public record ReGenerateTokenQuery(
     string RefreshToken) : IRequest<string>;
 
-public class ReGenerateTokenQuery(
+public class ReGenerateTokenQueryHandler(
     IAuthService authService,
-    IApplicationDbContext dbContext) : IRequestHandler<ReGenerateRefreshTokenQuery, string>
+    IApplicationDbContext dbContext) : IRequestHandler<ReGenerateTokenQuery, string>
 {
     public async Task<string> Handle(
-        ReGenerateRefreshTokenQuery request,
+        ReGenerateTokenQuery request,
         CancellationToken cancellationToken)
     {
         var dateNow = DateTime.UtcNow;
@@ -53,12 +53,9 @@ public class ReGenerateTokenQuery(
                 refreshToken.UserId,
                 cancellationToken),
 
-            Role.Deliver => await GenerateDeliverToken(
+            Role.Deliver or Role.Admin => await GenerateDeliverOrCompanyEmployeeToken(
                 refreshToken.UserId,
                 cancellationToken),
-
-            Role.Admin => await GenerateCompanyEmployeeToken(
-                refreshToken.UserId, cancellationToken),
 
             _ => throw new BusinessException(
                 "Unknown role")
@@ -66,7 +63,9 @@ public class ReGenerateTokenQuery(
         return newAccessToken;
     }
 
-    private async Task<string> GenerateCustomerToken(long userId, CancellationToken cancellationToken)
+    private async Task<string> GenerateCustomerToken(
+        long userId,
+        CancellationToken cancellationToken)
     {
         var customer = await dbContext.Customers
             .FirstOrDefaultAsync(
@@ -82,7 +81,9 @@ public class ReGenerateTokenQuery(
         return await authService.GenerateTokenForCustomer(customer);
     }
 
-    private async Task<string> GenerateEmployeeToken(long userId, CancellationToken cancellationToken)
+    private async Task<string> GenerateEmployeeToken(
+        long userId, 
+        CancellationToken cancellationToken)
     {
         var employee = await dbContext.Employees
             .FirstOrDefaultAsync(
@@ -98,34 +99,21 @@ public class ReGenerateTokenQuery(
         return await authService.GenerateTokenForEmployee(employee);
     }
 
-    private async Task<string> GenerateDeliverToken(long userId, CancellationToken cancellationToken)
+    private async Task<string> GenerateDeliverOrCompanyEmployeeToken(
+        long userId, 
+        CancellationToken cancellationToken)
     {
-        var deliver = await dbContext.Delivers
+        var user = await dbContext.Users
             .FirstOrDefaultAsync(
                 x => x.Id == userId,
                 cancellationToken);
 
-        if (deliver is null)
+        if (user is null)
         {
             throw new ResourceNotFoundException(
                 "Deliver not found");
         }
 
-        return await authService.GenerateTokenForDeliver(deliver);
-    }
-
-    private async Task<string> GenerateCompanyEmployeeToken(long userId, CancellationToken cancellationToken)
-    {
-        var companyEmployee = await dbContext.CompanyEmployees
-            .FirstOrDefaultAsync(
-                x => x.Id == userId,
-                cancellationToken);
-        if (companyEmployee is null)
-        {
-            throw new ResourceNotFoundException(
-                "Deliver not found");
-        }
-
-        return await authService.GenerateTokenForCompanyEmployee(companyEmployee);
+        return await authService.GenerateTokenForDeliverOrCompanyEmployee(user);
     }
 }

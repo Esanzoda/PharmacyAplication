@@ -8,28 +8,5 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<EmployeeEntity>
 {
     public void Configure(EntityTypeBuilder<EmployeeEntity> builder)
     {
-        builder.ToTable("Employees");
-
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.Name)
-            .IsRequired()
-            .HasMaxLength(50);
-
-        builder.Property(x => x.Address)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.Email)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.PasswordHash)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.PhoneNumber)
-            .IsRequired()
-            .HasMaxLength(50);
     }
 }

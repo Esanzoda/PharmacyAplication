@@ -31,95 +31,6 @@ namespace Pharmacy.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CompanyEmployees",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CompanyEmployees", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Customers",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Address = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Latitude = table.Column<double>(type: "double precision", nullable: false),
-                    Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    Email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    PasswordHash = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Delivers",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Address = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Shot = table.Column<decimal>(type: "numeric", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    PasswordHash = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Delivers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PharmacyId = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Address = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Salary = table.Column<decimal>(type: "numeric", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    Position = table.Column<int>(type: "integer", nullable: false),
-                    PasswordHash = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ExpireDateProducts",
                 columns: table => new
                 {
@@ -147,7 +58,6 @@ namespace Pharmacy.Migrations
                     Address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Latitude = table.Column<double>(type: "double precision", nullable: false),
                     Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    MaxDistanceKm = table.Column<decimal>(type: "numeric", nullable: false),
                     PhoneNumber = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     OpeningTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
@@ -178,6 +88,34 @@ namespace Pharmacy.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
+                    Address = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    PasswordHash = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: true),
+                    Longitude = table.Column<double>(type: "double precision", nullable: true),
+                    Shot = table.Column<decimal>(type: "numeric", nullable: true),
+                    PharmacyId = table.Column<long>(type: "bigint", nullable: true),
+                    Salary = table.Column<decimal>(type: "numeric", nullable: true),
+                    Position = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -225,9 +163,9 @@ namespace Pharmacy.Migrations
                 {
                     table.PrimaryKey("PK_Carts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Carts_Customers_CustomerEntityId",
+                        name: "FK_Carts_Users_CustomerEntityId",
                         column: x => x.CustomerEntityId,
-                        principalTable: "Customers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -255,15 +193,15 @@ namespace Pharmacy.Migrations
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_Customers_CustomerEntityId",
+                        name: "FK_Orders_Users_CustomerEntityId",
                         column: x => x.CustomerEntityId,
-                        principalTable: "Customers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_Delivers_DeliverId",
+                        name: "FK_Orders_Users_DeliverId",
                         column: x => x.DeliverId,
-                        principalTable: "Delivers",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -284,43 +222,11 @@ namespace Pharmacy.Migrations
                 {
                     table.PrimaryKey("PK_Purchases", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Purchases_Employees_EmployeeEntityId",
+                        name: "FK_Purchases_Users_EmployeeEntityId",
                         column: x => x.EmployeeEntityId,
-                        principalTable: "Employees",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductBatches",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PharmacyId = table.Column<long>(type: "bigint", nullable: false),
-                    ProductEntityId = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Country = table.Column<int>(type: "integer", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
-                    PurchaseItemId = table.Column<long>(type: "bigint", nullable: false),
-                    ProductionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PurchasePrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    TotalPurchasePrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductBatches", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductBatches_Products_ProductEntityId",
-                        column: x => x.ProductEntityId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -407,8 +313,8 @@ namespace Pharmacy.Migrations
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     Barcode = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    ProductionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ProductionDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
@@ -420,6 +326,44 @@ namespace Pharmacy.Migrations
                         name: "FK_PurchaseItems_Purchases_PurchaseEntityId",
                         column: x => x.PurchaseEntityId,
                         principalTable: "Purchases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductBatches",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PharmacyId = table.Column<long>(type: "bigint", nullable: false),
+                    ProductEntityId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Country = table.Column<int>(type: "integer", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    PurchaseItemId = table.Column<long>(type: "bigint", nullable: false),
+                    ProductionDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    PurchasePrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    TotalPurchasePrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductBatches", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductBatches_Products_ProductEntityId",
+                        column: x => x.ProductEntityId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductBatches_PurchaseItems_PurchaseItemId",
+                        column: x => x.PurchaseItemId,
+                        principalTable: "PurchaseItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -513,6 +457,11 @@ namespace Pharmacy.Migrations
                 column: "ProductEntityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductBatches_PurchaseItemId",
+                table: "ProductBatches",
+                column: "PurchaseItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryEntityId",
                 table: "Products",
                 column: "CategoryEntityId");
@@ -535,9 +484,6 @@ namespace Pharmacy.Migrations
                 name: "CartItems");
 
             migrationBuilder.DropTable(
-                name: "CompanyEmployees");
-
-            migrationBuilder.DropTable(
                 name: "ExpireDateItems");
 
             migrationBuilder.DropTable(
@@ -545,9 +491,6 @@ namespace Pharmacy.Migrations
 
             migrationBuilder.DropTable(
                 name: "Pharmacies");
-
-            migrationBuilder.DropTable(
-                name: "PurchaseItems");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
@@ -565,22 +508,19 @@ namespace Pharmacy.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Purchases");
-
-            migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "Delivers");
-
-            migrationBuilder.DropTable(
-                name: "Employees");
+                name: "PurchaseItems");
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Purchases");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

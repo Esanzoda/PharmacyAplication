@@ -22,42 +22,19 @@ public class AuthController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<LoginResponse>> CustomerLogin(LoginRequest request,
+    public async Task<ActionResult<LoginResponse>> Login(LoginRequest request,
         CancellationToken cancellationToken)
     {
-        var response = await mediator.Send(new LoginCustomerCommand(request), cancellationToken);
+        var response = await mediator.Send(new LoginCommand(request), cancellationToken);
         return Ok(response);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<LoginResponse>> EmployeeLogin(LoginRequest request,
-        CancellationToken cancellationToken)
-    {
-        var response = await mediator.Send(new LoginEmployeeCommand(request), cancellationToken);
-        return Ok(response);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<LoginResponse>> DeliverLogin(LoginRequest request,
-        CancellationToken cancellationToken)
-    {
-        var response = await mediator.Send(new LoginDeliverCommand(request), cancellationToken);
-        return Ok(response);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<LoginResponse>> CompanyEmployeeLogin(LoginRequest request,
-        CancellationToken cancellationToken)
-    {
-        var response = await mediator.Send(new LoginCompanyEmployeeCommand(request), cancellationToken);
-        return Ok(response);
-    }
 
     [HttpPost]
     public async Task<ActionResult<LoginResponse>> ReGenerateRefreshToken(string refreshToken,
         CancellationToken cancellationToken)
     {
-        var response = await mediator.Send(new ReGenerateRefreshTokenQuery(refreshToken), cancellationToken);
+        var response = await mediator.Send(new ReGenerateTokenQuery(refreshToken), cancellationToken);
         return Ok(response);
     }
 }

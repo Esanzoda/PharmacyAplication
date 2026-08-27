@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pharmacy.Data;
@@ -12,11 +11,9 @@ using Pharmacy.Data;
 namespace Pharmacy.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260810064119_InitialCreate")]
-    partial class InitialCreate
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,206 +134,7 @@ namespace Pharmacy.Migrations
                     b.ToTable("Categories", (string)null);
                 });
 
-            modelBuilder.Entity("Pharmacy.CQRS.Customer.Models.CustomerEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customers", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.CQRS.Deliver.Models.DeliverEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Shot")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Delivers", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.CQRS.Employee.Models.EmployeeEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Employees", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiryDateEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("TotalPurchasePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalSalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExpireDateProducts");
-                });
-
-            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiryDateItemsEntity", b =>
+            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiredItemsEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -375,6 +173,37 @@ namespace Pharmacy.Migrations
                     b.HasIndex("ProductBatchId");
 
                     b.ToTable("ExpireDateItems");
+                });
+
+            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiredProductsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalPurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalSalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExpireDateProducts");
                 });
 
             modelBuilder.Entity("Pharmacy.CQRS.Order.Models.OrderEntity", b =>
@@ -506,9 +335,6 @@ namespace Pharmacy.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
 
-                    b.Property<decimal>("MaxDistanceKm")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -544,8 +370,8 @@ namespace Pharmacy.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("ExpiryDate")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -564,8 +390,8 @@ namespace Pharmacy.Migrations
                     b.Property<long>("ProductEntityId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("ProductionDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("ProductionDate")
+                        .HasColumnType("date");
 
                     b.Property<long>("PurchaseItemId")
                         .HasColumnType("bigint");
@@ -585,6 +411,8 @@ namespace Pharmacy.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductEntityId");
+
+                    b.HasIndex("PurchaseItemId");
 
                     b.ToTable("ProductBatches", (string)null);
                 });
@@ -696,8 +524,8 @@ namespace Pharmacy.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("ExpiryDate")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -708,8 +536,8 @@ namespace Pharmacy.Migrations
                     b.Property<long>("ProductEntityId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("ProductionDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("ProductionDate")
+                        .HasColumnType("date");
 
                     b.Property<long>("PurchaseEntityId")
                         .HasColumnType("bigint");
@@ -731,50 +559,6 @@ namespace Pharmacy.Migrations
                     b.HasIndex("PurchaseEntityId");
 
                     b.ToTable("PurchaseItems", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Models.Domain.CompanyEmployee", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CompanyEmployees");
                 });
 
             modelBuilder.Entity("Pharmacy.Models.Domain.RefreshToken", b =>
@@ -810,6 +594,111 @@ namespace Pharmacy.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Pharmacy.Models.Domain.User", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Pharmacy.CQRS.Customer.Models.CustomerEntity", b =>
+                {
+                    b.HasBaseType("Pharmacy.Models.Domain.User");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.HasDiscriminator().HasValue("CustomerEntity");
+                });
+
+            modelBuilder.Entity("Pharmacy.CQRS.Deliver.Models.DeliverEntity", b =>
+                {
+                    b.HasBaseType("Pharmacy.Models.Domain.User");
+
+                    b.Property<decimal>("Shot")
+                        .HasColumnType("numeric");
+
+                    b.HasDiscriminator().HasValue("DeliverEntity");
+                });
+
+            modelBuilder.Entity("Pharmacy.CQRS.Employee.Models.EmployeeEntity", b =>
+                {
+                    b.HasBaseType("Pharmacy.Models.Domain.User");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.HasDiscriminator().HasValue("EmployeeEntity");
+                });
+
+            modelBuilder.Entity("Pharmacy.Models.Domain.CompanyEmployee", b =>
+                {
+                    b.HasBaseType("Pharmacy.Models.Domain.User");
+
+                    b.HasDiscriminator().HasValue("CompanyEmployee");
                 });
 
             modelBuilder.Entity("Pharmacy.CQRS.Cart.Models.CartEntity", b =>
@@ -848,9 +737,9 @@ namespace Pharmacy.Migrations
                     b.Navigation("ProductEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiryDateItemsEntity", b =>
+            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiredItemsEntity", b =>
                 {
-                    b.HasOne("Pharmacy.CQRS.ExpiredProducts.Models.ExpiryDateEntity", "ExpiryDateEntity")
+                    b.HasOne("Pharmacy.CQRS.ExpiredProducts.Models.ExpiredProductsEntity", "ExpiredProductsEntity")
                         .WithMany("ExpiryDateItemsList")
                         .HasForeignKey("ExpiryDateEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -862,7 +751,7 @@ namespace Pharmacy.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ExpiryDateEntity");
+                    b.Navigation("ExpiredProductsEntity");
 
                     b.Navigation("ProductBatch");
                 });
@@ -907,7 +796,15 @@ namespace Pharmacy.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Pharmacy.CQRS.Purchase.Models.PurchaseItem", "PurchaseItem")
+                        .WithMany()
+                        .HasForeignKey("PurchaseItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ProductEntity");
+
+                    b.Navigation("PurchaseItem");
                 });
 
             modelBuilder.Entity("Pharmacy.CQRS.Product.ProductModels.ProductEntity", b =>
@@ -934,11 +831,13 @@ namespace Pharmacy.Migrations
 
             modelBuilder.Entity("Pharmacy.CQRS.Purchase.Models.PurchaseItem", b =>
                 {
-                    b.HasOne("Pharmacy.CQRS.Purchase.Models.Purchase", null)
+                    b.HasOne("Pharmacy.CQRS.Purchase.Models.Purchase", "PurchaseEntity")
                         .WithMany("PurchaseItems")
                         .HasForeignKey("PurchaseEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PurchaseEntity");
                 });
 
             modelBuilder.Entity("Pharmacy.CQRS.Cart.Models.CartEntity", b =>
@@ -951,18 +850,7 @@ namespace Pharmacy.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Pharmacy.CQRS.Customer.Models.CustomerEntity", b =>
-                {
-                    b.Navigation("CartEntity")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Pharmacy.CQRS.Deliver.Models.DeliverEntity", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiryDateEntity", b =>
+            modelBuilder.Entity("Pharmacy.CQRS.ExpiredProducts.Models.ExpiredProductsEntity", b =>
                 {
                     b.Navigation("ExpiryDateItemsList");
                 });
@@ -980,6 +868,17 @@ namespace Pharmacy.Migrations
             modelBuilder.Entity("Pharmacy.CQRS.Purchase.Models.Purchase", b =>
                 {
                     b.Navigation("PurchaseItems");
+                });
+
+            modelBuilder.Entity("Pharmacy.CQRS.Customer.Models.CustomerEntity", b =>
+                {
+                    b.Navigation("CartEntity")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Pharmacy.CQRS.Deliver.Models.DeliverEntity", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

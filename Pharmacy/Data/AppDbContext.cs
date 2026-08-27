@@ -11,7 +11,6 @@ using Pharmacy.CQRS.Purchase.Models;
 using Pharmacy.Infrastructure.Configurations;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain;
-using CompanyEmployee = Pharmacy.Models.Domain.CompanyEmployee;
 
 namespace Pharmacy.Data;
 
@@ -34,6 +33,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<CQRS.Pharmacy.Models.PharmacyEntity> Pharmacies { get; set; }
     public DbSet<ProductBatch> ProductBatches { get; set; }
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; }
+    public DbSet<User> Users { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
