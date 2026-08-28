@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -6,7 +5,6 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Pharmacy.CQRS.Customer.Models;
-using Pharmacy.CQRS.Deliver.Models;
 using Pharmacy.CQRS.Employee.Models;
 using Pharmacy.Infrastructure.Setting;
 using Pharmacy.Models.Domain;
@@ -18,8 +16,7 @@ public interface IAuthService
     Task<string> GenerateRefreshToken();
     Task<string> GenerateTokenForCustomer(CustomerEntity customer);
     Task<string> GenerateTokenForEmployee(EmployeeEntity employee);
-    Task<string> GenerateTokenForDeliver(DeliverEntity deliver);
-    Task<string> GenerateTokenForCompanyEmployee(CompanyEmployee companyEmployee);
+    Task<string> GenerateTokenForDeliverOrCompanyEmployee(User deliver);
 }
 
 public class AuthService(IOptionsMonitor<JwtOption> jwt) : IAuthService
@@ -93,41 +90,13 @@ public class AuthService(IOptionsMonitor<JwtOption> jwt) : IAuthService
             .WriteToken(token));
     }
 
-    public Task<string> GenerateTokenForDeliver(DeliverEntity deliver)
+    public Task<string> GenerateTokenForDeliverOrCompanyEmployee(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, deliver.Id.ToString()),
-            new Claim(ClaimTypes.Email, deliver.Email),
-            new Claim(ClaimTypes.Role, deliver.Role.ToString()),
-        };
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwt.CurrentValue.SecretKey));
-
-        var credentials =
-            new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(
-            issuer: jwt.CurrentValue.Issuer,
-            audience: jwt.CurrentValue.Audience,
-            claims: claims,
-            expires:
-            DateTime.UtcNow.AddMinutes(jwt.CurrentValue.AccessTokenExpirationMinutes),
-            signingCredentials:
-            credentials);
-
-        return Task.FromResult(new JwtSecurityTokenHandler()
-            .WriteToken(token));
-    }
-
-    public Task<string> GenerateTokenForCompanyEmployee(CompanyEmployee companyEmployee)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, companyEmployee.Id.ToString()),
-            new Claim(ClaimTypes.Email, companyEmployee.Email),
-            new Claim(ClaimTypes.Role, companyEmployee.Role.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
         };
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwt.CurrentValue.SecretKey));

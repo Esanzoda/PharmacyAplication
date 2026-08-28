@@ -31,7 +31,7 @@ public interface IApplicationDbContext
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<PharmacyEntity> Pharmacies { get; }
     DbSet<ProductBatch> ProductBatches { get; set; }
-    DbSet<CompanyEmployee> CompanyEmployees { get; set; }
+    DbSet<User> Users { get; set; }
 
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
