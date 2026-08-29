@@ -5,7 +5,6 @@ using Pharmacy.Exception;
 using Pharmacy.Infrastructure.Setting;
 using Pharmacy.Interfaces;
 using Pharmacy.Models.Domain;
-using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Models.Dto.Request;
 using Pharmacy.Models.Dto.Response;
 using Pharmacy.Services.Auth;
@@ -22,7 +21,9 @@ public class LoginCommandHandler(
     IAuthService authService,
     IPasswordService passwordService) : IRequestHandler<LoginCommand, LoginResponse>
 {
-    public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResponse> Handle(
+        LoginCommand request,
+        CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var user = await dbContext.Users
@@ -39,21 +40,8 @@ public class LoginCommandHandler(
             throw new BusinessException("Invalid email or password");
         }
 
-        var token = user.Role switch
-        {
-            Role.Customer => await GenerateTokenForCustomer(
-                user.Id,
-                cancellationToken),
+        var token = await authService.GenerateToken(user);
 
-            Role.Employee => await GenerateTokenForEmployee(
-                user.Id,
-                cancellationToken),
-
-            Role.Deliver or Role.Admin => await GenerateTokenForDeliverOrCompanyEmployee(
-                user.Id,
-                cancellationToken),
-            _ => throw new ArgumentOutOfRangeException()
-        };
         var newRefreshToken =
             new RefreshToken
             {
@@ -71,50 +59,5 @@ public class LoginCommandHandler(
             AccessToken = token,
             RefreshToken = newRefreshToken.Token
         };
-    }
-
-    private async Task<string> GenerateTokenForCustomer(
-        long id,
-        CancellationToken ctx)
-    {
-        var customer = await dbContext.Customers
-            .FindAsync([id],
-                ctx);
-        if (customer is null)
-        {
-            throw new ResourceNotFoundException("Customer not found");
-        }
-
-        return await authService.GenerateTokenForCustomer(customer);
-    }
-
-    private async Task<string> GenerateTokenForEmployee(
-        long id,
-        CancellationToken ctx)
-    {
-        var employee = await dbContext.Employees
-            .FindAsync([id],
-                ctx);
-        if (employee is null)
-        {
-            throw new ResourceNotFoundException("Employee not found");
-        }
-
-        return await authService.GenerateTokenForEmployee(employee);
-    }
-
-    private async Task<string> GenerateTokenForDeliverOrCompanyEmployee(
-        long id,
-        CancellationToken ctx)
-    {
-        var user = await dbContext.Users
-            .FindAsync([id],
-                ctx);
-        if (user is null)
-        {
-            throw new ResourceNotFoundException("Employee not found");
-        }
-
-        return await authService.GenerateTokenForDeliverOrCompanyEmployee(user);
     }
 }
