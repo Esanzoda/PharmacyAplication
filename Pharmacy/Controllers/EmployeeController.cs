@@ -16,40 +16,35 @@ namespace Pharmacy.Controllers;
 public class EmployeeController(IMediator mediator) : ControllerBase
 {
     [HttpPut]
-    public async Task<ActionResult<EmployeeResponse>> UpdateOrderStatus(long orderId, OrderStatus newOrderStatus)
+    public async Task<ActionResult<EmployeeResponse>> UpdateOrderStatus(long orderId, long pharmacyId,
+        OrderStatus newOrderStatus)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response =
             await mediator.Send(new UpdateOrderStatusCommand(employeeId, pharmacyId, orderId, newOrderStatus));
         return Ok(response);
     }
 
     [HttpPut]
-    public async Task<ActionResult<EmployeeResponse>> Update([FromBody] UpdateEmployeeRequest request)
+    public async Task<ActionResult<EmployeeResponse>> Update([FromBody] UpdateEmployeeRequest request, long pharmacyId)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
-
         var response = await mediator.Send(new UpdateEmployeeCommand(pharmacyId, employeeId, request));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<EmployeeResponse>> GetInformation()
+    public async Task<ActionResult<EmployeeResponse>> GetInformation(long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new GetEmployeeByIdQuery(pharmacyId, employeeId));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<string>> UpdatePassword(string oldPassword, string newPassword)
+    public async Task<ActionResult<string>> UpdatePassword(long pharmacyId, string oldPassword, string newPassword)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
-
         var response =
             await mediator.Send(new UpdateEmployeePasswordCommand(employeeId, pharmacyId, oldPassword, newPassword));
         return Ok(response);

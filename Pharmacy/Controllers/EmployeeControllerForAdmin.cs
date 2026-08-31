@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,83 +15,75 @@ namespace Pharmacy.Controllers;
 public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<EmployeeResponse>> Add([FromBody] EmployeeRequest request)
+    public async Task<ActionResult<EmployeeResponse>> Add([FromBody] EmployeeRequest request, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new CreateEmployeeCommand(pharmacyId, request));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<ActionResult<EmployeeResponse>>> GetById(long id)
+    public async Task<ActionResult<ActionResult<EmployeeResponse>>> GetById(long pharmacyId, long id)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeeByIdQuery(pharmacyId, id));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetAll(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetAllEmployeeByPaginationQuery(pharmacyId, pageNumber, pageSize));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id)
+    public async Task<IActionResult> DeleteById(long pharmacyId, long id)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new DeleteEmployeeCommand(pharmacyId, id));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(string name, int page, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(long pharmacyId, string name, int page,
+        int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesByNameQuery(pharmacyId, name, page, pageSize));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(string address, int page,
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(long pharmacyId, string address, int page,
         int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesByAddressQuery(pharmacyId, address, page, pageSize));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByNumber(string number)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByNumber(long pharmacyId, string number)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeeByNumberQuery(pharmacyId, number));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<EmployeeResponse>> GetByEmail(string email)
+    public async Task<ActionResult<EmployeeResponse>> GetByEmail(long pharmacyId, string email)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeeByEmailQuery(pharmacyId, email));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(decimal salary, int page,
+    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(long pharmacyId, decimal salary, int page,
         int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesBySalaryQuery(pharmacyId, salary, page, pageSize));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(Position position, int page, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(long pharmacyId, Position position, int page,
+        int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetEmployeesByPositionQuery(pharmacyId, position, page, pageSize));
         return Ok(response);
     }
