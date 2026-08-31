@@ -18,8 +18,9 @@ namespace Pharmacy.CQRS.Order.Commands;
 public record CreateOrderFromCartCommand(
     long CustomerId,
     OrderType OrderType,
-    double CustomerLatitude,
-    double CustomerLongitude) : IRequest<List<OrderResponseForCustomer>>;
+    double? NewCustomerLatitude,
+    double? NewCustomerLongitude,
+    string? NewCustomerAddress) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreatOrderFromCartHandler(
     IApplicationDbContext dbContext,
@@ -48,6 +49,10 @@ public class CreatOrderFromCartHandler(
         {
             throw new BusinessException("Cart is empty");
         }
+
+        var latitude = request.NewCustomerLatitude ?? cart.CustomerEntity.Latitude;
+        var longitude = request.NewCustomerLongitude ?? cart.CustomerEntity.Longitude;
+        var address = request.NewCustomerAddress ?? cart.CustomerEntity.Address;
 
         var productIds = cart.CartItems
             .Select(x => x.ProductEntityId)
@@ -102,7 +107,7 @@ public class CreatOrderFromCartHandler(
                 PharmacyId = pharmacy.Key,
                 OrderType = request.OrderType,
                 OrderStatus = OrderStatus.Pending,
-                Address = cart.CustomerEntity.Address
+                Address = address
             };
 
             await dbContext.Orders
@@ -137,8 +142,8 @@ public class CreatOrderFromCartHandler(
                 {
                     StartLat = currentPharmacy.Latitude,
                     StartLng = currentPharmacy.Longitude,
-                    FinishLat = request.CustomerLatitude,
-                    FinishLng = request.CustomerLongitude,
+                    FinishLat = latitude,
+                    FinishLng = longitude
                 };
 
                 var distanceKm = await routesService
@@ -163,7 +168,7 @@ public class CreatOrderFromCartHandler(
                 TotalAmount = order.TotalAmount,
                 Email = cart.CustomerEntity.Email,
                 CreatedAt = order.CreatedAt,
-                Address = order.Address
+                Address = address
             }, cancellationToken);
         }
 
