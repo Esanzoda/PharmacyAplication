@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Pharmacy.CQRS.Employee.Models;
 using Pharmacy.Infrastructure.Setting;
 using Pharmacy.Models.Domain;
 
@@ -32,8 +33,13 @@ public class AuthService(IOptionsMonitor<JwtOption> jwt) : IAuthService
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
+        if (user is EmployeeEntity employee)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, employee.Position.ToString()));
+        }
+
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwt.CurrentValue.SecretKey));
 

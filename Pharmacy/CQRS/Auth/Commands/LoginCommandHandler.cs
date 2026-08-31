@@ -35,7 +35,7 @@ public class LoginCommandHandler(
             throw new ResourceNotFoundException("User not found");
         }
 
-        if (await passwordService.PasswordVerify(request.Request.Password, user.PasswordHash))
+        if (!await passwordService.PasswordVerify(request.Request.Password, user.PasswordHash))
         {
             throw new BusinessException("Invalid email or password");
         }
