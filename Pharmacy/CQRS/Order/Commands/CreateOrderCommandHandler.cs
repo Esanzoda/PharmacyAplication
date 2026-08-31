@@ -17,10 +17,9 @@ namespace Pharmacy.CQRS.Order.Commands;
 
 public record CreateOrderCommand(
     long CustomerId,
-    double CustomerLatitude,
-    double CustomerLongitude,
-    string CustomerEmail,
-    string CustomerAddress,
+    double? NewCustomerLatitude,
+    double? NewCustomerLongitude,
+    string? NewCustomerAddress,
     CreateOrderRequest Request) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreateOrderCommandHandler(
@@ -33,6 +32,19 @@ public class CreateOrderCommandHandler(
         CreateOrderCommand request,
         CancellationToken cancellationToken)
     {
+        var customer = await dbContext.Customers
+            .FindAsync([request.CustomerId],
+                cancellationToken);
+        if (customer is null)
+        {
+            throw new ResourceNotFoundException("Customer not found");
+        }
+
+        var latitude = request.NewCustomerLatitude ?? customer.Latitude;
+        var longitude = request.NewCustomerLongitude ?? customer.Longitude;
+        var address = request.NewCustomerAddress ?? customer.Address;
+
+
         var productIds = request.Request.OrderItemRequest
             .Select(x => x.ProductId)
             .ToList();
@@ -82,7 +94,7 @@ public class CreateOrderCommandHandler(
             order.OrderStatus = OrderStatus.Pending;
             order.CustomerEntityId = request.CustomerId;
             order.PharmacyId = pharmacy.Key;
-            order.Address = request.CustomerAddress;
+            order.Address = address;
 
             await dbContext.Orders
                 .AddAsync(order, cancellationToken);
@@ -163,8 +175,8 @@ public class CreateOrderCommandHandler(
                 {
                     StartLat = currentPharmacy.Latitude,
                     StartLng = currentPharmacy.Longitude,
-                    FinishLat = request.CustomerLatitude,
-                    FinishLng = request.CustomerLongitude,
+                    FinishLat = latitude,
+                    FinishLng = longitude
                 };
 
                 var distanceKm = await routesService.CalculateRouteAsync(routeRequest);
@@ -183,10 +195,10 @@ public class CreateOrderCommandHandler(
                 {
                     OrderId = order.Id,
                     CustomerId = order.CustomerEntityId,
-                    Address = request.CustomerAddress,
+                    Address = address,
                     DeliveryFee = deliveryFee,
                     TotalAmount = order.TotalAmount,
-                    Email = request.CustomerEmail
+                    Email = customer.Email
                 },
                 cancellationToken);
         }

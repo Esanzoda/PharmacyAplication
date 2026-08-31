@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -17,26 +16,29 @@ namespace Pharmacy.Controllers;
 public class OrderController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<OrderResponseForCustomer>> Create([FromBody] CreateOrderRequest request)
+    public async Task<ActionResult<OrderResponseForCustomer>> Create([FromBody] CreateOrderRequest request,
+        double? newCustomerLat,
+        double? newCustomerLong,
+        string? newCustomerAddress)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var customerLat = double.Parse(User.FindFirstValue("Latitude")!, CultureInfo.InvariantCulture);
-        var customerLong = double.Parse(User.FindFirstValue("Longitude")!, CultureInfo.InvariantCulture);
-        var customerEmail = User.FindFirstValue(ClaimTypes.Email);
-        var customerAddress = User.FindFirstValue(ClaimTypes.StreetAddress);
-        var response = await mediator.Send(new CreateOrderCommand(customerId, customerLat, customerLong,
-            customerEmail!, customerAddress!, request));
+        var response =
+            await mediator.Send(new CreateOrderCommand(customerId, newCustomerLat, newCustomerLong, newCustomerAddress,
+                request));
         return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<OrderResponseForCustomer>> CreateFromCart(OrderType orderType)
+    public async Task<ActionResult<OrderResponseForCustomer>> CreateFromCart(OrderType orderType,
+        double? newCustomerLatitude,
+        double? newCustomerLongitude,
+        string? newCustomerAddress)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var customerLat = double.Parse(User.FindFirstValue("Latitude")!);
-        var customerLong = double.Parse(User.FindFirstValue("Longitude")!);
         var response =
-            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType, customerLat, customerLong));
+            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType, newCustomerLatitude,
+                newCustomerLongitude,
+                newCustomerAddress));
         return Ok(response);
     }
 
