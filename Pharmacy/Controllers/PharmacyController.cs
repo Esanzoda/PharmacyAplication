@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,42 +15,38 @@ namespace Pharmacy.Controllers;
 public class PharmacyController(IMediator mediator) : ControllerBase
 {
     [HttpPatch]
-    public async Task<ActionResult<PharmacyResponse>> UpdateName([FromBody] string newName)
+    public async Task<ActionResult<PharmacyResponse>> UpdateName([FromBody] string newName, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new UpdatePharmacyNameCommand(pharmacyId, newName));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<PharmacyResponse>> UpdateAddress([FromBody] string nawAddress)
+    public async Task<ActionResult<PharmacyResponse>> UpdateAddress([FromBody] string nawAddress, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new UpdatePharmacyAddressCommand(pharmacyId, nawAddress));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<PharmacyResponse>> UpdateEmail([FromBody] string newEmail)
+    public async Task<ActionResult<PharmacyResponse>> UpdateEmail([FromBody] string newEmail, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new UpdatePharmacyEmailCommand(pharmacyId, newEmail));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<PharmacyResponse>> UpdatePhoneNumber([FromBody] string nawNumber)
+    public async Task<ActionResult<PharmacyResponse>> UpdatePhoneNumber([FromBody] string nawNumber, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new UpdatePharmacyPhoneNumberCommand(pharmacyId, nawNumber));
         return Ok(response);
     }
 
 
     [HttpGet]
-    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiryProducts(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiryProducts(long pharmacyId, int pageNumber,
+        int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetExpiryProductsQuery(pharmacyId, pageNumber, pageSize));
         return Ok(response);
     }

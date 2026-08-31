@@ -16,53 +16,47 @@ namespace Pharmacy.Controllers;
 public class PurchaseController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<PurchaseResponse>> Add([FromBody] PurchaseRequest request)
+    public async Task<ActionResult<PurchaseResponse>> Add([FromBody] PurchaseRequest request, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new CreatePurchaseCommand(pharmacyId, employeeId, request));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<PurchaseResponse>> GetById(long id)
+    public async Task<ActionResult<PurchaseResponse>> GetById(long id, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetPurchaseBuIdQuery(pharmacyId, id));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new GetAllPurchaseQuery(pharmacyId, pageNumber, pageSize));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id)
+    public async Task<IActionResult> DeleteById(long id, long pharmacyId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new DeletePurchaseCommand(pharmacyId, employeeId, id));
         return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<PurchaseItemResponse>> AddItem(long purchaseId,
+    public async Task<ActionResult<PurchaseItemResponse>> AddItem(long pharmacyId, long purchaseId,
         PurchaseItemRequest purchaseItemRequest)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var response = await mediator.Send(new AddItemToPurchaseCommand(pharmacyId, purchaseId, purchaseItemRequest));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<ActionResult<PurchaseItemResponse>> RemoveItem(long purchaseId,
+    public async Task<ActionResult<PurchaseItemResponse>> RemoveItem(long purchaseId, long pharmacyId,
         long purchaseItemId)
     {
-        var pharmacyId = long.Parse(User.FindFirstValue("PharmacyId")!);
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
             await mediator.Send(new RemoveItemFromPurchaseCommand(employeeId, pharmacyId, purchaseId, purchaseItemId));
