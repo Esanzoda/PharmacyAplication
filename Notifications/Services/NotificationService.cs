@@ -32,6 +32,9 @@ public interface INotificationService
 
     Task ToPharmacyLowStockProduct(string toEmail, string productName, int currentStock,
         CancellationToken cancellationToken);
+
+
+    Task ToUser(string toEmail, string message, CancellationToken cancellationToken);
 }
 
 public class NotificationService(
@@ -247,5 +250,16 @@ public class NotificationService(
             "
         };
         await SendToEmail(message, cancellationToken);
+    }
+
+    public async Task ToUser(string toEmail, string message, CancellationToken cancellationToken)
+    {
+        var messageToUser = new EmailMessage
+        {
+            To = toEmail,
+            Subject = "Information",
+            Body = message
+        };
+        await SendToEmail(messageToUser, cancellationToken);
     }
 }

@@ -4,6 +4,7 @@ using Pharmacy.CQRS.Auth.Commands;
 using Pharmacy.CQRS.Auth.Query;
 using Pharmacy.CQRS.Customer.Commands;
 using Pharmacy.CQRS.Customer.Models.DTOs.Response;
+using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Models.Dto.Request;
 using Pharmacy.Models.Dto.Response;
 
@@ -35,6 +36,27 @@ public class AuthController(
         CancellationToken cancellationToken)
     {
         var response = await mediator.Send(new ReGenerateTokenQuery(refreshToken), cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<LoginResponse>> ForgotPassword(
+        string email,
+        Role role,
+        CancellationToken cancellationToken)
+    {
+        var response = await mediator.Send(new ForgotCommand(email, role), cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<LoginResponse>> ResetPassword(int code,
+        string newPassword,
+        string email,
+        Role role,
+        CancellationToken cancellationToken)
+    {
+        var response = await mediator.Send(new ResetPasswordCommand(code, newPassword, email, role), cancellationToken);
         return Ok(response);
     }
 }
