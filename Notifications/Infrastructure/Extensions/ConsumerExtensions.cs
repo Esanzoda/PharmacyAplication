@@ -26,6 +26,8 @@ public static class ConsumerExtensions
                     .Endpoint(e => e.Name = "check-expiry-date-product");
                 x.AddConsumer<OrderShippedConsumer>()
                     .Endpoint(e => e.Name = "order-shipped");
+                x.AddConsumer<ForgotPasswordConsumer>()
+                    .Endpoint(e=>e.Name="password-updated");
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(rabbitmq.Host, rabbitmq.VirtualHost, hostConfigure =>
