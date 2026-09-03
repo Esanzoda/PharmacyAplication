@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
@@ -28,7 +27,8 @@ public class ForgotCommandHandler(
             throw new ResourceNotFoundException("User not found");
         }
 
-        var newCode = RandomNumberGenerator.GetInt32(12345678);
+        var random = new Random();
+        var newCode = random.Next(10000000, 19999999);
         var key = $"User-{user.Email}-{user.Role}";
         await cache.SetStringAsync(
             key, newCode.ToString(),

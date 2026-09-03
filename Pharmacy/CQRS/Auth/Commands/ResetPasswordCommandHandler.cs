@@ -26,7 +26,7 @@ public class ResetPasswordCommandHandler(
         var userCode = await cache.GetStringAsync(key, cancellationToken);
         if (userCode is null)
         {
-            throw new ResourceNotFoundException("Code expired ");
+            throw new ResourceNotFoundException($"Reset code has expired for user-{request.Email} ");
         }
 
         if (userCode != request.Code.ToString())
