@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Pharmacy.CQRS.Employee.Models;
+using Pharmacy.Domain.Models.Base.Domain;
+using Pharmacy.Domain.Models.Employee;
 using Pharmacy.Infrastructure.Setting;
-using Pharmacy.Models.Domain;
 
 namespace Pharmacy.Services.Auth;
 

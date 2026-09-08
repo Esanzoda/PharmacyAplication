@@ -1,10 +1,10 @@
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Event.Events;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Auth.Commands;
 

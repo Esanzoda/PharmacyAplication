@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.CQRS.Order.Models;
+using Pharmacy.Domain.Models.Order;
 
 namespace Pharmacy.Infrastructure.Configurations;
 

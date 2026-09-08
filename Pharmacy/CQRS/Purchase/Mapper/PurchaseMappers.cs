@@ -1,6 +1,6 @@
-using Pharmacy.CQRS.Purchase.Models;
-using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
-using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
+using Pharmacy.Domain.Models.PurchaseEntity;
+using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Request;
+using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Response;
 
 namespace Pharmacy.CQRS.Purchase.Mapper;
 
@@ -35,7 +35,7 @@ public static class PurchaseMappers
         };
     }
 
-    public static PurchaseResponse ToPurchaseResponse(Models.Purchase purchase)
+    public static PurchaseResponse ToPurchaseResponse(Domain.Models.PurchaseEntity.Purchase purchase)
     {
         return new PurchaseResponse
         {
@@ -48,7 +48,7 @@ public static class PurchaseMappers
         };
     }
 
-    public static List<PurchaseResponse> ToListPurchaseResponse(List<Models.Purchase> purchases)
+    public static List<PurchaseResponse> ToListPurchaseResponse(List<Domain.Models.PurchaseEntity.Purchase> purchases)
     {
         return purchases
             .Select(ToPurchaseResponse)

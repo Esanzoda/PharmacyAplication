@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 using Pharmacy.CQRS.Product.Queries.Customer;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Product.DTos.Response.Customer;
 
 namespace Pharmacy.Controllers;
 

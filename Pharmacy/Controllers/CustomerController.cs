@@ -3,18 +3,18 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Cart.Commands;
-using Pharmacy.CQRS.Cart.Models.DTOs.Request;
 using Pharmacy.CQRS.Cart.Queries;
-using Pharmacy.CQRS.Category.Models.DTOs.Response;
 using Pharmacy.CQRS.Category.Queries;
 using Pharmacy.CQRS.Customer.Commands;
-using Pharmacy.CQRS.Customer.Models.DTOs.Request;
-using Pharmacy.CQRS.Customer.Models.DTOs.Response;
-using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
 using Pharmacy.CQRS.Pharmacy.Queries;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response.Customer;
 using Pharmacy.CQRS.Product.Queries.Customer;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Cart.DTOs.Request;
+using Pharmacy.Domain.Models.Category.DTOs.Response;
+using Pharmacy.Domain.Models.Customer.DTOs.Request;
+using Pharmacy.Domain.Models.Customer.DTOs.Response;
+using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
+using Pharmacy.Domain.Models.Product.DTos.Response.Customer;
 
 namespace Pharmacy.Controllers;
 

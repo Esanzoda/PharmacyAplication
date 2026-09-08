@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.ExpiredProducts.Models;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
+using Pharmacy.Domain.Models.Expired;
+using Pharmacy.Domain.Models.Product.DTos.Response;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.ExpiredProducts.Query;

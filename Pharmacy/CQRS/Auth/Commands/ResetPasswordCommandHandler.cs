@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Services.Password;
 
 namespace Pharmacy.CQRS.Auth.Commands;
@@ -12,8 +12,7 @@ public record ResetPasswordCommand(
     int Code,
     string NewPassword,
     string Email,
-    Role Role
-) : IRequest<string>;
+    Role Role ) : IRequest<string>;
 
 public class ResetPasswordCommandHandler(
     IApplicationDbContext dbContext,

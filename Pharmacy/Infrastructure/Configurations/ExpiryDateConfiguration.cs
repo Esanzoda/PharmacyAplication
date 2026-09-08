@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.CQRS.ExpiredProducts.Models;
+using Pharmacy.Domain.Models.Expired;
 
 namespace Pharmacy.Infrastructure.Configurations;
 

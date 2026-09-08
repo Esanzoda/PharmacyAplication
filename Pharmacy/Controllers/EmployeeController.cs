@@ -3,10 +3,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Employee.Commands;
-using Pharmacy.CQRS.Employee.Models.DTOs.Request;
-using Pharmacy.CQRS.Employee.Models.DTOs.Response;
 using Pharmacy.CQRS.Employee.Queries;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Employee.DTOs.Request;
+using Pharmacy.Domain.Models.Employee.DTOs.Response;
 
 namespace Pharmacy.Controllers;
 

@@ -1,6 +1,6 @@
-using Pharmacy.CQRS.Cart.Models;
-using Pharmacy.CQRS.Cart.Models.DTOs.Request;
-using Pharmacy.CQRS.Cart.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Cart;
+using Pharmacy.Domain.Models.Cart.DTOs.Request;
+using Pharmacy.Domain.Models.Cart.DTOs.Response;
 
 namespace Pharmacy.CQRS.Cart.Mappers;
 

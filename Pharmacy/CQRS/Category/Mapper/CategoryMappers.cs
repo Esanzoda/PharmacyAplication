@@ -1,7 +1,7 @@
-using Pharmacy.CQRS.Category.Models;
-using Pharmacy.CQRS.Category.Models.DTOs.Request;
-using Pharmacy.CQRS.Category.Models.DTOs.Response;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Category;
+using Pharmacy.Domain.Models.Category.DTOs.Request;
+using Pharmacy.Domain.Models.Category.DTOs.Response;
 
 namespace Pharmacy.CQRS.Category.Mapper;
 

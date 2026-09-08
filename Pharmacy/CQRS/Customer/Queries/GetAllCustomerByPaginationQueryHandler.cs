@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Customer.Mapper;
-using Pharmacy.CQRS.Customer.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Customer.DTOs.Response;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Customer.Queries;

@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Cart.Models;
 using Pharmacy.CQRS.Customer.Mapper;
-using Pharmacy.CQRS.Customer.Models.DTOs.Request;
-using Pharmacy.CQRS.Customer.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Cart;
+using Pharmacy.Domain.Models.Customer.DTOs.Request;
+using Pharmacy.Domain.Models.Customer.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Services.GoogleMaps;
