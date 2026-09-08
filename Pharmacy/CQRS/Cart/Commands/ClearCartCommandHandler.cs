@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Cart.Mappers;
-using Pharmacy.CQRS.Cart.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Cart.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 

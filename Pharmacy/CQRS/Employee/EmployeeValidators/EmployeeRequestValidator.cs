@@ -1,5 +1,5 @@
 using FluentValidation;
-using Pharmacy.CQRS.Employee.Models.DTOs.Request;
+using Pharmacy.Domain.Models.Employee.DTOs.Request;
 
 namespace Pharmacy.CQRS.Employee.EmployeeValidators;
 

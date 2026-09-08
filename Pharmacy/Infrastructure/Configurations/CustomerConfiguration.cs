@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.CQRS.Cart.Models;
-using Pharmacy.CQRS.Customer.Models;
-using Pharmacy.CQRS.Order.Models;
+using Pharmacy.Domain.Models.Cart;
+using Pharmacy.Domain.Models.Customer;
+using Pharmacy.Domain.Models.Order;
 
 namespace Pharmacy.Infrastructure.Configurations;
 

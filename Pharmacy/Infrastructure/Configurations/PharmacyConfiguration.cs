@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pharmacy.Domain.Models.Pharmacy;
 
 namespace Pharmacy.Infrastructure.Configurations;
 
-public class PharmacyConfiguration : IEntityTypeConfiguration<CQRS.Pharmacy.Models.PharmacyEntity>
+public class PharmacyConfiguration : IEntityTypeConfiguration<PharmacyEntity>
 {
-    public void Configure(EntityTypeBuilder<CQRS.Pharmacy.Models.PharmacyEntity> builder)
+    public void Configure(EntityTypeBuilder<PharmacyEntity> builder)
     {
         builder.HasKey(x => x.Id);
 

@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.ExpiredProducts.Query;
 using Pharmacy.CQRS.Pharmacy.Commands;
-using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
-using Pharmacy.CQRS.Product.ProductModels.DTos.Response;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
+using Pharmacy.Domain.Models.Product.DTos.Response;
 
 namespace Pharmacy.Controllers;
 

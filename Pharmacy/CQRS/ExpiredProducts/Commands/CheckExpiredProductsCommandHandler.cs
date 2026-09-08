@@ -1,7 +1,7 @@
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.ExpiredProducts.Models;
+using Pharmacy.Domain.Models.Expired;
 using Pharmacy.Event.Events;
 using Pharmacy.Interfaces;
 

@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Employee.Mapper;
-using Pharmacy.CQRS.Employee.Models.DTOs.Request;
-using Pharmacy.CQRS.Employee.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Employee.DTOs.Request;
+using Pharmacy.Domain.Models.Employee.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Services.Password;

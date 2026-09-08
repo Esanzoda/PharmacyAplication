@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Employee.Models;
 using Pharmacy.CQRS.Pharmacy.Mapper;
-using Pharmacy.CQRS.Pharmacy.Models.DTOs.Request;
-using Pharmacy.CQRS.Pharmacy.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Employee;
+using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
+using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 using Pharmacy.Services.GoogleMaps;
 using Pharmacy.Services.Password;
 

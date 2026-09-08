@@ -1,9 +1,9 @@
-using Pharmacy.CQRS.Deliver.Models;
-using Pharmacy.CQRS.Deliver.Models.DTOs.Request;
-using Pharmacy.CQRS.Deliver.Models.DTOs.Response;
-using Pharmacy.CQRS.Order.Models;
-using Pharmacy.CQRS.Order.Models.DTOs.Response;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Deliver;
+using Pharmacy.Domain.Models.Deliver.DTOs.Request;
+using Pharmacy.Domain.Models.Deliver.DTOs.Response;
+using Pharmacy.Domain.Models.Order;
+using Pharmacy.Domain.Models.Order.DTOs.Response;
 
 namespace Pharmacy.CQRS.Deliver.Mapper;
 

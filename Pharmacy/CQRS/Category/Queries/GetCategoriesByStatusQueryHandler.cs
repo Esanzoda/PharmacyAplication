@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Category.Mapper;
-using Pharmacy.CQRS.Category.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Category.DTOs.Response;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Category.Queries;
 

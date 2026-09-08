@@ -1,7 +1,7 @@
-using Pharmacy.CQRS.Employee.Models;
-using Pharmacy.CQRS.Employee.Models.DTOs.Request;
-using Pharmacy.CQRS.Employee.Models.DTOs.Response;
-using Pharmacy.Models.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Employee;
+using Pharmacy.Domain.Models.Employee.DTOs.Request;
+using Pharmacy.Domain.Models.Employee.DTOs.Response;
 
 namespace Pharmacy.CQRS.Employee.Mapper;
 

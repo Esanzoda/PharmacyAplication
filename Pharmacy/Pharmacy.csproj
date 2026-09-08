@@ -50,6 +50,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Pharmacy.Domain\Pharmacy.Domain.csproj" />
       <ProjectReference Include="..\Pharmacy.Event\Pharmacy.Event.csproj" />
     </ItemGroup>
 

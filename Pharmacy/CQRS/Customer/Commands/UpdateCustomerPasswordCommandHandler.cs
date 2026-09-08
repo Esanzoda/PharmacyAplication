@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Pharmacy.CQRS.Customer.Mapper;
-using Pharmacy.CQRS.Customer.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Customer.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 using Pharmacy.Services.Password;

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Auth.Commands;
 using Pharmacy.CQRS.Auth.Query;
 using Pharmacy.CQRS.Customer.Commands;
-using Pharmacy.CQRS.Customer.Models.DTOs.Response;
-using Pharmacy.Models.Domain.Enum;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
+using Pharmacy.Domain.Models.Base.Dto.Response;
+using Pharmacy.Domain.Models.Customer.DTOs.Response;
 
 namespace Pharmacy.Controllers;
 
@@ -56,7 +56,10 @@ public class AuthController(
         Role role,
         CancellationToken cancellationToken)
     {
-        var response = await mediator.Send(new ResetPasswordCommand(code, newPassword, email, role), cancellationToken);
+        var response = await mediator.Send(
+            new ResetPasswordCommand(code, newPassword, email, role),
+            cancellationToken);
+
         return Ok(response);
     }
 }

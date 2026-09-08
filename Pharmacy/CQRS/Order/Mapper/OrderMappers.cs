@@ -1,6 +1,6 @@
-using Pharmacy.CQRS.Order.Models;
-using Pharmacy.CQRS.Order.Models.DTOs.Request;
-using Pharmacy.CQRS.Order.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Order;
+using Pharmacy.Domain.Models.Order.DTOs.Request;
+using Pharmacy.Domain.Models.Order.DTOs.Response;
 
 namespace Pharmacy.CQRS.Order.Mapper;
 

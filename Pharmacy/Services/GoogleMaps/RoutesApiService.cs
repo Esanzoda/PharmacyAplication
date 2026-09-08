@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Infrastructure.Setting;
-using Pharmacy.Models.Domain;
 
 namespace Pharmacy.Services.GoogleMaps;
 

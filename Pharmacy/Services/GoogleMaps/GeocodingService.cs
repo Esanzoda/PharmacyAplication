@@ -1,7 +1,7 @@
 using System.Text.Json;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Exception;
 using Pharmacy.Infrastructure.Setting;
-using Pharmacy.Models.Domain;
 
 namespace Pharmacy.Services.GoogleMaps;
 

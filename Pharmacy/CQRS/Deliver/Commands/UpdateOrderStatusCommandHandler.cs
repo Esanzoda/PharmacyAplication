@@ -1,11 +1,11 @@
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Deliver.Models;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Event.Events;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain.Enum;
 
 namespace Pharmacy.CQRS.Deliver.Commands;
 

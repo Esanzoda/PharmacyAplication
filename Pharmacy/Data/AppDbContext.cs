@@ -1,16 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Cart.Models;
-using Pharmacy.CQRS.Category.Models;
-using Pharmacy.CQRS.Customer.Models;
-using Pharmacy.CQRS.Deliver.Models;
-using Pharmacy.CQRS.Employee.Models;
-using Pharmacy.CQRS.ExpiredProducts.Models;
-using Pharmacy.CQRS.Order.Models;
-using Pharmacy.CQRS.Product.ProductModels;
-using Pharmacy.CQRS.Purchase.Models;
+using Pharmacy.Domain.Models.Base.Domain;
+using Pharmacy.Domain.Models.Cart;
+using Pharmacy.Domain.Models.Category;
+using Pharmacy.Domain.Models.Customer;
+using Pharmacy.Domain.Models.Deliver;
+using Pharmacy.Domain.Models.Employee;
+using Pharmacy.Domain.Models.Expired;
+using Pharmacy.Domain.Models.Order;
+using Pharmacy.Domain.Models.Pharmacy;
+using Pharmacy.Domain.Models.Product;
+using Pharmacy.Domain.Models.PurchaseEntity;
 using Pharmacy.Infrastructure.Configurations;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain;
 
 namespace Pharmacy.Data;
 
@@ -30,7 +31,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ExpiredProductsEntity> ExpireDateProducts { get; set; }
     public DbSet<ExpiredItemsEntity> ExpireDateItems { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-    public DbSet<CQRS.Pharmacy.Models.PharmacyEntity> Pharmacies { get; set; }
+    public DbSet<PharmacyEntity> Pharmacies { get; set; }
     public DbSet<ProductBatch> ProductBatches { get; set; }
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; }
     public DbSet<User> Users { get; set; }

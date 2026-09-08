@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Pharmacy.Domain.Models.Base.Domain;
+using Pharmacy.Domain.Models.Base.Dto.Request;
+using Pharmacy.Domain.Models.Base.Dto.Response;
 using Pharmacy.Exception;
 using Pharmacy.Infrastructure.Setting;
 using Pharmacy.Interfaces;
-using Pharmacy.Models.Domain;
-using Pharmacy.Models.Dto.Request;
-using Pharmacy.Models.Dto.Response;
 using Pharmacy.Services.Auth;
 using Pharmacy.Services.Password;
 

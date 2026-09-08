@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pharmacy.CQRS.Cart.Models;
+using Pharmacy.Domain.Models.Cart;
 
 namespace Pharmacy.CQRS.Cart.Configuration;
 
@@ -12,7 +12,7 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItemEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.HasOne<Models.CartEntity>()
+        builder.HasOne<CartEntity>()
             .WithMany(x => x.CartItems)
             .HasForeignKey(x => x.CustomerEntityId)
             .OnDelete(DeleteBehavior.Cascade);

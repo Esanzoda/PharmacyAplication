@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy.CQRS.Product.ProductModels;
 using Pharmacy.CQRS.Purchase.Mapper;
-using Pharmacy.CQRS.Purchase.Models.DTOs.Request;
-using Pharmacy.CQRS.Purchase.Models.DTOs.Response;
+using Pharmacy.Domain.Models.Product;
+using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Request;
+using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -12,8 +12,7 @@ namespace Pharmacy.CQRS.Purchase.Commands;
 public record CreatePurchaseCommand(
     long PharmacyId,
     long EmployeeId,
-    PurchaseRequest Request
-) : IRequest<PurchaseResponse>;
+    PurchaseRequest Request ) : IRequest<PurchaseResponse>;
 
 public class CreatePurchaseCommandHandler(
     IApplicationDbContext dbContext) : IRequestHandler<CreatePurchaseCommand, PurchaseResponse>
@@ -22,7 +21,7 @@ public class CreatePurchaseCommandHandler(
         CreatePurchaseCommand request,
         CancellationToken cancellationToken)
     {
-        var purchase = new Models.Purchase
+        var purchase = new Domain.Models.PurchaseEntity.Purchase
         {
             PharmacyId = request.PharmacyId,
             EmployeeEntityId = request.EmployeeId
