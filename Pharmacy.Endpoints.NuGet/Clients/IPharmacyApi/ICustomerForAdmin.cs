@@ -5,14 +5,14 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface ICustomerForAdmin
 {
-    [Get("api/CustomerControllerForAdmin/GetAll")]
+    [Get("/api/CustomerControllerForAdmin/GetAll")]
     Task<List<CustomerResponse>> GetAll(
         long pharmacyId,
         int pageNumber,
         int pageSize);
 
 
-    [Get("api/CustomerControllerForAdmin/GetByPhoneAsync")]
+    [Get("/api/CustomerControllerForAdmin/GetByPhoneAsync")]
     Task<CustomerResponse> GetByPhoneAsync(
         long pharmacyId,
         string phone,
@@ -20,7 +20,7 @@ public interface ICustomerForAdmin
         int pageSize);
 
 
-    [Get("api/CustomerControllerForAdmin/GetByNameAsync")]
+    [Get("/api/CustomerControllerForAdmin/GetByNameAsync")]
     Task<List<CustomerResponse>> GetByNameAsync(
         long pharmacyId,
         string name,

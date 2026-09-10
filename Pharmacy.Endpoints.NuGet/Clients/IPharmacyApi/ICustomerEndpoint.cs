@@ -10,66 +10,66 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface ICustomerEndpoint
 {
-    [Patch("ali/Customer/UpdateCartItemQuantity")]
+    [Patch("/ali/Customer/UpdateCartItemQuantity")]
     Task UpdateCartItemQuantity(
         long productId, 
         int quantity);
 
 
-    [Put("api/Customer/Update")]
+    [Put("/api/Customer/Update")]
     Task<CustomerResponse> Update(
         UpdateCustomerRequest request);
 
 
-    [Patch("api/Customer/UpdatePassword")]
+    [Patch("/api/Customer/UpdatePassword")]
     Task<CustomerResponse> UpdatePassword(
         string oldPassword, 
         string newPassword);
 
 
-    [Patch("api/Customer/UpdateAddress")]
+    [Patch("/api/Customer/UpdateAddress")]
     Task<string> UpdateAddress(
         string newAddress);
 
 
 
-    [Get("api/Customer/GetCategoryWithProducts")]
+    [Get("/api/Customer/GetCategoryWithProducts")]
     Task<List<ProductForCustomerResponse>> GetCategoryWithProducts(
         int categoryId, int page,
         int pageSize);
 
 
-    [Post("api/Customer/AddToCartAsync")]
+    [Post("/api/Customer/AddToCartAsync")]
     Task AddToCartAsync(
         CartItemRequest request);
 
 
-    [Delete("api/Customer/RemoveItemFromCartAsync")]
+    [Delete("/api/Customer/RemoveItemFromCartAsync")]
     Task RemoveItemFromCartAsync(
         long productId);
 
 
-    [Delete("api/Customer/ClearCartAsync")]
+    [Delete("/api/Customer/ClearCartAsync")]
     Task ClearCartAsync();
 
 
-    [Get("api/Customer/GetBiCustomerId")]
+    [Get("/api/Customer/GetBiCustomerId")]
     Task GetBiCustomerId();
 
 
-    [Get("api/Customer/GetAllPharmacy")]
+    [Get("/api/Customer/GetAllPharmacy")]
     Task<PharmacyResponse> GetAllPharmacy(
         int page,
         int pageSize);
 
 
-    [Get("api/Customer/GetAllCategory")]
+    [Get("/api/Customer/GetAllCategory")]
     Task<List<CategoryResponse>> GetAllCategory(
         int page,
         int pageSize);
 
 
-    [Get("api/Customer/GetPharmacyProductsByCategory")]
+    [Get("/api/Customer/GetPharmacyProductsByCategory")]
     Task<List<ProductForCustomerResponse>> GetPharmacyProductsByCategory(
         long pharmacyId,
         long categoryId,

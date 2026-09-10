@@ -8,43 +8,43 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface ICategoryEndpoint
 {
-    [Post("api/Category/Add")]
+    [Post("/api/Category/Add")]
     Task<CategoryResponse> Add(
         [Body] CreateCategoryRequest request);
     
-    [Post("api/Category/Update")]
+    [Post("/api/Category/Update")]
     Task<CategoryResponse> Update(
         long id, 
         [Body] UpdateCategoryRequest request);
 
-    [Get("api/Category/GetById")]
+    [Get("/api/Category/GetById")]
     Task<CategoryResponse> GetById(
         long id,
         CancellationToken cancellationToken = default);
     
-    [Get("api/Category/GetAll")]
+    [Get("/api/Category/GetAll")]
     Task<List<CategoryResponse>> GetAll(
         int page, 
         int pageSize);
 
-    [Delete("api/Category/DeleteById")]
+    [Delete("/api/Category/DeleteById")]
     Task DeleteById(
         long id);
 
 
-    [Get("api/Category/GetProducts")]
+    [Get("/api/Category/GetProducts")]
     Task<List<ProductForCustomerResponse>> GetProducts(
         int categoryId, 
         int page,
         int pageSize);
 
 
-    [Get("api/Category/GetByName")]
+    [Get("/api/Category/GetByName")]
     Task<CategoryResponse> GetByName(
         string name);
 
 
-    [Get("api/Category/GetByStatus")]
+    [Get("/api/Category/GetByStatus")]
     Task<List<CategoryResponse>> GetByStatus(
         CategoryStatus categoryStatus, 
         int pageNumber,
