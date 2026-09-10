@@ -6,6 +6,7 @@ using Pharmacy.CQRS.Customer.Commands;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Base.Dto.Response;
+using Pharmacy.Domain.Models.Customer.DTOs.Request;
 using Pharmacy.Domain.Models.Customer.DTOs.Response;
 
 namespace Pharmacy.Controllers;
@@ -16,9 +17,9 @@ public class AuthController(
     IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<CustomerResponse>> Register([FromBody] RegisterCommand registerCommandHandler)
+    public async Task<ActionResult<CustomerResponse>> Register([FromBody] CustomerRequest request)
     {
-        var response = await mediator.Send(registerCommandHandler);
+        var response = await mediator.Send(new RegisterCommand( request));
         return Ok(response);
     }
 
