@@ -7,25 +7,25 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface IEmployeeEndpoint
 {
-    [Put("api/Employee/UpdateOrderStatus")]
+    [Put("/api/Employee/UpdateOrderStatus")]
     Task<EmployeeResponse> UpdateOrderStatus(
         long orderId, 
         long pharmacyId,
         OrderStatus newOrderStatus);
 
 
-    [Put("api/Employee/Update")]
+    [Put("/api/Employee/Update")]
      Task<EmployeeResponse> Update(
          [Body] UpdateEmployeeRequest request, 
          long pharmacyId);
 
 
-    [Get("api/Employee/GetInformation")]
+    [Get("/api/Employee/GetInformation")]
     Task<EmployeeResponse> GetInformation(
         long pharmacyId);
 
 
-    [Patch("api/Employee/UpdatePassword")]
+    [Patch("/api/Employee/UpdatePassword")]
    Task<string> UpdatePassword(
        long pharmacyId, 
        string oldPassword, 
