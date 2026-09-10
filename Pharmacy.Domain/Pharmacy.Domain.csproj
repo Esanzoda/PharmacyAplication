@@ -4,6 +4,13 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <PackageId>Negusaf.PharmacyDomain</PackageId>
+        <Version>1.0.0</Version>
+        <Author>Orash</Author>
+        <Company>Negusaf</Company>
+        <Description>Contracts and domain models for the Pharmacy platform.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
 </Project>

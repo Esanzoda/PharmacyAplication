@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <PackageId>Negusaf.PharmacyEndpointsLibrary</PackageId>
+        <Version>1.0.0</Version>
+        <Author>Orash</Author>
+        <Company>Negusaf</Company>
+        <Description>A helpful library that does amazing things in .NET.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Refit" Version="15.2.0" />
+      <PackageReference Include="Refit.HttpClientFactory" Version="15.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Negusaf.PharmacyDomain" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Pharmacy.Domain\Pharmacy.Domain.csproj" />
+    </ItemGroup>
+    
+ 
+    
+
+</Project>
