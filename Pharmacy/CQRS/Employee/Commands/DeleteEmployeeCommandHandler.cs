@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -8,13 +9,13 @@ namespace Pharmacy.CQRS.Employee.Commands;
 
 public record DeleteEmployeeCommand(
     long PharmacyId,
-    long EmployeeId) : IRequest<bool>;
+    long EmployeeId) : IRequest<string>;
 
 public class DeleteEmployeeHandler(
     IDistributedCache cache,
-    IApplicationDbContext dbContext) : IRequestHandler<DeleteEmployeeCommand, bool>
+    IApplicationDbContext dbContext) : IRequestHandler<DeleteEmployeeCommand, string>
 {
-    public async Task<bool> Handle(
+    public async Task<string> Handle(
         DeleteEmployeeCommand request,
         CancellationToken cancellationToken)
     {
@@ -34,6 +35,6 @@ public class DeleteEmployeeHandler(
         var key = $"Employee-{request.PharmacyId}-{employee.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        return true;
+        return Message.Deleted;
     }
 }

@@ -1,17 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Pharmacy.Commands;
 
 public record DeletePharmacyCommand(
-    long PharmacyId) : IRequest<bool>;
+    long PharmacyId) : IRequest<string>;
 
 public class DeletePharmacyCommandHandler(IApplicationDbContext dbContext)
-    : IRequestHandler<DeletePharmacyCommand, bool>
+    : IRequestHandler<DeletePharmacyCommand, string>
 {
-    public async Task<bool> Handle(DeletePharmacyCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(DeletePharmacyCommand request, CancellationToken cancellationToken)
     {
         var pharmacy = await dbContext.Pharmacies
             .FindAsync([request.PharmacyId],
@@ -23,6 +24,6 @@ public class DeletePharmacyCommandHandler(IApplicationDbContext dbContext)
 
         dbContext.Pharmacies.Remove(pharmacy);
         await dbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        return Message.Deleted;
     }
 }

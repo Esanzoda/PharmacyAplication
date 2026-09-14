@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
@@ -7,12 +8,12 @@ namespace Pharmacy.CQRS.Product.Commands;
 
 public record DeleteProductCommand(
     long PharmacyId,
-    long Id) : IRequest<bool>;
+    long Id) : IRequest<string>;
 
 public class DeleteProductCommandHandler(
-    IApplicationDbContext dbContext) : IRequestHandler<DeleteProductCommand, bool>
+    IApplicationDbContext dbContext) : IRequestHandler<DeleteProductCommand, string>
 {
-    public async Task<bool> Handle(
+    public async Task<string> Handle(
         DeleteProductCommand request,
         CancellationToken cancellationToken)
     {
@@ -36,6 +37,6 @@ public class DeleteProductCommandHandler(
         dbContext.Products.Remove(product);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        return Message.Deleted;
     }
 }

@@ -29,7 +29,7 @@ public class PharmacyControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<bool>> Delete(long pharmacyId)
+    public async Task<ActionResult<string>> Delete(long pharmacyId)
     {
         var response = await mediator.Send(new DeletePharmacyCommand(pharmacyId));
         return Ok(response);

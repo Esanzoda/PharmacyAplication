@@ -50,7 +50,7 @@ public class DeliverControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id)
+    public async Task<ActionResult<string>> DeleteById(long id)
     {
         var response = await mediator.Send(new DeleteDeliverCommand(id));
         return Ok(response);

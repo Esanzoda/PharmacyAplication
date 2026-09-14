@@ -36,7 +36,7 @@ public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long pharmacyId, long id)
+    public async Task<ActionResult<string>> DeleteById(long pharmacyId, long id)
     {
         var response = await mediator.Send(new DeleteEmployeeCommand(pharmacyId, id));
         return Ok(response);

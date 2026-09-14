@@ -30,7 +30,7 @@ public class ProductControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id, long pharmacyId)
+    public async Task<ActionResult<string>> DeleteById(long id, long pharmacyId)
     {
         var response = await mediator.Send(new DeleteProductCommand(pharmacyId, id));
         return Ok(response);
