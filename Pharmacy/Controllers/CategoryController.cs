@@ -46,7 +46,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id)
+    public async Task<ActionResult<string>> DeleteById(long id)
     {
         var response = await mediator.Send(new DeleteCategoryCommand(id));
         return Ok(response);

@@ -38,7 +38,7 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteById(long id, long pharmacyId)
+    public async Task<ActionResult<string>> DeleteById(long id, long pharmacyId)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new DeletePurchaseCommand(pharmacyId, employeeId, id));

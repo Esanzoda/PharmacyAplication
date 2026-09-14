@@ -1,19 +1,20 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Category.Commands;
 
 public record DeleteCategoryCommand(
-    long Id) : IRequest<bool>;
+    long Id) : IRequest<string>;
 
 public class DeleteCategoryByIdHandler(
     IApplicationDbContext dbContext,
-    IDistributedCache cache) : IRequestHandler<DeleteCategoryCommand, bool>
+    IDistributedCache cache) : IRequestHandler<DeleteCategoryCommand,string >
 {
-    public async Task<bool> Handle(
+    public async Task<string> Handle(
         DeleteCategoryCommand request,
         CancellationToken cancellationToken)
     {
@@ -40,7 +41,10 @@ public class DeleteCategoryByIdHandler(
         await dbContext.SaveChangesAsync(cancellationToken);
         var key = $"CategoryById-{request.Id}";
         await cache.RemoveAsync(key, cancellationToken);
+        
 
-        return true;
+        return Message.Deleted  ;
     }
+
+    
 }

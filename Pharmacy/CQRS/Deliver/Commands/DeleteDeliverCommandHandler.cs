@@ -1,18 +1,19 @@
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Deliver.Commands;
 
 public record DeleteDeliverCommand(
-    long Id) : IRequest<bool>;
+    long Id) : IRequest<string>;
 
 public class DeleteDeliverHandler(
     IApplicationDbContext dbContext,
-    IDistributedCache cache) : IRequestHandler<DeleteDeliverCommand, bool>
+    IDistributedCache cache) : IRequestHandler<DeleteDeliverCommand, string>
 {
-    public async Task<bool> Handle(
+    public async Task<string> Handle(
         DeleteDeliverCommand request,
         CancellationToken cancellationToken)
     {
@@ -31,6 +32,6 @@ public class DeleteDeliverHandler(
         var key = $"DeliverById-{request.Id}";
         await cache.RemoveAsync(key, cancellationToken);
 
-        return true;
+        return Message.Deleted;
     }
 }
