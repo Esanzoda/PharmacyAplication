@@ -44,7 +44,7 @@ public class PharmacyController(IMediator mediator) : ControllerBase
 
 
     [HttpGet]
-    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiryProducts(long pharmacyId, int pageNumber,
+    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiredProducts(long pharmacyId, int pageNumber,
         int pageSize)
     {
         var response = await mediator.Send(new GetExpiryProductsQuery(pharmacyId, pageNumber, pageSize));

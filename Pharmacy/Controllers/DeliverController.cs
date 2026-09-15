@@ -52,7 +52,7 @@ public class DeliverController(
     }
 
     [HttpPatch]
-    public async Task<ActionResult<DeliverResponse>> GetOrder(long orderId)
+    public async Task<ActionResult<DeliverResponse>> AcceptOrder(long orderId)
     {
         var deliverId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
