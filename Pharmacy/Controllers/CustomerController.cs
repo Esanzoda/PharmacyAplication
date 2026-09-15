@@ -65,7 +65,7 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToCartAsync(CartItemRequest request)
+    public async Task<IActionResult> AddToCart(CartItemRequest request)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new AddItemToCartCommand(customerId, request));
@@ -73,7 +73,7 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> RemoveItemFromCartAsync(long productId)
+    public async Task<IActionResult> RemoveItemFromCart(long productId)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new RemoveItemFromCartCommand(customerId, productId));
@@ -81,7 +81,7 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> ClearCartAsync()
+    public async Task<IActionResult> ClearCart()
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new ClearCartCommand(customerId));

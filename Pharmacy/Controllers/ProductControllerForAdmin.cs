@@ -52,7 +52,7 @@ public class ProductControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ProductForCustomerResponse>> GetByBarcodeAsync(long pharmacyId, string barcode)
+    public async Task<ActionResult<ProductForCustomerResponse>> GetByBarcode(long pharmacyId, string barcode)
     {
         var response = await mediator.Send(new GetProductByBarcodeQuery(pharmacyId, barcode));
         return Ok(response);
@@ -77,7 +77,7 @@ public class ProductControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetOutOfStockAsync(long pharmacyId, int page,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetOutOfStock(long pharmacyId, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetOutOfStockQuery(pharmacyId, page, pageSize));
@@ -85,7 +85,7 @@ public class ProductControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetLowOfStockAsync(long pharmacyId,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetLowOfStock(long pharmacyId,
         int minimumQuantity, int page,
         int pageSize)
     {
@@ -94,7 +94,7 @@ public class ProductControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByPurchasePriceAsync(long pharmacyId,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByPurchasePrice(long pharmacyId,
         decimal price, int page,
         int pageSize)
     {

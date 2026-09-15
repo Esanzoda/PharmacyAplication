@@ -20,7 +20,7 @@ public class CustomerControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<CustomerResponse>> GetByPhoneAsync(long pharmacyId, string phone, int page,
+    public async Task<ActionResult<CustomerResponse>> GetByPhone(long pharmacyId, string phone, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetCustomerByPhoneNumberQuery(pharmacyId, phone, page, pageSize));
@@ -28,7 +28,7 @@ public class CustomerControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CustomerResponse>>> GetByNameAsync(long pharmacyId, string name, int page,
+    public async Task<ActionResult<List<CustomerResponse>>> GetByName(long pharmacyId, string name, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetCustomerByNameQuery(pharmacyId, name, page, pageSize));
