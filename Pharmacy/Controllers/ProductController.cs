@@ -20,7 +20,7 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByNameAsync(string name, int page,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByName(string name, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetProductsByNameQuery(name, page, pageSize));
@@ -28,7 +28,7 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByCategoryIdAsync(long categoryId, int page,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByCategoryId(long categoryId, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetProductsByCategoryIdQuery(categoryId, page, pageSize));
@@ -36,7 +36,7 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetBySalePriceAsync(decimal price, int page,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetBySalePrice(decimal price, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetProductsBySalePriceQuery(price, page, pageSize));
@@ -44,7 +44,7 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByCountryAsync(CountryEnum country, int page,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByCountry(CountryEnum country, int page,
         int pageSize)
     {
         var response = await mediator.Send(new GetProductsByCountryQuery(country, page, pageSize));

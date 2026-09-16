@@ -68,7 +68,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetByStatusAsync(OrderStatus status, int pageNumber,
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetByStatus(OrderStatus status, int pageNumber,
         int pageSize)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
