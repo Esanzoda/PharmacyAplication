@@ -60,7 +60,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetAllByPagination(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetAll(int pageNumber, int pageSize)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
         var response = await mediator.Send(new GetAllOrdersQuery(customerId, pageNumber, pageSize));
