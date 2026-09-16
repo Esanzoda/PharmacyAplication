@@ -89,7 +89,7 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetBiCustomerId()
+    public async Task<IActionResult> GetCartByCustomerId()
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new GetCartByCustomerIdQuery(customerId));
@@ -111,7 +111,7 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetPharmacyProductsByCategory(long pharmacyId,
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetPharmacyProductsByCategoryId(long pharmacyId,
         long categoryId, int page, int pageSize)
     {
         var response =
