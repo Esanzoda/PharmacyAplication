@@ -10,7 +10,7 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface ICustomerEndpoint
 {
-    [Patch("/ali/Customer/UpdateCartItemQuantity")]
+    [Patch("/api/Customer/UpdateCartItemQuantity")]
     Task UpdateCartItemQuantity(
         long productId, 
         int quantity);
@@ -39,22 +39,22 @@ public interface ICustomerEndpoint
         int pageSize);
 
 
-    [Post("/api/Customer/AddToCartAsync")]
-    Task AddToCartAsync(
+    [Post("/api/Customer/AddToCart")]
+    Task AddToCart(
         CartItemRequest request);
 
 
-    [Delete("/api/Customer/RemoveItemFromCartAsync")]
-    Task RemoveItemFromCartAsync(
+    [Delete("/api/Customer/RemoveItemFromCart")]
+    Task RemoveItemFromCart(
         long productId);
 
 
-    [Delete("/api/Customer/ClearCartAsync")]
-    Task ClearCartAsync();
+    [Delete("/api/Customer/ClearCart")]
+    Task ClearCart();
 
 
     [Get("/api/Customer/GetBiCustomerId")]
-    Task GetBiCustomerId();
+    Task GetCartByCustomerId();
 
 
     [Get("/api/Customer/GetAllPharmacy")]

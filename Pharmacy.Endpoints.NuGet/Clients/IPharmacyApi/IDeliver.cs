@@ -30,8 +30,8 @@ public interface IDeliver
         int pageSize);
 
 
-    [Patch("/api/Deliver/GetOrder")]
-    Task<DeliverResponse> GetOrder(
+    [Patch("/api/Deliver/AcceptOrder")]
+    Task<DeliverResponse> AcceptOrder(
         long orderId);
 
 }

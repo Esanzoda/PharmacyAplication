@@ -23,7 +23,7 @@ public interface IPurchaseEndpoint
      int pageSize);
     
    [Delete("/api/Purchase/DeleteById")]
-   Task DeleteById(
+   Task<string> DeleteById(
     long id, 
     long pharmacyId);
    

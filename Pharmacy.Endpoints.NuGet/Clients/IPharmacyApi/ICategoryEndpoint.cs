@@ -28,27 +28,23 @@ public interface ICategoryEndpoint
         int pageSize);
 
     [Delete("/api/Category/DeleteById")]
-    Task DeleteById(
+    Task<string> DeleteById(
         long id);
-
 
     [Get("/api/Category/GetProducts")]
     Task<List<ProductForCustomerResponse>> GetProducts(
         int categoryId, 
         int page,
         int pageSize);
-
-
+    
     [Get("/api/Category/GetByName")]
     Task<CategoryResponse> GetByName(
         string name);
-
 
     [Get("/api/Category/GetByStatus")]
     Task<List<CategoryResponse>> GetByStatus(
         CategoryStatus categoryStatus, 
         int pageNumber,
         int pageSize);
-
 
 }

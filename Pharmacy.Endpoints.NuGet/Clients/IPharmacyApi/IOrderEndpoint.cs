@@ -29,13 +29,13 @@ public interface IOrderEndpoint
      Task<OrderResponseForCustomer> GetInfo(
       long id);
 
-    [Get("/api/Order/GetAllByPagination")]
-     Task<List<OrderResponseForCustomer>> GetAllByPagination(
+    [Get("/api/Order/GetAll")]
+     Task<List<OrderResponseForCustomer>> GetAll(
       int pageNumber, 
       int pageSize);
 
-     [Get("/api/Order/GetByStatusAsync")]
-     Task<List<OrderResponseForCustomer>> GetByStatusAsync(
+     [Get("/api/Order/GetByStatus")]
+     Task<List<OrderResponseForCustomer>> GetByStatus(
       OrderStatus status, 
       int pageNumber,
       int pageSize);

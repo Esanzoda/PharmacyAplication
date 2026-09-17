@@ -6,7 +6,7 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface IDeliverForAdmin
 {
-    [Post("/api/DeliverForAdmin/")]
+    [Post("/api/DeliverForAdmin/Add")]
     Task<DeliverResponse> Add(
      [Body] DeliverRequest request);
 
@@ -34,7 +34,7 @@ public interface IDeliverForAdmin
 
 
     [Delete("/api/DeliverForAdmin/DeleteById")]
-     Task DeleteById(
+     Task<string> DeleteById(
       long id);
 
 }

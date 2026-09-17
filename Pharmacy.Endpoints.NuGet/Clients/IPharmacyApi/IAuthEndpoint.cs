@@ -11,7 +11,7 @@ public interface IAuthEndpoint
 {
     [Post("/api/Auth/Register")]
     Task<CustomerResponse> Register( 
-        CustomerRequest registerCommandHandler);
+       [Body] CustomerRequest registerRequest);
     
     [Post("/api/Auth/Login")]
     Task<LoginResponse> Login(
