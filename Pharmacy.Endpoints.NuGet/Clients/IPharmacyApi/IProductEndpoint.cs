@@ -11,26 +11,26 @@ public interface IProductEndpoint
          int pageNumber, 
          int pageSize);
 
-    [Get("/api/Product/GetByNameAsync")]
-     Task<List<ProductForCustomerResponse>> GetByNameAsync(
+    [Get("/api/Product/GetByName")]
+     Task<List<ProductForCustomerResponse>> GetByName(
          string name, 
          int page,
         int pageSize);
 
-    [Get("/api/Product/GetByCategoryIdAsync")]
-    Task<List<ProductForCustomerResponse>> GetByCategoryIdAsync(
+    [Get("/api/Product/GetByCategoryId")]
+    Task<List<ProductForCustomerResponse>> GetByCategoryId(
         long categoryId,
         int page,
         int pageSize);
 
-    [Get("/api/Product/GetBySalePriceAsync")]
-    Task<List<ProductForCustomerResponse>> GetBySalePriceAsync(
+    [Get("/api/Product/GetBySalePrice")]
+    Task<List<ProductForCustomerResponse>> GetBySalePrice(
         decimal price, 
         int page,
         int pageSize);
 
-    [Get("/api/Product/GetByCountryAsync")]
-    Task<List<ProductForCustomerResponse>> GetByCountryAsync(
+    [Get("/api/Product/GetByCountry")]
+    Task<List<ProductForCustomerResponse>> GetByCountry(
         CountryEnum country,
         int page,
         int pageSize);

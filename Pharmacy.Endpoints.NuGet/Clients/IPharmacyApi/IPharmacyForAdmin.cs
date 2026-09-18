@@ -6,16 +6,16 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface IPharmacyForAdmin
 {
-    [Post("/api/PharmacyControllerForAdmin/")]
+    [Post("/api/PharmacyControllerForAdmin/Create")]
     Task<PharmacyResponse> Create(
         PharmacyRequest request);
 
-    [Get("/api/PharmacyControllerForAdmin/")]
+    [Get("/api/PharmacyControllerForAdmin/GetAll")]
      Task<PharmacyResponse> GetAll(
          int page, 
          int pageSize);
 
-    [Delete("/api/PharmacyControllerForAdmin/")]
+    [Delete("/api/PharmacyControllerForAdmin/Delete")]
     Task<bool> Delete(
         long pharmacyId);
 }

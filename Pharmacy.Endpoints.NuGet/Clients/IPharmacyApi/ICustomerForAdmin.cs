@@ -12,16 +12,16 @@ public interface ICustomerForAdmin
         int pageSize);
 
 
-    [Get("/api/CustomerControllerForAdmin/GetByPhoneAsync")]
-    Task<CustomerResponse> GetByPhoneAsync(
+    [Get("/api/CustomerControllerForAdmin/GetByPhone")]
+    Task<CustomerResponse> GetByPhone(
         long pharmacyId,
         string phone,
         int page,
         int pageSize);
 
 
-    [Get("/api/CustomerControllerForAdmin/GetByNameAsync")]
-    Task<List<CustomerResponse>> GetByNameAsync(
+    [Get("/api/CustomerControllerForAdmin/GetByName")]
+    Task<List<CustomerResponse>> GetByName(
         long pharmacyId,
         string name,
         int page,
