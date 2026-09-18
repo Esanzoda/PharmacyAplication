@@ -28,7 +28,7 @@ public interface ICategoryEndpoint
         int pageSize);
 
     [Delete("/api/Category/DeleteById")]
-    Task DeleteById(
+    Task<string> DeleteById(
         long id);
 
     [Get("/api/Category/GetProducts")]

@@ -34,7 +34,7 @@ public interface IDeliverForAdmin
 
 
     [Delete("/api/DeliverForAdmin/DeleteById")]
-     Task DeleteById(
+     Task<string> DeleteById(
       long id);
 
 }

@@ -18,7 +18,7 @@ public interface IProductForAdminEndpoint
         long pharmacyId);
 
     [Delete("/api/ProductControllerForAdmin/DeleteById")]
-    Task DeleteById(
+    Task<string> DeleteById(
         long id, 
         long pharmacyId);
 

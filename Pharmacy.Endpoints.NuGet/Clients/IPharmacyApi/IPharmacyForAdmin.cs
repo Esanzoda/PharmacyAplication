@@ -16,6 +16,6 @@ public interface IPharmacyForAdmin
          int pageSize);
 
     [Delete("/api/PharmacyControllerForAdmin/Delete")]
-    Task<bool> Delete(
+    Task<string> Delete(
         long pharmacyId);
 }

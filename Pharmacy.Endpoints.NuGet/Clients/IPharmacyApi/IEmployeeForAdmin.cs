@@ -27,7 +27,7 @@ public interface IEmployeeForAdmin
 
 
     [Delete("/api/EmployeeControllerForAdmin/DeleteById")]
-    Task DeleteById(
+    Task<string> DeleteById(
         long pharmacyId, 
         long id);
 
