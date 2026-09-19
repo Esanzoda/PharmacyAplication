@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,26 +17,23 @@ public class DeliverController(
     IMediator mediator) : ControllerBase
 {
     [HttpPut]
-    public async Task<ActionResult<DeliverResponse>> Update([FromBody] UpdateDeliverRequest request)
+    public async Task<ActionResult<DeliverResponse>> Update(long deliverId,[FromBody] UpdateDeliverRequest request)
     {
-        var deliverId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new UpdateDeliverCommand(deliverId, request));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<string>> UpdatePassword(string oldPassword, string newPassword)
+    public async Task<ActionResult<string>> UpdatePassword(long deliverId,string oldPassword, string newPassword)
     {
-        var deliverId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new UpdateDeliverPasswordCommand(deliverId, oldPassword, newPassword));
         return response;
     }
 
     [HttpPut]
-    public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long orderId,
+    public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long deliverId,long orderId,
         DeliverUpdateOrderStatus newOrderStatus)
     {
-        var deliverId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
             await mediator.Send(new UpdateOrderStatusCommand(deliverId, orderId, newOrderStatus));
         return Ok(response);
@@ -52,9 +48,8 @@ public class DeliverController(
     }
 
     [HttpPatch]
-    public async Task<ActionResult<DeliverResponse>> AcceptOrder(long orderId)
+    public async Task<ActionResult<DeliverResponse>> AcceptOrder(long deliverId,long orderId)
     {
-        var deliverId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
             await mediator.Send(new ShippedOrderCommand(orderId, deliverId));
         return Ok(response);
