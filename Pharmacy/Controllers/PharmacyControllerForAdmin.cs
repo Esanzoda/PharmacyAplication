@@ -1,9 +1,7 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Pharmacy.Commands;
 using Pharmacy.CQRS.Pharmacy.Queries;
-using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 
@@ -11,7 +9,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Role.Admin))]
 public class PharmacyControllerForAdmin(IMediator mediator) : ControllerBase
 {
     [HttpPost]

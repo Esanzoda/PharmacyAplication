@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Employee.Commands;
 using Pharmacy.CQRS.Employee.Queries;
@@ -11,7 +10,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Role.Employee))]
 public class EmployeeController(IMediator mediator) : ControllerBase
 {
     [HttpPut]
