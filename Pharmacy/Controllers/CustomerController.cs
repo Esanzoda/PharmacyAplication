@@ -10,6 +10,7 @@ using Pharmacy.CQRS.Pharmacy.Queries;
 using Pharmacy.CQRS.Product.Queries.Customer;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Cart.DTOs.Request;
+using Pharmacy.Domain.Models.Cart.DTOs.Response;
 using Pharmacy.Domain.Models.Category.DTOs.Response;
 using Pharmacy.Domain.Models.Customer.DTOs.Request;
 using Pharmacy.Domain.Models.Customer.DTOs.Response;
@@ -24,7 +25,7 @@ namespace Pharmacy.Controllers;
 public class CustomerController(IMediator mediator) : ControllerBase
 {
     [HttpPatch]
-    public async Task<IActionResult> UpdateCartItemQuantity(long customerId,long productId, int quantity)
+    public async Task<ActionResult<CartItemResponse>> UpdateCartItemQuantity(long customerId,long productId, int quantity)
     {
         var response = await mediator.Send(new UpdateQuantityCartItemCommand(customerId, productId, quantity));
         return Ok(response);
@@ -61,28 +62,28 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToCart(long customerId,CartItemRequest request)
+    public async Task<ActionResult<CartResponse>> AddToCart(long customerId,CartItemRequest request)
     {
         var response = await mediator.Send(new AddItemToCartCommand(customerId, request));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> RemoveItemFromCart(long customerId,long productId)
+    public async Task<ActionResult<CartResponse>> RemoveItemFromCart(long customerId,long productId)
     {
         var response = await mediator.Send(new RemoveItemFromCartCommand(customerId, productId));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> ClearCart(long customerId)
+    public async Task<ActionResult<CartResponse>> ClearCart(long customerId)
     {
         var response = await mediator.Send(new ClearCartCommand(customerId));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCartByCustomerId(long customerId)
+    public async Task<ActionResult<CartResponse>> GetCartByCustomerId(long customerId)
     {
         var response = await mediator.Send(new GetCartByCustomerIdQuery(customerId));
         return Ok(response);
