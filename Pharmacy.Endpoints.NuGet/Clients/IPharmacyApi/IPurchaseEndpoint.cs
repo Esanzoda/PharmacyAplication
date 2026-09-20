@@ -8,6 +8,7 @@ public interface IPurchaseEndpoint
 {
    [Post("/api/Purchase/Add")]
     Task<PurchaseResponse> Add(
+     long employeeId,
      [Body] PurchaseRequest request,
      long pharmacyId);
     
@@ -24,6 +25,7 @@ public interface IPurchaseEndpoint
     
    [Delete("/api/Purchase/DeleteById")]
    Task<string> DeleteById(
+    long employeeId,
     long id, 
     long pharmacyId);
    
@@ -35,6 +37,7 @@ public interface IPurchaseEndpoint
   
    [Delete("/api/Purchase/RemoveItem")]
    Task<PurchaseItemResponse> RemoveItem(
+    long employeeId,
     long purchaseId, 
     long pharmacyId,
       long purchaseItemId);
