@@ -1,15 +1,12 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Customer.Queries;
-using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Customer.DTOs.Response;
 
 namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Position.AdminPharmacy))]
 public class CustomerControllerForAdmin(IMediator mediator) : ControllerBase
 {
     [HttpGet]

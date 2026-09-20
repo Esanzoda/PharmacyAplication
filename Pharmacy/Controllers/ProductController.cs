@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Product.Queries.Customer;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
@@ -9,7 +8,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Role.Customer))]
 public class ProductController(IMediator mediator) : ControllerBase
 {
     [HttpGet]

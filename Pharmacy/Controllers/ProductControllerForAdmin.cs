@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Product.Commands;
 using Pharmacy.CQRS.Product.Queries;
@@ -11,7 +10,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Position.AdminPharmacy) + "," + nameof(Position.ManagerPharmacy))]
 public class ProductControllerForAdmin(IMediator mediator) : ControllerBase
 {
     [HttpPost]

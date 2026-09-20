@@ -1,9 +1,7 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Deliver.Commands;
 using Pharmacy.CQRS.Deliver.Queries;
-using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
@@ -12,7 +10,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Role.Deliver))]
 public class DeliverController(
     IMediator mediator) : ControllerBase
 {

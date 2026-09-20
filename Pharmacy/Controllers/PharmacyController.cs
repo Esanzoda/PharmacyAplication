@@ -1,9 +1,7 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.ExpiredProducts.Query;
 using Pharmacy.CQRS.Pharmacy.Commands;
-using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 using Pharmacy.Domain.Models.Product.DTos.Response;
 
@@ -11,7 +9,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Position.AdminPharmacy))]
 public class PharmacyController(IMediator mediator) : ControllerBase
 {
     [HttpPatch]
