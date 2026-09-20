@@ -24,33 +24,29 @@ namespace Pharmacy.Controllers;
 public class CustomerController(IMediator mediator) : ControllerBase
 {
     [HttpPatch]
-    public async Task<IActionResult> UpdateCartItemQuantity(long productId, int quantity)
+    public async Task<IActionResult> UpdateCartItemQuantity(long customerId,long productId, int quantity)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new UpdateQuantityCartItemCommand(customerId, productId, quantity));
         return Ok(response);
     }
 
     [HttpPut]
-    public async Task<ActionResult<CustomerResponse>> Update(UpdateCustomerRequest request)
+    public async Task<ActionResult<CustomerResponse>> Update(long customerId,UpdateCustomerRequest request)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new UpdateCustomerCommand(customerId, request));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<CustomerResponse>> UpdatePassword(string oldPassword, string newPassword)
+    public async Task<ActionResult<CustomerResponse>> UpdatePassword(long customerId,string oldPassword, string newPassword)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new UpdateCustomerPasswordCommand(customerId, oldPassword, newPassword));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<string>> UpdateAddress(string newAddress)
+    public async Task<ActionResult<string>> UpdateAddress(long customerId,string newAddress)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new UpdateCustomerAddressCommand(customerId, newAddress));
         return Ok(response);
     }
@@ -65,33 +61,29 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToCart(CartItemRequest request)
+    public async Task<IActionResult> AddToCart(long customerId,CartItemRequest request)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new AddItemToCartCommand(customerId, request));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> RemoveItemFromCart(long productId)
+    public async Task<IActionResult> RemoveItemFromCart(long customerId,long productId)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new RemoveItemFromCartCommand(customerId, productId));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> ClearCart()
+    public async Task<IActionResult> ClearCart(long customerId)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new ClearCartCommand(customerId));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCartByCustomerId()
+    public async Task<IActionResult> GetCartByCustomerId(long customerId)
     {
-        var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new GetCartByCustomerIdQuery(customerId));
         return Ok(response);
     }

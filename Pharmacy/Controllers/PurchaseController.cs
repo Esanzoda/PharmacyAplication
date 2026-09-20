@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +15,8 @@ namespace Pharmacy.Controllers;
 public class PurchaseController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<PurchaseResponse>> Add([FromBody] PurchaseRequest request, long pharmacyId)
+    public async Task<ActionResult<PurchaseResponse>> Add(long employeeId,[FromBody] PurchaseRequest request, long pharmacyId)
     {
-        var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new CreatePurchaseCommand(pharmacyId, employeeId, request));
         return Ok(response);
     }
@@ -38,9 +36,8 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<string>> DeleteById(long id, long pharmacyId)
+    public async Task<ActionResult<string>> DeleteById(long employeeId,long id, long pharmacyId)
     {
-        var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await mediator.Send(new DeletePurchaseCommand(pharmacyId, employeeId, id));
         return Ok(response);
     }
@@ -54,10 +51,9 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<PurchaseItemResponse>> RemoveItem(long purchaseId, long pharmacyId,
+    public async Task<ActionResult<PurchaseItemResponse>> RemoveItem(long employeeId,long purchaseId, long pharmacyId,
         long purchaseItemId)
     {
-        var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
             await mediator.Send(new RemoveItemFromPurchaseCommand(employeeId, pharmacyId, purchaseId, purchaseItemId));
         return Ok(response);
