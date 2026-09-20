@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Order.Commands;
 using Pharmacy.CQRS.Order.Queries;
@@ -12,7 +11,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Role.Customer))]
 public class OrderController(IMediator mediator) : ControllerBase
 {
     [HttpPost]

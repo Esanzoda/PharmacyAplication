@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Category.Commands;
 using Pharmacy.CQRS.Category.Queries;
@@ -13,7 +12,6 @@ namespace Pharmacy.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Role.Admin))]
 public class CategoryController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
@@ -52,7 +50,6 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<ProductForCustomerResponse>>> GetProducts(int categoryId, int page,
         int pageSize)
