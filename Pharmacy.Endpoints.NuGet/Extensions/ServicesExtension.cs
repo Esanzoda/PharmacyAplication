@@ -56,6 +56,30 @@ public static class ServicesExtension
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
 
+        services
+            .AddRefitClient<IPharmacyEndpoint>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri(baseUrl));
+        
+        services
+            .AddRefitClient<IPharmacyForAdmin>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri(baseUrl));
+        
+        services
+            .AddRefitClient<IProductEndpoint>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri(baseUrl));
+        
+        services
+            .AddRefitClient<IProductForAdminEndpoint>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri(baseUrl));
+        
+        services
+            .AddRefitClient<IPurchaseEndpoint>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri(baseUrl));
         return services;
     }
 }
