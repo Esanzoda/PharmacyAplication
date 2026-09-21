@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Pharmacy.Data;
@@ -16,7 +17,10 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddScoped<AuditableInterceptor>();
         serviceCollection.AddAuthorization();
-        serviceCollection.AddControllers();
+        serviceCollection.AddControllers()
+            .AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter()));
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddFluentValidationAutoValidation();
         serviceCollection.AddValidatorsFromAssemblyContaining<Program>();
