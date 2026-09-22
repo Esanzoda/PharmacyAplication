@@ -67,7 +67,7 @@ public interface ICustomerEndpoint
 
 
     [Get("/api/Customer/GetAllPharmacy")]
-    Task<PharmacyResponse> GetAllPharmacy(
+    Task<List<PharmacyResponse>> GetAllPharmacy(
         int page,
         int pageSize);
 

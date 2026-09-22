@@ -8,7 +8,7 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 public interface IOrderEndpoint
 {
     [Post("/api/Order/Create")]
-     Task<OrderResponseForCustomer> Create(
+     Task<List<OrderResponseForCustomer>> Create(
       long customerId,
         [Body] CreateOrderRequest request,
         double? newCustomerLat,
@@ -16,7 +16,7 @@ public interface IOrderEndpoint
         string? newCustomerAddress);
 
     [Post("/api/Order/CreateFromCart")]
-     Task<OrderResponseForCustomer> CreateFromCart(
+     Task<List<OrderResponseForCustomer>> CreateFromCart(
       long customerId,
         OrderType orderType,
         double? newCustomerLatitude,

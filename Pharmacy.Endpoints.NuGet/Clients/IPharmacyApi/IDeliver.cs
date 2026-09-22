@@ -1,6 +1,8 @@
+using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
+using Pharmacy.Domain.Models.Order.DTOs.Response;
 using Refit;
 
 namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
@@ -21,7 +23,7 @@ public interface IDeliver
 
 
     [Put("/api/Deliver/UpdateOrderStatus")]
-    Task<DeliverResponse> UpdateOrderStatus(
+    Task<OrderStatus> UpdateOrderStatus(
         long deliverId,
         long orderId,
         DeliverUpdateOrderStatus newOrderStatus);
@@ -34,7 +36,7 @@ public interface IDeliver
 
 
     [Patch("/api/Deliver/AcceptOrder")]
-    Task<DeliverResponse> AcceptOrder(
+    Task<OrderResponseForDeliver> AcceptOrder(
         long deliverId,
         long orderId);
 
