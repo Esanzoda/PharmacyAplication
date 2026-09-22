@@ -24,13 +24,13 @@ public interface IAuthEndpoint
         CancellationToken cancellationToken);
 
     [Post("/api/Auth/ForgotPassword")]
-    Task<LoginResponse> ForgotPassword(
+    Task<string> ForgotPassword(
         string email,
         Role role,
         CancellationToken cancellationToken);
     
     [Post("/api/Auth/ResetPassword")]
-    Task<LoginResponse> ResetPassword(int code,
+    Task<string> ResetPassword(int code,
         string newPassword,
         string email,
         Role role,

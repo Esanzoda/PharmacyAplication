@@ -30,13 +30,13 @@ public interface IPurchaseEndpoint
     long pharmacyId);
    
    [Post("/api/Purchase/AddItem")]
-  Task<PurchaseItemResponse> AddItem(
+  Task<PurchaseResponse> AddItem(
    long pharmacyId, 
    long purchaseId,
       PurchaseItemRequest purchaseItemRequest);
   
    [Delete("/api/Purchase/RemoveItem")]
-   Task<PurchaseItemResponse> RemoveItem(
+   Task<PurchaseResponse> RemoveItem(
     long employeeId,
     long purchaseId, 
     long pharmacyId,

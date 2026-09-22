@@ -38,7 +38,7 @@ public interface ICategoryEndpoint
         int pageSize);
     
     [Get("/api/Category/GetByName")]
-    Task<CategoryResponse> GetByName(
+    Task<List<CategoryResponse>> GetByName(
         string name);
 
     [Get("/api/Category/GetByStatus")]
