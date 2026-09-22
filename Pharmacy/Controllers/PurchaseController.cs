@@ -40,7 +40,7 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PurchaseItemResponse>> AddItem(long pharmacyId, long purchaseId,
+    public async Task<ActionResult<PurchaseResponse>> AddItem(long pharmacyId, long purchaseId,
         PurchaseItemRequest purchaseItemRequest)
     {
         var response = await mediator.Send(new AddItemToPurchaseCommand(pharmacyId, purchaseId, purchaseItemRequest));
@@ -48,7 +48,7 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<PurchaseItemResponse>> RemoveItem(long employeeId,long purchaseId, long pharmacyId,
+    public async Task<ActionResult<PurchaseResponse>> RemoveItem(long employeeId,long purchaseId, long pharmacyId,
         long purchaseItemId)
     {
         var response =

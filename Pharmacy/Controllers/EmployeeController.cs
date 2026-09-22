@@ -13,7 +13,7 @@ namespace Pharmacy.Controllers;
 public class EmployeeController(IMediator mediator) : ControllerBase
 {
     [HttpPut]
-    public async Task<ActionResult<EmployeeResponse>> UpdateOrderStatus(long employeeId,long orderId, long pharmacyId,
+    public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long employeeId,long orderId, long pharmacyId,
         OrderStatus newOrderStatus)
     {
         var response =

@@ -41,7 +41,7 @@ public class AuthController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<LoginResponse>> ForgotPassword(
+    public async Task<ActionResult<string>> ForgotPassword(
         string email,
         Role role,
         CancellationToken cancellationToken)
@@ -51,7 +51,7 @@ public class AuthController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<LoginResponse>> ResetPassword(int code,
+    public async Task<ActionResult<string>> ResetPassword(int code,
         string newPassword,
         string email,
         Role role,

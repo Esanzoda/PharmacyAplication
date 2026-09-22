@@ -33,7 +33,7 @@ public class DeliverControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<DeliverResponse>>> GetByEmail(string email)
+    public async Task<ActionResult<DeliverResponse>> GetByEmail(string email)
     {
         var response = await mediator.Send(new GetDeliverByEmailQuery(email));
         return Ok(response);

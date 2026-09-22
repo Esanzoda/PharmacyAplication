@@ -59,7 +59,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<CategoryResponse>> GetByName(string name)
+    public async Task<ActionResult<List<CategoryResponse>>> GetByName(string name)
     {
         var response = await mediator.Send(new GetCategoryByNameQuery(name));
         return Ok(response);

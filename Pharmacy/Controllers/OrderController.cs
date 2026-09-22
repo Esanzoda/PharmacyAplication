@@ -14,7 +14,7 @@ namespace Pharmacy.Controllers;
 public class OrderController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<OrderResponseForCustomer>> Create(long customerId,[FromBody] CreateOrderRequest request,
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> Create(long customerId,[FromBody] CreateOrderRequest request,
         double? newCustomerLat,
         double? newCustomerLong,
         string? newCustomerAddress)
@@ -26,7 +26,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<OrderResponseForCustomer>> CreateFromCart(long customerId,OrderType orderType,
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(long customerId,OrderType orderType,
         double? newCustomerLatitude,
         double? newCustomerLongitude,
         string? newCustomerAddress)
