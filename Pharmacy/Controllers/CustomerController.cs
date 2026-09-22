@@ -86,7 +86,7 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PharmacyResponse>> GetAllPharmacy(int page, int pageSize)
+    public async Task<ActionResult<List<PharmacyResponse>>> GetAllPharmacy(int page, int pageSize)
     {
         var response = await mediator.Send(new GetAllPharmacyQuery(page, pageSize));
         return Ok(response);

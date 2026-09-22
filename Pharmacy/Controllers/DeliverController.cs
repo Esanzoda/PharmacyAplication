@@ -2,9 +2,11 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Deliver.Commands;
 using Pharmacy.CQRS.Deliver.Queries;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
+using Pharmacy.Domain.Models.Order.DTOs.Response;
 
 namespace Pharmacy.Controllers;
 
@@ -28,7 +30,7 @@ public class DeliverController(
     }
 
     [HttpPut]
-    public async Task<ActionResult<DeliverResponse>> UpdateOrderStatus(long deliverId,long orderId,
+    public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long deliverId,long orderId,
         DeliverUpdateOrderStatus newOrderStatus)
     {
         var response =
@@ -45,7 +47,7 @@ public class DeliverController(
     }
 
     [HttpPatch]
-    public async Task<ActionResult<DeliverResponse>> AcceptOrder(long deliverId,long orderId)
+    public async Task<ActionResult<OrderResponseForDeliver>> AcceptOrder(long deliverId,long orderId)
     {
         var response =
             await mediator.Send(new ShippedOrderCommand(orderId, deliverId));
