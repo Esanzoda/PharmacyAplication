@@ -11,7 +11,7 @@ public interface IPharmacyForAdmin
         PharmacyRequest request);
 
     [Get("/api/PharmacyControllerForAdmin/GetAll")]
-     Task<PharmacyResponse> GetAll(
+     Task<List<PharmacyResponse>> GetAll(
          int page, 
          int pageSize);
 

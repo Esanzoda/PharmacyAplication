@@ -23,7 +23,7 @@ public interface IDeliverForAdmin
 
 
     [Get("/api/DeliverForAdmin/GetByEmail")]
-   Task<List<DeliverResponse>> GetByEmail(
+   Task<DeliverResponse> GetByEmail(
     string email);
 
 

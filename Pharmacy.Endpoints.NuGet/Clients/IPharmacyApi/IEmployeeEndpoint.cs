@@ -8,7 +8,7 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 public interface IEmployeeEndpoint
 {
     [Put("/api/Employee/UpdateOrderStatus")]
-    Task<EmployeeResponse> UpdateOrderStatus(
+    Task<OrderStatus> UpdateOrderStatus(
         long employeeId,
         long orderId, 
         long pharmacyId,
