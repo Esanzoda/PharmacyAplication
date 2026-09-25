@@ -1,4 +1,5 @@
 using Gateway.Infrastructure.Extensions;
+using Gateway.Middlewares;
 using Pharmacy.Endpoints.NuGet.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/V1/swagger.json", "Gateway Api"); });
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
