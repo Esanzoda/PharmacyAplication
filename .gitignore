@@ -8,5 +8,6 @@ obj/
 *.user
 *.sln.DotSettings.user
 
+Logs/
 .env
 
