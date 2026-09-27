@@ -4,14 +4,11 @@ namespace Pharmacy.Infrastructure.Extensions;
 
 public static class SeriaLoggerExtensions
 {
-    public static void AddSeriaLogger(this WebApplicationBuilder webApplicationBuilder)
+    public static void AddSeriaLogger(this WebApplicationBuilder builder)
     {
         Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(webApplicationBuilder.Configuration)
-            .Enrich.FromLogContext()
-            .Enrich.WithEnvironmentName()
-            .WriteTo.Console()
-            .WriteTo.File("logs/pharmacy-log-.txt", rollingInterval: RollingInterval.Day)
+            .ReadFrom.Configuration(builder.Configuration)
             .CreateLogger();
+        builder.Logging.AddSerilog(Log.Logger);
     }
 }
