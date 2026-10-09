@@ -1,7 +1,7 @@
 using FluentValidation;
-using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 
-namespace Pharmacy.CQRS.Pharmacy.PharmacyValidators;
+namespace Product.Validator;
 
 public class PaginationRequestValidator : AbstractValidator<PaginationRequest>
 {
@@ -10,9 +10,5 @@ public class PaginationRequestValidator : AbstractValidator<PaginationRequest>
         RuleFor(x => x.PageNumber)
             .GreaterThan(0)
             .WithMessage("Page number is invalid");
-
-        RuleFor(x => x.PageSize)
-            .InclusiveBetween(1, 100)
-            .WithMessage("Page size must be between 1 and 100");
     }
 }
