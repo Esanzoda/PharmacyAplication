@@ -6,7 +6,7 @@ namespace Product.Endpoint.Extensions;
 
 public static class ServicesExtension
 {
-    public static IServiceCollection AddPharmacyApi(
+    public static IServiceCollection AddProductApi(
         this IServiceCollection services)
     {
         var baseUrl = "http://localhost:5289";
