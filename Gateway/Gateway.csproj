@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Pharmacy.Domain\Pharmacy.Domain.csproj" />
       <ProjectReference Include="..\Pharmacy.Endpoints.NuGet\Pharmacy.Endpoints.NuGet.csproj" />
+      <ProjectReference Include="..\Product.Endpoint\Product.Endpoint.csproj" />
     </ItemGroup>
 
 </Project>
