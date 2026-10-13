@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pharmacy.Endpoints.NuGet", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "Gateway\Gateway.csproj", "{CD0193A3-7D38-417C-8427-10E303BFA1D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Product", "Product\Product.csproj", "{8289A866-FE64-4966-86FE-8995BE7308F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService", "ProductService\ProductService.csproj", "{8289A866-FE64-4966-86FE-8995BE7308F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Product.Endpoint", "Product.Endpoint\Product.Endpoint.csproj", "{35AC6255-B9C0-4052-BCF2-574B1BDCCEC5}"
 EndProject
