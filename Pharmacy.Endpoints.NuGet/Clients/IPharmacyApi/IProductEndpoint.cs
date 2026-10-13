@@ -6,40 +6,40 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 
 public interface IProductEndpoint
 {
-    [Get("/api/Product/GetAll")]
+    [Get("/api/ProductService/GetAll")]
      Task<List<ProductForCustomerResponse>> GetAll(
          int pageNumber, 
          int pageSize);
 
-    [Get("/api/Product/GetByName")]
+    [Get("/api/ProductService/GetByName")]
      Task<List<ProductForCustomerResponse>> GetByName(
          string name, 
          int page,
         int pageSize);
 
-    [Get("/api/Product/GetByCategoryId")]
+    [Get("/api/ProductService/GetByCategoryId")]
     Task<List<ProductForCustomerResponse>> GetByCategoryId(
         long categoryId,
         int page,
         int pageSize);
 
-    [Get("/api/Product/GetBySalePrice")]
+    [Get("/api/ProductService/GetBySalePrice")]
     Task<List<ProductForCustomerResponse>> GetBySalePrice(
         decimal price, 
         int page,
         int pageSize);
 
-    [Get("/api/Product/GetByCountry")]
+    [Get("/api/ProductService/GetByCountry")]
     Task<List<ProductForCustomerResponse>> GetByCountry(
         CountryEnum country,
         int page,
         int pageSize);
 
-    [Get("/api/Product/GetById")]
+    [Get("/api/ProductService/GetById")]
      Task<ProductForCustomerResponse> GetById(
          long productId);
 
-    [Get("/api/Product/SearchByProductNameFromPharmacy")]
+    [Get("/api/ProductService/SearchByProductNameFromPharmacy")]
     Task<List<ProductForCustomerResponse>> SearchByProductNameFromPharmacy(
         long pharmacyId,
         string name, 
