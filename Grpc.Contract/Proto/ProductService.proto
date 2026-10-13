@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "Grpc.Contract.Proto";
+
+service ProductService{
+  rpc GetProducts (ProductGrpcIdsRequest)
+      returns (ProductsGrpcResponseFromProductService);
+  rpc UpdateStock(UpdateStockRequest)
+      returns(UpdateStockResponse);
+}
+message ProductGrpcIdsRequest {
+  repeated int64 productIds = 1;
+}
+message ProductsGrpcResponseFromProductService{
+  repeated ProductGrpcResponse products = 1;
+}
+message ProductGrpcResponse{
+  int64 productId = 1;
+  int64 pharmacyId = 2;
+  int32 stock = 3;
+  double salePrice = 4;
+}
+message ReserveStockResponse {
+  bool success = 1;
+  string message = 2;
+}
+message UpdateStockItem{
+  int64  productId = 1;
+  int32 quantity = 2;
+}
+message UpdateStockRequest{
+  repeated UpdateStockItem orderGrpcRequest = 1;
+}
+message UpdateStockResponse{
+  bool success = 1;
+  string message = 2;
+
+}

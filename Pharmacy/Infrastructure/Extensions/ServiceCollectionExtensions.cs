@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Grpc.Contract.Proto;
 using Pharmacy.Data;
 using Pharmacy.Interfaces;
 using Pharmacy.Jobs;
@@ -35,5 +36,9 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IPasswordService, PasswordService>();
         serviceCollection.AddScoped<IDeliveryFeeByDistance, DeliveryFeeByDistance>();
         serviceCollection.AddScoped<IAuthService, AuthService>();
+        serviceCollection.AddGrpcClient<ProductService.ProductServiceClient>(options =>
+        {
+            options.Address = new Uri("https://localhost:7083");
+        });
     }
 }

@@ -1,5 +1,6 @@
 using Product.Infrastructure.Extensions;
 using Product.Middlewares;
+using Product.Service.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -8,6 +9,7 @@ builder.Services.ADDRedis(builder.Configuration);
 builder.Services.AddFluentValidation();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatr();
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
@@ -21,5 +23,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
+app.MapGrpcService<ProductGrpcService>();
 
 app.Run();

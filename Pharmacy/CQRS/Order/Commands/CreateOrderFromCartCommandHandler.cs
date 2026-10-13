@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,8 @@ public class CreatOrderFromCartHandler(
     IMediator mediator,
     IPublishEndpoint publishEndpoint,
     IRoutesService routesService,
-    IDeliveryFeeByDistance deliveryFeeByDistance)
+    IDeliveryFeeByDistance deliveryFeeByDistance,
+    ProductService.ProductServiceClient productClient)
     : IRequestHandler<CreateOrderFromCartCommand, List<OrderResponseForCustomer>>
 {
     public async Task<List<OrderResponseForCustomer>> Handle(
@@ -58,10 +60,14 @@ public class CreatOrderFromCartHandler(
             .Select(x => x.ProductEntityId)
             .ToList();
 
-        var products = await dbContext.Products
-            .Where(x => productIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id,
-                cancellationToken);
+        var response = await productClient.GetProductsAsync(
+            new ProductGrpcIdsRequest
+            {
+                ProductIds = { productIds }
+            },
+            cancellationToken: cancellationToken);
+        var products = response.Products
+            .ToDictionary(x => x.ProductId);
 
         var preparedCartItems = new List<PreparedOrderItem>();
 
@@ -77,18 +83,18 @@ public class CreatOrderFromCartHandler(
             if (product.Stock < item.Quantity)
             {
                 throw new BusinessException(
-                    $"Insufficient stock for product {product.Name}: available {product.Stock}, requested {item.Quantity}");
+                    $"Insufficient stock for product {product.SalePrice}: available {product.Stock}, requested {item.Quantity}");
             }
 
             preparedCartItems.Add(new PreparedOrderItem()
             {
-                ProductEntity = product,
+                Product = product,
                 Quantity = item.Quantity
             });
         }
 
         var pharmacyGroup = preparedCartItems
-            .GroupBy(x => x.ProductEntity.PharmacyId)
+            .GroupBy(x => x.Product.PharmacyId)
             .ToList();
 
         var pharmacyIds = pharmacyGroup
@@ -97,7 +103,26 @@ public class CreatOrderFromCartHandler(
 
         var pharmacies = await dbContext.Pharmacies
             .Where(x => pharmacyIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, cancellationToken);
+            .ToDictionaryAsync(x => x.Id,
+                cancellationToken);
+
+        var preparedUpdateStockItem = preparedCartItems.Select(item =>
+            new UpdateStockItem
+            {
+                ProductId = item.Product.ProductId,
+                Quantity = item.Quantity
+            });
+
+        var updateStockResponse = await productClient.UpdateStockAsync(
+            new UpdateStockRequest
+            {
+                OrderGrpcRequest = { preparedUpdateStockItem }
+            });
+
+        if (!updateStockResponse.Success)
+        {
+            throw new BusinessException(updateStockResponse.Message);
+        }
 
         foreach (var pharmacy in pharmacyGroup)
         {
@@ -117,15 +142,13 @@ public class CreatOrderFromCartHandler(
             {
                 var orderItem = new OrderItemEntity
                 {
-                    ProductEntityId = preparedOrderItem.ProductEntity.Id,
+                    ProductEntityId = preparedOrderItem.Product.ProductId,
                     Quantity = preparedOrderItem.Quantity,
-                    Price = preparedOrderItem.ProductEntity.SalePrice,
-                    TotalPrice = preparedOrderItem.ProductEntity.SalePrice * preparedOrderItem.Quantity
+                    Price = (decimal)preparedOrderItem.Product.SalePrice,
+                    TotalPrice = (decimal)preparedOrderItem.Product.SalePrice * preparedOrderItem.Quantity
                 };
 
                 order.OrderItems.Add(orderItem);
-
-                preparedOrderItem.ProductEntity.Stock -= preparedOrderItem.Quantity;
             }
 
             var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
@@ -158,6 +181,8 @@ public class CreatOrderFromCartHandler(
             order.DeliveryFee = deliveryFee;
             orders.Add(order);
 
+            await mediator.Send(new ClearCartCommand(request.CustomerId), cancellationToken);
+
             await dbContext.SaveChangesAsync(cancellationToken);
 
             await publishEndpoint.Publish(new OrderCreatedEvent
@@ -171,8 +196,6 @@ public class CreatOrderFromCartHandler(
                 Address = address
             }, cancellationToken);
         }
-
-        await mediator.Send(new ClearCartCommand(request.CustomerId), cancellationToken);
 
         return OrderMappers.ToListOrderResponseForCustomers(orders);
     }

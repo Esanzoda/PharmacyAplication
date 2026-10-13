@@ -1,9 +1,9 @@
-using Pharmacy.Domain.Models.Product;
+using Grpc.Contract.Proto;
 
 namespace Pharmacy.Domain.Models.Order;
 
 public class PreparedOrderItem
 {
-    public ProductEntity ProductEntity { get; set; } = null!;
+    public ProductGrpcResponse Product { get; set; } = null!;
     public int Quantity { get; set; }
 }
