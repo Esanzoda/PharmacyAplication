@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using Pharmacy.Domain.Models.Product;
 using Pharmacy.Domain.Models.Product.DTos.Request;
 using Pharmacy.Domain.Models.Product.DTos.Response;
@@ -102,5 +103,27 @@ public static class ProductMappers
         return products
             .Select(ToProductForCustomerResponse)
             .ToList();
+    }
+
+    public static ProductGrpcResponse ToProductGrpcResponse(ProductEntity productEntity)
+    {
+        return new ProductGrpcResponse
+        {
+            ProductId = productEntity.Id,
+            PharmacyId = productEntity.PharmacyId,
+            Stock = productEntity.Stock,
+            SalePrice = (double)productEntity.SalePrice,
+        };
+    }
+
+    public static ProductsGrpcResponseFromProductService ToProductsGrpcResponseFromProductService(
+        List<ProductEntity> products)
+    {
+        var response = new ProductsGrpcResponseFromProductService();
+
+        response.Products.AddRange(
+            products.Select(ToProductGrpcResponse));
+
+        return response;
     }
 }

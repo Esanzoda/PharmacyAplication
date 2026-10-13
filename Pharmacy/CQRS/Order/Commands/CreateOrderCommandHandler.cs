@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,9 @@ public class CreateOrderCommandHandler(
     IPublishEndpoint publishEndpoint,
     IApplicationDbContext dbContext,
     IRoutesService routesService,
-    IDeliveryFeeByDistance deliveryFeeByDistance) : IRequestHandler<CreateOrderCommand, List<OrderResponseForCustomer>>
+    IDeliveryFeeByDistance deliveryFeeByDistance,
+    ProductService.ProductServiceClient productClient)
+    : IRequestHandler<CreateOrderCommand, List<OrderResponseForCustomer>>
 {
     public async Task<List<OrderResponseForCustomer>> Handle(
         CreateOrderCommand request,
@@ -49,10 +52,15 @@ public class CreateOrderCommandHandler(
             .Select(x => x.ProductId)
             .ToList();
 
-        var products = await dbContext.Products
-            .Include(x => x.ProductBatches)
-            .Where(x => productIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, cancellationToken);
+        var response = await productClient.GetProductsAsync(
+            new ProductGrpcIdsRequest
+            {
+                ProductIds = { productIds }
+            },
+            cancellationToken: cancellationToken);
+
+        var products = response.Products
+            .ToDictionary(x => x.ProductId);
 
         var preparedOrderItems = new List<PreparedOrderItem>();
 
@@ -72,13 +80,13 @@ public class CreateOrderCommandHandler(
 
             preparedOrderItems.Add(new PreparedOrderItem
             {
-                ProductEntity = product,
+                Product = product,
                 Quantity = orderItemRequest.Quantity
             });
         }
 
         var pharmacyGroup = preparedOrderItems
-            .GroupBy(x => x.ProductEntity.PharmacyId)
+            .GroupBy(x => x.Product.PharmacyId)
             .ToList();
 
         var pharmacyIds = pharmacyGroup.Select(x => x.Key)
@@ -87,7 +95,25 @@ public class CreateOrderCommandHandler(
         var pharmacies = await dbContext.Pharmacies
             .Where(x => pharmacyIds.Contains(x.Id))
             .ToDictionaryAsync(x => x.Id, cancellationToken);
+        
+        var preparedUpdateStockItem = request.Request.OrderItemRequest.Select(item =>
+            new UpdateStockItem
+            {
+                ProductId = item.ProductId,
+                Quantity = item.Quantity
+            });
 
+        var updateStockResponse = await productClient.UpdateStockAsync(
+            new UpdateStockRequest
+            {
+                OrderGrpcRequest = { preparedUpdateStockItem }
+            });
+
+        if (!updateStockResponse.Success)
+        {
+            throw new BusinessException(updateStockResponse.Message);
+        }
+        
         foreach (var pharmacy in pharmacyGroup)
         {
             var order = OrderMappers.ToOrder(request.Request);
@@ -102,63 +128,25 @@ public class CreateOrderCommandHandler(
             foreach (var preparedOrderItem in pharmacy)
             {
                 var existingOrderItem = order.OrderItems
-                    .FirstOrDefault(x => x.ProductEntityId == preparedOrderItem.ProductEntity.Id);
+                    .FirstOrDefault(x => x.ProductEntityId == preparedOrderItem.Product.ProductId);
 
                 if (existingOrderItem != null)
                 {
                     existingOrderItem.Quantity += preparedOrderItem.Quantity;
                     existingOrderItem.TotalPrice =
-                        existingOrderItem.Quantity * preparedOrderItem.ProductEntity.SalePrice;
+                        existingOrderItem.Quantity * (decimal)preparedOrderItem.Product.SalePrice;
                 }
                 else
                 {
                     var orderItem = new OrderItemEntity
                     {
-                        ProductEntityId = preparedOrderItem.ProductEntity.Id,
-                        Price = preparedOrderItem.ProductEntity.SalePrice,
+                        ProductEntityId = preparedOrderItem.Product.ProductId,
+                        Price = (decimal)preparedOrderItem.Product.SalePrice,
                         Quantity = preparedOrderItem.Quantity,
-                        TotalPrice = preparedOrderItem.Quantity * preparedOrderItem.ProductEntity.SalePrice,
+                        TotalPrice = preparedOrderItem.Quantity * (decimal)preparedOrderItem.Product.SalePrice,
                     };
                     order.OrderItems.Add(orderItem);
                 }
-
-                var productBatches = preparedOrderItem.ProductEntity.ProductBatches
-                    .Where(x => x.ProductEntityId == preparedOrderItem.ProductEntity.Id &&
-                                x is { Quantity: > 0, IsActive: true })
-                    .OrderBy(x => x.ExpiryDate)
-                    .ToList();
-
-                var requestQuantity = preparedOrderItem.Quantity;
-
-                foreach (var productBatch in productBatches)
-                {
-                    if (requestQuantity != 0)
-                    {
-                        var branchQuantity = productBatch.Quantity;
-
-                        if (requestQuantity > branchQuantity)
-                        {
-                            productBatch.Quantity -= branchQuantity;
-                            requestQuantity -= branchQuantity;
-                            productBatch.IsActive = false;
-                        }
-                        else
-                        {
-                            productBatch.Quantity -= requestQuantity;
-                            requestQuantity = 0;
-                            if (productBatch.Quantity == 0)
-                            {
-                                productBatch.IsActive = false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                preparedOrderItem.ProductEntity.Stock -= preparedOrderItem.Quantity;
             }
 
             var totalAmount = order.OrderItems.Sum(x => x.TotalPrice);
