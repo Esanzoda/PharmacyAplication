@@ -30,7 +30,6 @@ public static class PurchaseMappers
             PurchasePrice = purchaseItem.PurchasePrice,
             Country = purchaseItem.Country,
             Quantity = purchaseItem.Quantity,
-            Barcode = purchaseItem.Barcode,
             TotalPrice = purchaseItem.TotalPrice
         };
     }

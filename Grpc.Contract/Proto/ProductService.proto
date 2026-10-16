@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 option csharp_namespace = "Grpc.Contract.Proto";
 
 service ProductService{
@@ -7,6 +6,17 @@ service ProductService{
       returns (ProductsGrpcResponseFromProductService);
   rpc UpdateStock(UpdateStockRequest)
       returns(UpdateStockResponse);
+  rpc AddProductBatches(ProductBatches)
+      returns(UpdateStockResponse);
+  rpc GetProductWithIdAndPharmacyId(ProductWithIdAndPharmacyIdRequest)
+      returns(ProductGrpcResponse);
+  rpc UpdateProductBatch(AddItemToBatchRequest)
+      returns(UpdateStockResponse);
+  rpc DeleteProductBatchesByPurchaseItemIds(PurchaseItemIdsRequest)
+      returns(UpdateStockResponse);
+  rpc DeleteProductBatchByPurchaseId(PurchaseItemIdRequest)
+      returns(UpdateStockResponse);
+
 }
 message ProductGrpcIdsRequest {
   repeated int64 productIds = 1;
@@ -35,4 +45,46 @@ message UpdateStockResponse{
   bool success = 1;
   string message = 2;
 
+}
+message ProductBatches{
+  repeated AddProductBatch branches = 1;
+}
+message AddProductBatch{
+  int64 pharmacyId = 1;
+  int64 productId = 2;
+  Country country = 3;
+  int32 quantity = 4;
+  int64 purchaseItemId = 5;
+  DateOnly productionDate = 6;
+  DateOnly expiryDate = 7;
+  double purchasePrice = 8;
+  double totalPrice = 9;
+}
+enum Country{
+  Tajikistan = 0;
+  Russia = 1;
+  China = 2;
+  India = 3;
+  Germany = 4;
+}
+message DateOnly{
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}
+message ProductWithIdAndPharmacyIdRequest{
+  int64 id = 1;
+  int64  pharmacyId = 2;
+}
+message AddItemToBatchRequest{
+  int64 productId = 1;
+  int64 purchaseItemId = 2;
+  int32 quantity = 3;
+  double totalPrice = 4;
+}
+message PurchaseItemIdsRequest{
+  repeated int64 purchaseItemId = 1;
+}
+message PurchaseItemIdRequest{
+  int64 purchaseItemId = 1;
 }

@@ -11,6 +11,5 @@ public record PurchaseItemResponse
     public decimal PurchasePrice { get; init; }
     public CountryEnum Country { get; init; }
     public int Quantity { get; init; }
-    public required string Barcode { get; init; }
     public decimal TotalPrice { get; init; }
 }
