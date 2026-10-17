@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Purchase.Mapper;
@@ -14,7 +15,9 @@ public record RemoveItemFromPurchaseCommand(
     long PurchaseItemId) : IRequest<PurchaseResponse>;
 
 public class RemoveItemFromPurchaseCommandHandler(
-    IApplicationDbContext dbContext) : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
+    IApplicationDbContext dbContext,
+    ProductService.ProductServiceClient productClient)
+    : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(
         RemoveItemFromPurchaseCommand request,
@@ -42,18 +45,17 @@ public class RemoveItemFromPurchaseCommandHandler(
             throw new ResourceNotFoundException("Purchase item not found");
         }
 
-        var productBatch = await dbContext.ProductBatches
-            .FirstOrDefaultAsync(x => x.PurchaseItemId == request.PurchaseItemId,
-                cancellationToken);
+        var productBatch = await productClient.DeleteProductBatchByPurchaseIdAsync(
+            new PurchaseItemIdRequest
+            {
+                PurchaseItemId = purchaseItemToRemove.Id
+            },
+            cancellationToken: cancellationToken);
 
-        if (productBatch is null)
+        if (!productBatch.Success)
         {
-            throw new ResourceNotFoundException("Product batch not found");
+            throw new BusinessException(productBatch.Message);
         }
-
-        productBatch.IsActive = false;
-        productBatch.Quantity -= purchaseItemToRemove.Quantity;
-        productBatch.ProductEntity.Stock -= purchaseItemToRemove.Quantity;
 
         purchase.PurchaseItems.Remove(purchaseItemToRemove);
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);

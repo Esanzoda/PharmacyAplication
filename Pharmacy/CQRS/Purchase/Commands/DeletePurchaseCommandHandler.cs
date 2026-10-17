@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.Domain.Models.Base.Domain;
@@ -12,7 +13,8 @@ public record DeletePurchaseCommand(
     long Id) : IRequest<string>;
 
 public class DeletePurchaseCommandHandler(
-    IApplicationDbContext dbContext) : IRequestHandler<DeletePurchaseCommand, string>
+    IApplicationDbContext dbContext,
+    ProductService.ProductServiceClient productClient) : IRequestHandler<DeletePurchaseCommand, string>
 {
     public async Task<string> Handle(
         DeletePurchaseCommand request,
@@ -33,15 +35,16 @@ public class DeletePurchaseCommandHandler(
             .Select(x => x.Id)
             .ToList();
 
-        var productBatches = await dbContext.ProductBatches
-            .Where(x => purchaseItemIds.Contains(x.Id))
-            .ToListAsync(cancellationToken);
-
-        foreach (var productBatch in productBatches)
+        var productBatch = await productClient.DeleteProductBatchesByPurchaseItemIdsAsync(
+            new PurchaseItemIdsRequest
+            {
+                PurchaseItemId = { purchaseItemIds }
+            },
+            cancellationToken: cancellationToken);
+        if (!productBatch.Success)
         {
-            productBatch.IsActive = false;
+            throw new BusinessException(productBatch.Message);
         }
-
 
         dbContext.Purchases
             .Remove(purchase);
