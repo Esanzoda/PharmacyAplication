@@ -312,5 +312,23 @@ namespace ProductService.Service.Grpc
                 Message = "Product successfully update stock."
             };
         }
+ 
+        public override async Task<ProductGrpcResponse> CheckProductAvailability(CheckProductAvailabilityRequest request, ServerCallContext context)
+        {
+            var product = await dbContext.Products
+                .FirstOrDefaultAsync(x => x.Id == request.Id);
+            if (product == null)
+            {
+                throw new ResourceNotFoundException("Product not found");
+            }
+
+            if (product.Stock < request.Quantity)
+            {
+                throw new BusinessException("Product stock isn't availability");
+            }
+
+            return ProductMappers.ToProductGrpcResponse(product);
+
+        }
     }
 }
