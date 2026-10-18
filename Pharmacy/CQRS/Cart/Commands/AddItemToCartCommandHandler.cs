@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Cart.Mappers;
@@ -13,7 +14,9 @@ public record AddItemToCartCommand(
     CartItemRequest ItemRequest) : IRequest<CartResponse>;
 
 public class AddItemToCartCommandHandler(
-    IApplicationDbContext dbContext) : IRequestHandler<AddItemToCartCommand, CartResponse>
+    IApplicationDbContext dbContext,
+    ProductService.ProductServiceClient productServiceClient) :
+    IRequestHandler<AddItemToCartCommand, CartResponse>
 {
     public async Task<CartResponse> Handle(
         AddItemToCartCommand request,
@@ -29,10 +32,12 @@ public class AddItemToCartCommandHandler(
             throw new ResourceNotFoundException("Cart not found");
         }
 
-        var product = await dbContext.Products
-            .FirstOrDefaultAsync(x => x.Id == request.ItemRequest.ProductId &&
-                                      x.IsDeleted == false,
-                cancellationToken);
+        var product = await productServiceClient.CheckProductAvailabilityAsync(
+            new CheckProductAvailabilityRequest
+            {
+                Id = request.ItemRequest.ProductId,
+                Quantity = request.ItemRequest.Quantity
+            });
         if (product == null)
         {
             throw new ResourceNotFoundException("Product not found");
@@ -52,7 +57,7 @@ public class AddItemToCartCommandHandler(
             cartItem.CustomerEntityId = request.CustomerId;
             cartItem.ProductEntityId = request.ItemRequest.ProductId;
             cartItem.CartEntity = cart;
-            cartItem.SalePrice = product.SalePrice;
+            cartItem.SalePrice = (decimal)product.SalePrice;
             cartItem.TotalPrice = cartItem.SalePrice * cartItem.Quantity;
 
             cart.CartItems.Add(cartItem);

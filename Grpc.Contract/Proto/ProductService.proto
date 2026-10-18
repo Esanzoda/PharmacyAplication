@@ -16,6 +16,8 @@ service ProductService{
       returns(UpdateStockResponse);
   rpc DeleteProductBatchByPurchaseId(PurchaseItemIdRequest)
       returns(UpdateStockResponse);
+  rpc CheckProductAvailability(CheckProductAvailabilityRequest)
+      returns(ProductGrpcResponse);
 
 }
 message ProductGrpcIdsRequest {
@@ -87,4 +89,8 @@ message PurchaseItemIdsRequest{
 }
 message PurchaseItemIdRequest{
   int64 purchaseItemId = 1;
+}
+message CheckProductAvailabilityRequest{
+  int64 id = 1;
+  int32 quantity = 2;
 }
