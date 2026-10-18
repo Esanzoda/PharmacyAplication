@@ -2,30 +2,31 @@ using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.Data;
+using Pharmacy.Domain.Models.Base.Domain.Enum;
 using Pharmacy.Event.Events;
-using Pharmacy.Jobs;
+using Pharmacy.Exception;
 
+namespace Pharmacy.CQRS.Order.Queries;
 
-namespace Pharmacy.CQRS.ExpiredProducts.Commands;
+public record ReportQuery: IRequest;
 
-public record ReportCommand : IRequest;
-
-public class ReportCommandHandler(
+public class ReportQueryHandler(
     AppDbContext dbContext,
-    ILogger<CheckExpiredProductsJob> logger,
-    IPublishEndpoint publishEndpoint) : IRequestHandler<ReportCommand>
+    ILogger<ReportQueryHandler> logger,
+    IPublishEndpoint publishEndpoint) : IRequestHandler<ReportQuery>
 {
-    public async Task Handle(ReportCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ReportQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting check to repo");
-        var today = DateTime.UtcNow.Date.AddDays(1);
-        var yesterday = today.AddDays(-2);
+        var today = DateTime.UtcNow.Date;
+        var yesterday = today.AddDays(-1);
 
         var completedOrders = await dbContext.Orders
-            .Where(x => //x.OrderStatus == OrderStatus.Completed &&
-                x.CreatedAt >= yesterday &&
-                x.CreatedAt < today)
+            .Where(x => x.OrderStatus == OrderStatus.Completed &&
+                        x.CreatedAt >= yesterday &&
+                        x.CreatedAt < today.AddDays(1))
             .OrderBy(x => x.Id)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
         if (completedOrders.Count == 0)
         {
@@ -49,10 +50,7 @@ public class ReportCommandHandler(
         {
             if (!pharmacies.TryGetValue(pharmacy.Key, out var pharmacyInfo))
             {
-                logger.LogWarning(
-                    "Pharmacy {PharmacyId} not found.",
-                    pharmacy.Key);
-                continue;
+                throw new ResourceNotFoundException("Pharmacy not found");
             }
 
             var totalAmount = pharmacy.Sum(x => x.TotalAmount);
@@ -61,7 +59,7 @@ public class ReportCommandHandler(
                 {
                     To = pharmacyInfo.Email,
                     Count = pharmacy.Count(),
-                    Day = DateTime.UtcNow,
+                    Day = today,
                     TotalAmount = totalAmount
                 },
                 cancellationToken);

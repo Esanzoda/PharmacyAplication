@@ -1,5 +1,5 @@
 using MediatR;
-using Pharmacy.CQRS.ExpiredProducts.Commands;
+using Pharmacy.CQRS.Order.Queries;
 
 namespace Pharmacy.Jobs;
 
@@ -7,6 +7,6 @@ public class Report(IMediator mediator)
 {
     public async Task ReportToCeo()
     {
-        await mediator.Send(new ReportCommand());
+        await mediator.Send(new ReportQuery());
     }
 }
