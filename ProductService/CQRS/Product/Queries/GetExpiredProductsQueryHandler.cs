@@ -1,18 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Expired;
 using Pharmacy.Domain.Models.Product.DTos.Response;
-using Pharmacy.Interfaces;
+using ProductService.Interfaces;
 
-namespace Pharmacy.CQRS.ExpiredProducts.Query;
+namespace ProductService.CQRS.Product.Queries;
 
 public record GetExpiryProductsQuery(
     long PharmacyId,
-    int PageNumber,
-    int PageSize) : IRequest<List<ExpiredResponse>>;
+    PaginationRequest PaginationRequest) : IRequest<List<ExpiredResponse>>;
 
 public class GetExpiredProductsQueryHandler(
-    IApplicationDbContext dbContext) : IRequestHandler<GetExpiryProductsQuery, List<ExpiredResponse>>
+    IProductDbContext dbContext) : IRequestHandler<GetExpiryProductsQuery, List<ExpiredResponse>>
 {
     public async Task<List<ExpiredResponse>> Handle(
         GetExpiryProductsQuery request,
@@ -21,8 +21,8 @@ public class GetExpiredProductsQueryHandler(
         var expiredProducts = await dbContext.ExpireDateProducts
             .Where(x => x.PharmacyId == request.PharmacyId)
             .OrderBy(x => x.Id)
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 

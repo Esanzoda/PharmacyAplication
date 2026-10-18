@@ -128,4 +128,12 @@ public class ProductForPharmacy(IMediator mediator) : ControllerBase
                 country, paginationRequest));
         return Ok(response);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiredProducts(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response = await mediator.Send(new GetExpiryProductsQuery(pharmacyId, paginationRequest));
+        return Ok(response);
+    }
 }

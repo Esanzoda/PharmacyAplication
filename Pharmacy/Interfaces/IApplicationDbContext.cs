@@ -4,7 +4,6 @@ using Pharmacy.Domain.Models.Cart;
 using Pharmacy.Domain.Models.Customer;
 using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Domain.Models.Employee;
-using Pharmacy.Domain.Models.Expired;
 using Pharmacy.Domain.Models.Order;
 using Pharmacy.Domain.Models.Pharmacy;
 using Pharmacy.Domain.Models.PurchaseEntity;
@@ -22,8 +21,6 @@ public interface IApplicationDbContext
     DbSet<Purchase> Purchases { get; }
     DbSet<PurchaseItem> PurchaseItems { get; }
     DbSet<DeliverEntity> Delivers { get; }
-    DbSet<ExpiredProductsEntity> ExpireDateProducts { get; }
-    DbSet<ExpiredItemsEntity> ExpireDateItems { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<PharmacyEntity> Pharmacies { get; }
     DbSet<User> Users { get; set; }

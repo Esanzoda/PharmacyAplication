@@ -39,13 +39,4 @@ public class PharmacyController(IPharmacyEndpoint pharmacyEndpoint) : Controller
         var response = await pharmacyEndpoint.UpdatePhoneNumber(nawNumber, pharmacyId);
         return Ok(response);
     }
-
-
-    [HttpGet]
-    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiryProducts(long pharmacyId, int pageNumber,
-        int pageSize)
-    {
-        var response = await pharmacyEndpoint.GetExpiryProducts(pharmacyId, pageNumber, pageSize);
-        return Ok(response);
-    }
 }
