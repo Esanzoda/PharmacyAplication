@@ -10,10 +10,6 @@ public static class JobExtensions
         var scope = webApplication.Services.CreateScope();
         {
             var recurringJob = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-            recurringJob.AddOrUpdate<CheckExpiredProductsJob>(
-                "check-expiry-data-products",
-                job => job.CheckExpiredProductsAsync(),
-                Cron.MinuteInterval(3));
             recurringJob.AddOrUpdate<Report>(
                 "report-to-ceo",
                 job => job.ReportToCeo(),

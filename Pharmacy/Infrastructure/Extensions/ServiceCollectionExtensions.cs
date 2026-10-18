@@ -27,7 +27,6 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddValidatorsFromAssemblyContaining<Program>();
         serviceCollection.AddAutoMapper(_ => { }, AppDomain.CurrentDomain.GetAssemblies());
         serviceCollection.AddScoped<IApplicationDbContext, AppDbContext>();
-        serviceCollection.AddScoped<CheckExpiredProductsJob>();
         serviceCollection.AddScoped<Report>();
         serviceCollection.AddOpenApi();
         serviceCollection.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
