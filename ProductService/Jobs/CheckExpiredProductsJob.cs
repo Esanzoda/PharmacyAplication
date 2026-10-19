@@ -1,7 +1,7 @@
 using MediatR;
-using Pharmacy.CQRS.ExpiredProducts.Commands;
+using ProductService.CQRS.Product.Commands;
 
-namespace Pharmacy.Jobs;
+namespace ProductService.Jobs;
 
 public class CheckExpiredProductsJob(IMediator mediator)
 {

@@ -1,17 +1,22 @@
+using Grpc.Contract.Proto;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.Domain.Models.Expired;
 using Pharmacy.Event.Events;
-using Pharmacy.Interfaces;
+using ProductService.Exception;
+using ProductService.Interfaces;
+using DateOnly = System.DateOnly;
 
-namespace Pharmacy.CQRS.ExpiredProducts.Commands;
+
+namespace ProductService.CQRS.Product.Commands;
 
 public record CreateExpiredProductsCommand : IRequest;
 
 public class CheckExpiredProductsHandler(
-    IApplicationDbContext dbContext,
+    IProductDbContext dbContext,
     ILogger<CheckExpiredProductsHandler> logger,
+    PharmacyService.PharmacyServiceClient pharmacyServiceClient,
     IPublishEndpoint publishEndpoint) : IRequestHandler<CreateExpiredProductsCommand>
 
 {
@@ -23,7 +28,6 @@ public class CheckExpiredProductsHandler(
         var now = DateTime.UtcNow;
 
         var expiredProducts = await dbContext.ProductBatches
-            .Include(x => x.ProductEntity)
             .Where(x => x.ExpiryDate <= tomorrow &&
                         x.IsActive)
             .ToListAsync(cancellationToken);
@@ -37,22 +41,31 @@ public class CheckExpiredProductsHandler(
 
         var pharmacyIds = pharmacyGroup
             .Select(x => x.Key)
-            .ToList();
+            .ToHashSet();
+        var productIds = expiredProducts
+            .Select(x => x.ProductEntityId)
+            .ToHashSet();
+        var products = await dbContext.Products
+            .Where(x => productIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id,
+                cancellationToken: cancellationToken);
 
-        var pharmacies = await dbContext.Pharmacies
-            .Where(x => pharmacyIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, cancellationToken);
+        var response = await pharmacyServiceClient.GetPharmaciesByIdsAsync(
+            new GetPharmaciesByIdsRequest
+            {
+                PharmacyIds = { pharmacyIds }
+            }
+        );
+        var pharmacies = response.Pharmacies
+            .ToDictionary(x => x.Id);
 
         foreach (var pharmacy in pharmacyGroup)
         {
             if (!pharmacies.TryGetValue(pharmacy.Key, out var pharmacyInfo))
             {
-                logger.LogWarning(
-                    "Pharmacy {PharmacyId} not found.",
-                    pharmacy.Key);
-
-                continue;
+                throw new ResourceNotFoundException("Pharmacy not found");
             }
+
 
             var expiryDate = new ExpiredProductsEntity
             {
@@ -62,23 +75,26 @@ public class CheckExpiredProductsHandler(
 
             foreach (var productBatch in pharmacy)
             {
+                if (!products.TryGetValue(productBatch.ProductEntityId, out var product))
+                {
+                    throw new ResourceNotFoundException("Product not found");
+                }
+
                 var item = new ExpiredItemsEntity
                 {
                     PharmacyId = productBatch.PharmacyId,
                     ProductBatch = productBatch,
                     ProductBatchId = productBatch.Id,
-                    TotalSalePrice = productBatch.Quantity * productBatch.ProductEntity.SalePrice,
-                    TotalPurchasePrice = productBatch.Quantity * productBatch.PurchasePrice
+                    TotalPurchasePrice = productBatch.Quantity * productBatch.PurchasePrice,
+                    TotalSalePrice = productBatch.Quantity * product.SalePrice
                 };
 
                 expiryDate.ExpiryDateItemsList.Add(item);
 
-                expiryDate.TotalSalePrice += item.TotalSalePrice;
                 expiryDate.TotalPurchasePrice += item.TotalPurchasePrice;
+                expiryDate.TotalSalePrice += item.TotalSalePrice;
 
                 productBatch.IsActive = false;
-                productBatch.ProductEntity.Stock -= productBatch.Quantity;
-                productBatch.IsDeleted = true;
                 var expiryProductEvent = new ExpiredItemEvent
                 {
                     ProductName = productBatch.Name,
