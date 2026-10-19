@@ -22,7 +22,7 @@ public class GetProductsByPurchasePriceQueryHandler(
     {
         var productBatch = await dbContext.ProductBatches
             .AsNoTracking()
-            .Where(x => x.ProductEntity.PharmacyId == request.PharmacyId &&
+            .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.PurchasePrice == request.Price)
             .ToListAsync(cancellationToken);
 
