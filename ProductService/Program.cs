@@ -10,6 +10,7 @@ builder.Services.AddFluentValidation();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatr();
 builder.Services.AddGrpc();
+builder.Services.AddMasstransit(builder.Configuration);
 
 var app = builder.Build();
 
