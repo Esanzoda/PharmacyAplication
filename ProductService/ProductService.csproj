@@ -9,6 +9,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Grpc.Contract\Grpc.Contract.csproj"/>
         <ProjectReference Include="..\Pharmacy.Domain\Pharmacy.Domain.csproj"/>
+        <ProjectReference Include="..\Pharmacy.Event\Pharmacy.Event.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -16,6 +17,14 @@
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1"/>
         <PackageReference Include="Grpc.AspNetCore" Version="2.84.0"/>
         <PackageReference Include="Grpc.Core.Api" Version="2.84.0"/>
+        <PackageReference Include="Grpc.Net.Client" Version="2.84.0"/>
+        <PackageReference Include="Hangfire" Version="1.8.23"/>
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23"/>
+        <PackageReference Include="Hangfire.Core" Version="1.8.23"/>
+        <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1"/>
+        <PackageReference Include="MassTransit" Version="8.5.10"/>
+        <PackageReference Include="MassTransit.Abstractions" Version="8.5.10"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10"/>
         <PackageReference Include="MediatR" Version="14.2.0"/>
         <PackageReference Include="MessagePack" Version="3.1.11"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8"/>

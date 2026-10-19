@@ -1,4 +1,5 @@
 using ProductService.Infrastructure.Extensions;
+using ProductService.Jobs;
 using ProductService.Middlewares;
 using ProductService.Service.Grpc;
 
@@ -10,10 +11,13 @@ builder.Services.AddFluentValidation();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatr();
 builder.Services.AddGrpc();
+builder.Services.AddGrpcClient();
+builder.Services.AddScoped<CheckExpiredProductsJob>();
+builder.Services.AddHangfire(builder.Configuration);
 builder.Services.AddMasstransit(builder.Configuration);
 
 var app = builder.Build();
-
+app.AddJob();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
