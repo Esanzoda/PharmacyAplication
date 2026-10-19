@@ -1,0 +1,17 @@
+syntax = "proto3";
+option csharp_namespace = "Grpc.Contract.Proto";
+
+service PharmacyService{
+  rpc GetPharmaciesByIds(GetPharmaciesByIdsRequest)
+      returns(PharmaciesGrpcResponse);
+}
+message GetPharmaciesByIdsRequest{
+  repeated int64 pharmacyIds = 1;
+}
+message PharmaciesGrpcResponse{
+  repeated PharmacyGrpcResponse pharmacies = 1;
+}
+message PharmacyGrpcResponse{
+  int64 id = 1;
+  string email = 2;
+}
