@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using Pharmacy.Domain.Models.Pharmacy;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
@@ -38,5 +39,22 @@ public static class PharmacyMappers
         return pharmacies
             .Select(ToPharmacyResponse)
             .ToList();
+    }
+
+    public static PharmacyGrpcResponse ToPharmacyGrpcResponse(PharmacyEntity pharmacy)
+    {
+        return new PharmacyGrpcResponse
+        {
+            Id = pharmacy.Id,
+            Email = pharmacy.Email,
+        };
+    }
+
+    public static PharmaciesGrpcResponse ToListPharmacyGrpcResponse(List<PharmacyEntity> pharmacies)
+    {
+        var response = new PharmaciesGrpcResponse();
+        response.Pharmacies.AddRange(
+            pharmacies.Select(ToPharmacyGrpcResponse));
+        return response;
     }
 }
