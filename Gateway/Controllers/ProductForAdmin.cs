@@ -17,7 +17,7 @@ public class ProductForAdmin(IProductForPharmacy productForAdminEndpoint) : Cont
     public async Task<ActionResult<ProductForPharmacyResponse>> Add(
         [FromBody] ProductRequest request, long pharmacyId)
     {
-        var response = await productForAdminEndpoint.Add( pharmacyId,request);
+        var response = await productForAdminEndpoint.Add(pharmacyId, request);
         return Ok(response);
     }
 
@@ -27,7 +27,7 @@ public class ProductForAdmin(IProductForPharmacy productForAdminEndpoint) : Cont
         [FromBody] UpdateProductRequest request,
         long pharmacyId)
     {
-        var response = await productForAdminEndpoint.Update(pharmacyId,id, request);
+        var response = await productForAdminEndpoint.Update(pharmacyId, id, request);
         return Ok(response);
     }
 
@@ -139,6 +139,16 @@ public class ProductForAdmin(IProductForPharmacy productForAdminEndpoint) : Cont
     {
         var response =
             await productForAdminEndpoint.GetByCountry(pharmacyId, country, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiredProducts(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest
+    )
+    {
+        var response = await productForAdminEndpoint.GetExpiredProducts(pharmacyId,
+            paginationRequest);
         return Ok(response);
     }
 }

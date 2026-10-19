@@ -1,9 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy.CQRS.ExpiredProducts.Query;
 using Pharmacy.CQRS.Pharmacy.Commands;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
-using Pharmacy.Domain.Models.Product.DTos.Response;
 
 namespace Pharmacy.Controllers;
 
@@ -36,15 +34,6 @@ public class PharmacyController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<PharmacyResponse>> UpdatePhoneNumber([FromBody] string nawNumber, long pharmacyId)
     {
         var response = await mediator.Send(new UpdatePharmacyPhoneNumberCommand(pharmacyId, nawNumber));
-        return Ok(response);
-    }
-
-
-    [HttpGet]
-    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiredProducts(long pharmacyId, int pageNumber,
-        int pageSize)
-    {
-        var response = await mediator.Send(new GetExpiryProductsQuery(pharmacyId, pageNumber, pageSize));
         return Ok(response);
     }
 }

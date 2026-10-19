@@ -18,7 +18,7 @@ public interface IProductForPharmacy
         long id,
         [Body] UpdateProductRequest request
     );
-    
+
     [Delete("/api/ProductForPharmacy/DeleteById")]
     Task<string> DeleteById(long pharmacyId, long id);
 
@@ -70,5 +70,9 @@ public interface IProductForPharmacy
     [Get("/api/ProductForPharmacy/GetByCountry")]
     Task<List<ProductForPharmacyResponse>> GetByCountry(long pharmacyId,
         CountryEnum country,
+        [Query] PaginationRequest paginationRequest);
+
+    [Get("/api/ProductForPharmacy/GetExpiredProducts")]
+    Task<List<ExpiredResponse>> GetExpiredProducts(long pharmacyId,
         [Query] PaginationRequest paginationRequest);
 }

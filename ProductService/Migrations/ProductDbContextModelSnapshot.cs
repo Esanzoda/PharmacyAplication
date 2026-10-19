@@ -57,6 +57,81 @@ namespace ProductService.Migrations
                     b.ToTable("Categories", (string)null);
                 });
 
+            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredItemsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ExpiredProductsEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ExpiryDateEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductBatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalPurchasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalSalePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiredProductsEntityId");
+
+                    b.HasIndex("ProductBatchId");
+
+                    b.ToTable("ExpireDateItems");
+                });
+
+            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredProductsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalPurchasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalSalePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExpireDateProducts");
+                });
+
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductBatch", b =>
                 {
                     b.Property<long>("Id")
@@ -82,7 +157,8 @@ namespace ProductService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<long>("PharmacyId")
                         .HasColumnType("bigint");
@@ -112,7 +188,7 @@ namespace ProductService.Migrations
 
                     b.HasIndex("ProductEntityId");
 
-                    b.ToTable("ProductBatches");
+                    b.ToTable("ProductBatches", (string)null);
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
@@ -170,15 +246,32 @@ namespace ProductService.Migrations
                     b.ToTable("Products", (string)null);
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductBatch", b =>
+            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredItemsEntity", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", "ProductEntity")
-                        .WithMany("ProductBatches")
-                        .HasForeignKey("ProductEntityId")
+                    b.HasOne("Pharmacy.Domain.Models.Expired.ExpiredProductsEntity", "ExpiredProductsEntity")
+                        .WithMany("ExpiryDateItemsList")
+                        .HasForeignKey("ExpiredProductsEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductEntity");
+                    b.HasOne("Pharmacy.Domain.Models.Product.ProductBatch", "ProductBatch")
+                        .WithMany()
+                        .HasForeignKey("ProductBatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExpiredProductsEntity");
+
+                    b.Navigation("ProductBatch");
+                });
+
+            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductBatch", b =>
+                {
+                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", null)
+                        .WithMany("ProductBatches")
+                        .HasForeignKey("ProductEntityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
@@ -195,6 +288,11 @@ namespace ProductService.Migrations
             modelBuilder.Entity("Pharmacy.Domain.Models.Category.CategoryEntity", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredProductsEntity", b =>
+                {
+                    b.Navigation("ExpiryDateItemsList");
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
