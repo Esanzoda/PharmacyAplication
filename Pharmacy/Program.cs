@@ -2,6 +2,7 @@ using Hangfire;
 using Pharmacy.Infrastructure.Extensions;
 using Pharmacy.Middlewares;
 using Pharmacy.Infrastructure.Setting;
+using Pharmacy.Services.Grpc;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,4 +50,5 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGrpcService<PharmacyGrpcService>();
 app.Run();

@@ -35,6 +35,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IPasswordService, PasswordService>();
         serviceCollection.AddScoped<IDeliveryFeeByDistance, DeliveryFeeByDistance>();
         serviceCollection.AddScoped<IAuthService, AuthService>();
+        serviceCollection.AddGrpc();
         serviceCollection.AddGrpcClient<ProductService.ProductServiceClient>(options =>
         {
             options.Address = new Uri("https://localhost:7083");
