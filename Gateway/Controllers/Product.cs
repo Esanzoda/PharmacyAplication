@@ -81,4 +81,14 @@ public class ProductController(IProductForCustomer productEndpoint) : Controller
             await productEndpoint.SearchByProductNameFromPharmacy(pharmacyId, name, paginationRequest);
         return Ok(response);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByIdWithRecommendation(
+        long id,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productEndpoint.GetByIdWithRecommendation(id, paginationRequest);
+        return Ok(response);
+    }
 }

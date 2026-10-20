@@ -78,4 +78,13 @@ public class ProductForCustomer(IMediator mediator) : ControllerBase
             new GetPharmacyProductsByNameQuery(pharmacyId, name, paginationRequest));
         return Ok(response);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetByIdWithRecommendation(long id,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response = await mediator.Send(
+            new GetProductByIdWithRecommendationQuery(id,paginationRequest));
+        return Ok(response);
+    }
 }
