@@ -27,13 +27,10 @@ public class GetProductByIdWithRecommendationQueryHandler(IProductDbContext dbCo
             throw new ResourceNotFoundException("Product not found");
         }
 
-        var productNameSplit = product.Name.ToLower().Split(' ');
-        var productName = productNameSplit[0];
         var recommendationProduct = await dbContext.Products
             .AsNoTracking()
             .Where(x => x.PharmacyId == product.PharmacyId &&
-                        x.Name.ToLower()
-                            .Contains(productName)
+                        x.CategoryEntityId == product.CategoryEntityId
             )
             .OrderBy(x => x.SalePrice)
             .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
