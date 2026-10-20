@@ -45,4 +45,9 @@ public interface IProductForCustomer
         long pharmacyId,
         string name,
         [Query] PaginationRequest paginationRequest);
+
+    [Get("/api/ProductForCustomer/GetByIdWithRecommendation")]
+    Task<List<ProductForCustomerResponse>> GetByIdWithRecommendation(
+        long id,
+        [Query] PaginationRequest paginationRequest);
 }
