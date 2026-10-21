@@ -475,8 +475,7 @@ namespace Pharmacy.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<long>("PharmacyId")
                         .HasColumnType("bigint");
@@ -506,9 +505,7 @@ namespace Pharmacy.Migrations
 
                     b.HasIndex("ProductEntityId");
 
-                    b.HasIndex("PurchaseItemId");
-
-                    b.ToTable("ProductBatches", (string)null);
+                    b.ToTable("ProductBatch");
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
@@ -584,6 +581,9 @@ namespace Pharmacy.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SupplierId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("TotalAmount")
@@ -678,6 +678,20 @@ namespace Pharmacy.Migrations
                         .HasColumnType("numeric");
 
                     b.HasDiscriminator().HasValue("DeliverEntity");
+                });
+
+            modelBuilder.Entity("Pharmacy.Domain.Models.Deliver.Supplier", b =>
+                {
+                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
+
+                    b.Property<string>("VehicleNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("integer");
+
+                    b.HasDiscriminator().HasValue("Supplier");
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Employee.EmployeeEntity", b =>
@@ -785,21 +799,11 @@ namespace Pharmacy.Migrations
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductBatch", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", "ProductEntity")
+                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", null)
                         .WithMany("ProductBatches")
                         .HasForeignKey("ProductEntityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Pharmacy.Domain.Models.PurchaseEntity.PurchaseItem", "PurchaseItem")
-                        .WithMany()
-                        .HasForeignKey("PurchaseItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ProductEntity");
-
-                    b.Navigation("PurchaseItem");
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>

@@ -30,6 +30,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PharmacyEntity> Pharmacies { get; set; }
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Supplier> Suppliers { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

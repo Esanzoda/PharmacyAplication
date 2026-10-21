@@ -23,7 +23,8 @@ public interface IApplicationDbContext
     DbSet<DeliverEntity> Delivers { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<PharmacyEntity> Pharmacies { get; }
-    DbSet<User> Users { get; set; }
+    DbSet<User> Users { get; }
+    DbSet<Supplier> Suppliers { get; }
 
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
