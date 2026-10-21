@@ -6,4 +6,5 @@ public enum Role
     Employee = 1,
     Deliver = 2,
     Admin = 3,
+    Supplier = 4
 }
