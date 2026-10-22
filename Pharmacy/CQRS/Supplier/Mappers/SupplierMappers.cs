@@ -12,10 +12,10 @@ public static class SupplierMappers
             Name = request.Name,
             Address = request.Address,
             PhoneNumber = request.PhoneNumber,
-            Email = request.Email,
+            Email = request.Email.ToLower(),
             Role = Role.Supplier,
             VehicleType = request.VehicleType,
-            VehicleNumber = request.VehicleNumber
+            VehicleNumber = request.VehicleNumber.ToUpper()
         };
     }
 
@@ -34,5 +34,22 @@ public static class SupplierMappers
             UpdateAt = supplier.UpdateAt,
             IsDeleted = supplier.IsDeleted
         };
+    }
+
+    public static List<SupplierResponse> ToSuppliersResponse(List<Domain.Models.Deliver.Supplier> suppliers)
+    {
+        return suppliers
+            .Select(ToSupplierResponse)
+            .ToList();
+    }
+
+    public static void ToUpdateSupplier(UpdateSupplierRequest request,
+        Domain.Models.Deliver.Supplier supplier)
+    {
+        supplier.Name = request.Name;
+        supplier.VehicleNumber = request.VehicleNumber.ToUpper();
+        supplier.Email = request.Email.ToLower();
+        supplier.PhoneNumber = request.PhoneNumber;
+        supplier.VehicleType = request.VehicleType;
     }
 }
