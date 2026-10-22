@@ -30,8 +30,16 @@ public static class PurchaseMappers
             PurchasePrice = purchaseItem.PurchasePrice,
             Country = purchaseItem.Country,
             Quantity = purchaseItem.Quantity,
-            TotalPrice = purchaseItem.TotalPrice
+            TotalPrice = purchaseItem.TotalPrice,
         };
+    }
+
+    public static List<PurchaseItemResponse> ToPurchaseResponse(List<PurchaseItem> purchaseItem)
+    {
+        var response = new List<PurchaseItemResponse>();
+        response.AddRange(
+            purchaseItem.Select(ToPurchaseItemResponse));
+        return response;
     }
 
     public static PurchaseResponse ToPurchaseResponse(Domain.Models.PurchaseEntity.Purchase purchase)
@@ -41,6 +49,7 @@ public static class PurchaseMappers
             Id = purchase.Id,
             TotalAmount = purchase.TotalAmount,
             CreatedAt = purchase.CreatedAt,
+            SupplierId = purchase.SupplierId,
             PurchaseItems = purchase.PurchaseItems
                 .Select(ToPurchaseItemResponse)
                 .ToList()
