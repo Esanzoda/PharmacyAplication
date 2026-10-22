@@ -24,7 +24,8 @@ public class CreatePurchaseCommandHandler(
         var purchase = new Domain.Models.PurchaseEntity.Purchase
         {
             PharmacyId = request.PharmacyId,
-            EmployeeEntityId = request.EmployeeId
+            EmployeeEntityId = request.EmployeeId,
+            SupplierId = request.Request.SupplierId
         };
 
         await dbContext.Purchases
