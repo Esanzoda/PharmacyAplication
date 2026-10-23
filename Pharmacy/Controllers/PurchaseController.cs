@@ -95,6 +95,16 @@ public class PurchaseController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesBySupplierId(long supplierId,
+        long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await mediator.Send(new GetPurchasesBySupplierIdQuery(supplierId, pharmacyId, paginationRequest));
+        return Ok(response);
+    }
+
     [HttpDelete]
     public async Task<ActionResult<PurchaseResponse>> RemoveItem(long employeeId, long purchaseId, long pharmacyId,
         long purchaseItemId)
