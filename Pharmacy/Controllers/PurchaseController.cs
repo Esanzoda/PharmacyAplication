@@ -34,29 +34,6 @@ public class PurchaseController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesBySupplierIdForSpecificDate(long supplierId,
-        long pharmacyId,
-        [FromQuery] DateOnly dateOnly,
-        [FromQuery] PaginationRequest paginationRequest)
-    {
-        var response =
-            await mediator.Send(
-                new GetPurchasesBySupplierIdForSpecificDateQuery(supplierId, pharmacyId, dateOnly, paginationRequest));
-        return Ok(response);
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<List<PurchaseItemResponse>>> GetPurchaseItemByPurchaseId(long supplierId,
-        long pharmacyId,
-        [FromQuery] PaginationRequest paginationRequest)
-    {
-        var response =
-            await mediator.Send(
-                new GetPurchaseItemByPurchaseIdQuery(supplierId, pharmacyId, paginationRequest));
-        return Ok(response);
-    }
-
     [HttpDelete]
     public async Task<ActionResult<string>> DeleteById(long employeeId, long id, long pharmacyId)
     {
@@ -69,6 +46,16 @@ public class PurchaseController(IMediator mediator) : ControllerBase
         PurchaseItemRequest purchaseItemRequest)
     {
         var response = await mediator.Send(new AddItemToPurchaseCommand(pharmacyId, purchaseId, purchaseItemRequest));
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesBySupplierId(long supplierId,
+        long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await mediator.Send(new GetPurchasesBySupplierIdQuery(supplierId, pharmacyId, paginationRequest));
         return Ok(response);
     }
 
