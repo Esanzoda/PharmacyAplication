@@ -47,13 +47,13 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PurchaseItemResponse>>> GetPurchaseItemByPurchaseId(long supplierId,
+    public async Task<ActionResult<List<PurchaseItemResponse>>> GetPurchaseItemByPurchaseId(long purchaseId,
         long pharmacyId,
         [FromQuery] PaginationRequest paginationRequest)
     {
         var response =
             await mediator.Send(
-                new GetPurchaseItemByPurchaseIdQuery(supplierId, pharmacyId, paginationRequest));
+                new GetPurchaseItemByPurchaseIdQuery(purchaseId, pharmacyId, paginationRequest));
         return Ok(response);
     }
 
