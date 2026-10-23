@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Purchase.Mapper;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -8,9 +9,8 @@ namespace Pharmacy.CQRS.Purchase.Queries;
 
 public record GetPurchaseByDateQuery(
     long PharmacyId,
-    DateTime Date,
-    int PageNumber,
-    int PageSize) : IRequest<List<PurchaseResponse>>;
+    DateOnly Date,
+    PaginationRequest PaginationRequest) : IRequest<List<PurchaseResponse>>;
 
 public class GetPurchaseByDateHandler(
     IApplicationDbContext dbContext) : IRequestHandler<GetPurchaseByDateQuery, List<PurchaseResponse>>
@@ -22,11 +22,12 @@ public class GetPurchaseByDateHandler(
         var purchases = await dbContext.Purchases
             .AsNoTracking()
             .Where(x => x.PharmacyId == request.PharmacyId &&
-                        x.CreatedAt == request.Date)
+                        x.CreatedAt.Date == request.Date.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc).Date
+            )
             .Include(o => o.PurchaseItems)
             .OrderBy(o => o.Id)
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);
 
         return PurchaseMappers.ToListPurchaseResponse(purchases);
