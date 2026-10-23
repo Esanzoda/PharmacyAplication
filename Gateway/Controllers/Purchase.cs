@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Request;
 using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Response;
 using Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
@@ -34,6 +35,68 @@ public class PurchaseController(IPurchaseEndpoint purchaseEndpoint) : Controller
         var response = await purchaseEndpoint.GetAll(pharmacyId, pageNumber, pageSize);
         return Ok(response);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesBySupplierIdForSpecificDate(
+        long supplierId,
+        long pharmacyId,
+        [FromQuery] DateOnly dateOnly,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await purchaseEndpoint.GetPurchasesBySupplierIdForSpecificDate(
+                supplierId, pharmacyId, dateOnly, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseItemResponse>>> GetPurchaseItemByPurchaseId(
+        long purchaseId,
+        long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await purchaseEndpoint.GetPurchaseItemByPurchaseId(
+                purchaseId, pharmacyId, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesByDate(
+        long pharmacyId,
+        [FromQuery] DateOnly dateOnly,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await purchaseEndpoint.GetPurchasesByDate(
+                pharmacyId, dateOnly, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesBySupplierId(
+        long supplierId,
+        long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await purchaseEndpoint.GetPurchasesBySupplierId(supplierId, pharmacyId, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<PurchaseResponse>>> GetPurchaseByEmployeeId(
+        long pharmacyId,
+        long employeeId,
+        int page,
+        int pageSize)
+    {
+        var response =
+            await purchaseEndpoint.GetPurchaseByEmployeeId(
+                pharmacyId, employeeId, page, pageSize);
+        return Ok(response);
+    }
+
 
     [HttpDelete]
     public async Task<ActionResult<string>> DeleteById(long id, long pharmacyId)
