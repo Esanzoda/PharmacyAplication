@@ -9,15 +9,10 @@ public static class ServicesExtension
     public static IServiceCollection AddPharmacyApi(
         this IServiceCollection services)
     {
-        var baseUrl ="http://localhost:5121";
+        var baseUrl = "http://localhost:5121";
 
         services
             .AddRefitClient<IAuthEndpoint>()
-            .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri(baseUrl));
-
-        services
-            .AddRefitClient<ICategoryEndpoint>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
 
@@ -60,22 +55,13 @@ public static class ServicesExtension
             .AddRefitClient<IPharmacyEndpoint>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
-        
+
         services
             .AddRefitClient<IPharmacyForAdmin>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
-        
-        services
-            .AddRefitClient<IProductEndpoint>()
-            .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri(baseUrl));
-        
-        services
-            .AddRefitClient<IProductForAdminEndpoint>()
-            .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri(baseUrl));
-        
+
+
         services
             .AddRefitClient<IPurchaseEndpoint>()
             .ConfigureHttpClient(c =>
