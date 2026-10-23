@@ -9,7 +9,7 @@ namespace Pharmacy.CQRS.Purchase.Queries;
 
 public record GetPurchaseByDateQuery(
     long PharmacyId,
-    DateOnly Date,
+    DateOnly DateOnly,
     PaginationRequest PaginationRequest) : IRequest<List<PurchaseResponse>>;
 
 public class GetPurchaseByDateHandler(
@@ -22,7 +22,7 @@ public class GetPurchaseByDateHandler(
         var purchases = await dbContext.Purchases
             .AsNoTracking()
             .Where(x => x.PharmacyId == request.PharmacyId &&
-                        x.CreatedAt.Date == request.Date.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc).Date
+                        x.CreatedAt.Date == request.DateOnly.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc).Date
             )
             .Include(o => o.PurchaseItems)
             .OrderBy(o => o.Id)

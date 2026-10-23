@@ -59,12 +59,12 @@ public class PurchaseController(IMediator mediator) : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<List<PurchaseResponse>>> GetPurchasesByDate(long pharmacyId,
-        DateOnly date,
+        DateOnly dateOnly,
         PaginationRequest paginationRequest)
     {
         var response =
             await mediator.Send(
-                new GetPurchaseByDateQuery(pharmacyId, date, paginationRequest));
+                new GetPurchaseByDateQuery(pharmacyId, dateOnly, paginationRequest));
         return Ok(response);
     }
 
