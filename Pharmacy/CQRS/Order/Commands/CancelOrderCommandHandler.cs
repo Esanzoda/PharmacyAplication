@@ -1,3 +1,4 @@
+using Grpc.Contract.Proto;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,9 @@ public record CancelOrderCommand(
 
 public class CancelOrderCommandHandler(
     IPublishEndpoint publishEndpoint,
-    IApplicationDbContext dbContext) : IRequestHandler<CancelOrderCommand, OrderResponseForCustomer>
+    IApplicationDbContext dbContext,
+    ProductService.ProductServiceClient productServiceClient)
+    : IRequestHandler<CancelOrderCommand, OrderResponseForCustomer>
 {
     public async Task<OrderResponseForCustomer> Handle(
         CancelOrderCommand request,
@@ -26,10 +29,10 @@ public class CancelOrderCommandHandler(
         var now = DateTime.UtcNow;
         var order = await dbContext.Orders
             .Include(x => x.OrderItems)
-            .ThenInclude(x => x.ProductEntity)
             .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId &&
                                       x.Id == request.OrderId,
                 cancellationToken);
+
         if (order == null)
         {
             throw new ResourceNotFoundException($"Order not found");
@@ -42,14 +45,25 @@ public class CancelOrderCommandHandler(
             throw new BusinessException($"Cannot cancel a {order.OrderStatus} order");
         }
 
-        foreach (var item in order.OrderItems)
-        {
-            if (item.ProductEntity == null)
-            {
-                throw new ResourceNotFoundException("Product not found");
-            }
+        var orderItemIds = order.OrderItems.Select(x => x.Id)
+            .ToList();
+        var orderItemBatch = await dbContext.OrderItemBatches
+            .Where(x => orderItemIds.Contains(x.OrderItemId))
+            .Select(x => new ProductBatchRequest
+                {
+                    ProductBatchId = x.ProductBatchId,
+                    Quantity = x.Quantity
+                }
+            )
+            .ToListAsync(cancellationToken);
 
-            item.ProductEntity.Stock += item.Quantity;
+        var cancelOrder = await productServiceClient.CancelOrderAsync(new CancelOrderRequest
+        {
+            ProductBatchRequest = { orderItemBatch }
+        });
+        if (!cancelOrder.Success)
+        {
+            throw new BusinessException(cancelOrder.Message);
         }
 
         order.OrderStatus = OrderStatus.Cancelled;

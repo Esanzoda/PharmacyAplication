@@ -18,6 +18,8 @@ service ProductService{
       returns(UpdateStockResponse);
   rpc CheckProductAvailability(CheckProductAvailabilityRequest)
       returns(ProductGrpcResponse);
+  rpc CancelOrder(CancelOrderRequest)
+      returns(UpdateStockResponse);
 
 }
 message ProductGrpcIdsRequest {
@@ -93,4 +95,12 @@ message PurchaseItemIdRequest{
 message CheckProductAvailabilityRequest{
   int64 id = 1;
   int32 quantity = 2;
+}
+message ProductBatchRequest{
+  int64 productBatchId = 1;
+  int32 quantity = 2;
+}
+
+message CancelOrderRequest{
+  repeated ProductBatchRequest productBatchRequest = 1;
 }

@@ -355,6 +355,42 @@ namespace Pharmacy.Migrations
                     b.ToTable("Orders", (string)null);
                 });
 
+            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemBatch", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long?>("OrderItemEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("OrderItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductBatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderItemEntityId");
+
+                    b.ToTable("OrderItemBatches");
+                });
+
             modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -782,6 +818,13 @@ namespace Pharmacy.Migrations
                     b.Navigation("Deliver");
                 });
 
+            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemBatch", b =>
+                {
+                    b.HasOne("Pharmacy.Domain.Models.Order.OrderItemEntity", null)
+                        .WithMany("OrderItemBatches")
+                        .HasForeignKey("OrderItemEntityId");
+                });
+
             modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
                 {
                     b.HasOne("Pharmacy.Domain.Models.Order.OrderEntity", null)
@@ -857,6 +900,11 @@ namespace Pharmacy.Migrations
             modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderEntity", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
+                {
+                    b.Navigation("OrderItemBatches");
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>

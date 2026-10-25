@@ -28,7 +28,7 @@ namespace ProductService.Service.Grpc
 
             return ProductMappers.ToProductsGrpcResponseFromProductService(products);
         }
-        
+
         public override async Task<UpdateStockResponse> UpdateStock(
             UpdateStockRequest request,
             ServerCallContext context)
@@ -70,7 +70,7 @@ namespace ProductService.Service.Grpc
                 {
                     throw new ResourceNotFoundException("Product not found");
                 }
-                
+
                 if (!productBatches.TryGetValue(item.ProductId, out var productBatch))
                 {
                     throw new ResourceNotFoundException("Product batch  not found");
@@ -117,7 +117,7 @@ namespace ProductService.Service.Grpc
 
                 product.Stock -= item.Quantity;
             }
-            
+
             await dbContext.SaveChangesAsync(context.CancellationToken);
 
             return new UpdateStockResponse
@@ -312,8 +312,9 @@ namespace ProductService.Service.Grpc
                 Message = "Product successfully update stock."
             };
         }
- 
-        public override async Task<ProductGrpcResponse> CheckProductAvailability(CheckProductAvailabilityRequest request, ServerCallContext context)
+
+        public override async Task<ProductGrpcResponse> CheckProductAvailability(
+            CheckProductAvailabilityRequest request, ServerCallContext context)
         {
             var product = await dbContext.Products
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
@@ -328,7 +329,50 @@ namespace ProductService.Service.Grpc
             }
 
             return ProductMappers.ToProductGrpcResponse(product);
+        }
 
+        public async override Task<UpdateStockResponse> CancelOrder(CancelOrderRequest request,
+            ServerCallContext context)
+        {
+            var productBatchIds = request.ProductBatchRequest
+                .Select(x => x.ProductBatchId)
+                .ToList();
+
+            var productBatches = await dbContext.ProductBatches
+                .Where(x => productBatchIds.Contains(x.Id))
+                .ToDictionaryAsync(x => x.Id);
+
+            var productIds = productBatches
+                .Select(x => x.Value.ProductEntityId)
+                .Distinct()
+                .ToList();
+
+            var products = await dbContext.Products
+                .Where(x => productIds.Contains(x.Id))
+                .ToDictionaryAsync(x => x.Id);
+
+            foreach (var batchRequest in request.ProductBatchRequest)
+            {
+                if (!productBatches.TryGetValue(batchRequest.ProductBatchId, out var productBatch))
+                {
+                    throw new ResourceNotFoundException("Product batch not fount");
+                }
+
+                if (!products.TryGetValue(productBatch.ProductEntityId, out var productEntity))
+                {
+                    throw new ResourceNotFoundException("Product not found");
+                }
+
+                productBatch.Quantity -= batchRequest.Quantity;
+                productEntity.Stock -= batchRequest.Quantity;
+            }
+
+            await dbContext.SaveChangesAsync();
+            return new UpdateStockResponse
+            {
+                Success = true,
+                Message = "Product stock successfully updated."
+            };
         }
     }
 }
