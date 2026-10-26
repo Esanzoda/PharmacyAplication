@@ -69,9 +69,9 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<OrderResponseForCustomer>> RemoveItem(long customerId,long orderId, long productId)
+    public async Task<ActionResult<OrderResponseForCustomer>> RemoveItem(long customerId,long orderId, long orderItemId)
     {
-        var response = await mediator.Send(new RemoveItemFromOrderCommand(customerId, orderId, productId));
+        var response = await mediator.Send(new RemoveItemFromOrderCommand(customerId, orderId, orderItemId));
         return Ok(response);
     }
 }

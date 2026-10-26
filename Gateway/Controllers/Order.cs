@@ -73,10 +73,10 @@ public class Order(IOrderEndpoint orderEndpoint) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<OrderResponseForCustomer>> RemoveItem(long orderId, long productId)
+    public async Task<ActionResult<OrderResponseForCustomer>> RemoveItem(long orderId, long orderItemId)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var response = await orderEndpoint.RemoveItem(customerId, orderId, productId);
+        var response = await orderEndpoint.RemoveItem(customerId, orderId, orderItemId);
         return Ok(response);
     }
 }

@@ -50,5 +50,5 @@ public interface IOrderEndpoint
      Task<OrderResponseForCustomer> RemoveItem(
       long customerId,
       long orderId,
-      long productId);
+      long orderItemId);
 }
