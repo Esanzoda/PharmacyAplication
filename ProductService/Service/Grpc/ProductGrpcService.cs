@@ -29,7 +29,7 @@ namespace ProductService.Service.Grpc
             return ProductMappers.ToProductsGrpcResponseFromProductService(products);
         }
 
-        public override async Task<UpdateStockResponse> UpdateStock(
+        public override async Task<CreateOrderResponse> CreateOrder(
             UpdateStockRequest request,
             ServerCallContext context)
         {
@@ -62,7 +62,7 @@ namespace ProductService.Service.Grpc
                 .GroupBy(x => x.ProductEntityId)
                 .ToDictionary(x => x.Key, x => x.ToList());
 
-
+            var productBatchResponse = new List<ProductBatchViaGrpcResponse>();
             foreach (var item in requestedItems)
             {
                 var requestQuantity = item.Quantity;
@@ -80,10 +80,10 @@ namespace ProductService.Service.Grpc
                 if (item.Quantity > availableQuantity ||
                     item.Quantity > product.Stock)
                 {
-                    return new UpdateStockResponse
+                    return new CreateOrderResponse
                     {
                         Success = false,
-                        Message = $"Insufficient stock for {product.Name}."
+                        Message = $"Insufficient stock for {product.Name}.",
                     };
                 }
 
@@ -91,16 +91,24 @@ namespace ProductService.Service.Grpc
                 {
                     if (requestQuantity != 0)
                     {
-                        var branchQuantity = batch.Quantity;
-
-                        if (requestQuantity > branchQuantity)
+                        var batchQuantity = batch.Quantity;
+                        var productBatchViaGrpcResponse = new ProductBatchViaGrpcResponse();
+                        if (requestQuantity > batchQuantity)
                         {
-                            batch.Quantity -= branchQuantity;
-                            requestQuantity -= branchQuantity;
+                            productBatchViaGrpcResponse.ProductId = batch.ProductEntityId;
+                            productBatchViaGrpcResponse.ProductBatchId = batch.Id;
+                            productBatchViaGrpcResponse.Quantity = batchQuantity;
+
+                            batch.Quantity -= batchQuantity;
+                            requestQuantity -= batchQuantity;
                             batch.IsActive = false;
                         }
                         else
                         {
+                            productBatchViaGrpcResponse.ProductId = batch.ProductEntityId;
+                            productBatchViaGrpcResponse.ProductBatchId = batch.Id;
+                            productBatchViaGrpcResponse.Quantity = requestQuantity;
+
                             batch.Quantity -= requestQuantity;
                             requestQuantity = 0;
                             if (batch.Quantity == 0)
@@ -108,6 +116,8 @@ namespace ProductService.Service.Grpc
                                 batch.IsActive = false;
                             }
                         }
+
+                        productBatchResponse.Add(productBatchViaGrpcResponse);
                     }
                     else
                     {
@@ -120,10 +130,11 @@ namespace ProductService.Service.Grpc
 
             await dbContext.SaveChangesAsync(context.CancellationToken);
 
-            return new UpdateStockResponse
+            return new CreateOrderResponse
             {
                 Success = true,
-                Message = "Stock updated successfully."
+                Message = "Stock updated successfully.",
+                ProductBatchResponse = { productBatchResponse }
             };
         }
 

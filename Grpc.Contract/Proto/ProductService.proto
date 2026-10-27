@@ -4,8 +4,8 @@ option csharp_namespace = "Grpc.Contract.Proto";
 service ProductService{
   rpc GetProducts (ProductGrpcIdsRequest)
       returns (ProductsGrpcResponseFromProductService);
-  rpc UpdateStock(UpdateStockRequest)
-      returns(UpdateStockResponse);
+  rpc CreateOrder(UpdateStockRequest)
+      returns(CreateOrderResponse);
   rpc AddProductBatches(ProductBatches)
       returns(UpdateStockResponse);
   rpc GetProductWithIdAndPharmacyId(ProductWithIdAndPharmacyIdRequest)
@@ -21,6 +21,16 @@ service ProductService{
   rpc CancelOrder(CancelOrderRequest)
       returns(UpdateStockResponse);
 
+}
+message ProductBatchViaGrpcResponse{
+  int64 productId = 1;
+  int64 productBatchId = 2;
+  int32 quantity = 3;
+}
+message CreateOrderResponse{
+  bool success = 1;
+  string message = 2;
+  repeated ProductBatchViaGrpcResponse productBatchResponse = 3;
 }
 message ProductGrpcIdsRequest {
   repeated int64 productIds = 1;
