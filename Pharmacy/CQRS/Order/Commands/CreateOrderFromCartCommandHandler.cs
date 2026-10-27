@@ -58,6 +58,7 @@ public class CreatOrderFromCartHandler(
 
         var productIds = cart.CartItems
             .Select(x => x.ProductEntityId)
+            .Distinct()
             .ToList();
 
         var response = await productClient.GetProductsAsync(
@@ -72,7 +73,7 @@ public class CreatOrderFromCartHandler(
         var preparedCartItems = new List<PreparedOrderItem>();
 
         var orders = new List<OrderEntity>();
-
+        var orderItemBatches = new List<OrderItemBatch>();
         foreach (var item in cart.CartItems)
         {
             if (!products.TryGetValue(item.ProductEntityId, out var product))
@@ -113,7 +114,7 @@ public class CreatOrderFromCartHandler(
                 Quantity = item.Quantity
             });
 
-        var updateStockResponse = await productClient.UpdateStockAsync(
+        var updateStockResponse = await productClient.CreateOrderAsync(
             new UpdateStockRequest
             {
                 OrderGrpcRequest = { preparedUpdateStockItem }
@@ -124,6 +125,9 @@ public class CreatOrderFromCartHandler(
             throw new BusinessException(updateStockResponse.Message);
         }
 
+        var productBatchResponse = updateStockResponse.ProductBatchResponse
+            .GroupBy(x => x.ProductId)
+            .ToDictionary(x => x.Key);
         foreach (var pharmacy in pharmacyGroup)
         {
             var order = new OrderEntity
@@ -140,12 +144,29 @@ public class CreatOrderFromCartHandler(
 
             foreach (var preparedOrderItem in pharmacy)
             {
+                if (!productBatchResponse.TryGetValue(preparedOrderItem.Product.ProductId,
+                        out var productBatch))
+                {
+                    throw new ResourceNotFoundException("Product not found ");
+                }
+
+                foreach (var batch in productBatch)
+                {
+                    var orderItemBatch = new OrderItemBatch
+                    {
+                        ProductBatchId = batch.ProductBatchId,
+                        Quantity = batch.Quantity
+                    };
+                    orderItemBatches.Add(orderItemBatch);
+                }
+
                 var orderItem = new OrderItemEntity
                 {
                     ProductEntityId = preparedOrderItem.Product.ProductId,
                     Quantity = preparedOrderItem.Quantity,
                     Price = (decimal)preparedOrderItem.Product.SalePrice,
-                    TotalPrice = (decimal)preparedOrderItem.Product.SalePrice * preparedOrderItem.Quantity
+                    TotalPrice = (decimal)preparedOrderItem.Product.SalePrice * preparedOrderItem.Quantity,
+                    OrderItemBatches = orderItemBatches
                 };
 
                 order.OrderItems.Add(orderItem);

@@ -47,9 +47,9 @@ public class CreateOrderCommandHandler(
         var longitude = request.NewCustomerLongitude ?? customer.Longitude;
         var address = request.NewCustomerAddress ?? customer.Address;
 
-
         var productIds = request.Request.OrderItemRequest
             .Select(x => x.ProductId)
+            .Distinct()
             .ToList();
 
         var response = await productClient.GetProductsAsync(
@@ -65,6 +65,7 @@ public class CreateOrderCommandHandler(
         var preparedOrderItems = new List<PreparedOrderItem>();
 
         var orders = new List<OrderEntity>();
+        var orderItemBatches = new List<OrderItemBatch>();
         foreach (var orderItemRequest in request.Request.OrderItemRequest)
         {
             if (!products.TryGetValue(orderItemRequest.ProductId, out var product))
@@ -95,7 +96,7 @@ public class CreateOrderCommandHandler(
         var pharmacies = await dbContext.Pharmacies
             .Where(x => pharmacyIds.Contains(x.Id))
             .ToDictionaryAsync(x => x.Id, cancellationToken);
-        
+
         var preparedUpdateStockItem = request.Request.OrderItemRequest.Select(item =>
             new UpdateStockItem
             {
@@ -103,7 +104,7 @@ public class CreateOrderCommandHandler(
                 Quantity = item.Quantity
             });
 
-        var updateStockResponse = await productClient.UpdateStockAsync(
+        var updateStockResponse = await productClient.CreateOrderAsync(
             new UpdateStockRequest
             {
                 OrderGrpcRequest = { preparedUpdateStockItem }
@@ -113,7 +114,10 @@ public class CreateOrderCommandHandler(
         {
             throw new BusinessException(updateStockResponse.Message);
         }
-        
+
+        var productBatchResponse = updateStockResponse.ProductBatchResponse
+            .GroupBy(x => x.ProductId)
+            .ToDictionary(x => x.Key);
         foreach (var pharmacy in pharmacyGroup)
         {
             var order = OrderMappers.ToOrder(request.Request);
@@ -127,6 +131,22 @@ public class CreateOrderCommandHandler(
 
             foreach (var preparedOrderItem in pharmacy)
             {
+                if (!productBatchResponse.TryGetValue(preparedOrderItem.Product.ProductId,
+                        out var productBatch))
+                {
+                    throw new ResourceNotFoundException("Product not found ");
+                }
+
+                foreach (var batch in productBatch)
+                {
+                    var orderItemBatch = new OrderItemBatch
+                    {
+                        ProductBatchId = batch.ProductBatchId,
+                        Quantity = batch.Quantity
+                    };
+                    orderItemBatches.Add(orderItemBatch);
+                }
+
                 var existingOrderItem = order.OrderItems
                     .FirstOrDefault(x => x.ProductEntityId == preparedOrderItem.Product.ProductId);
 
@@ -144,6 +164,7 @@ public class CreateOrderCommandHandler(
                         Price = (decimal)preparedOrderItem.Product.SalePrice,
                         Quantity = preparedOrderItem.Quantity,
                         TotalPrice = preparedOrderItem.Quantity * (decimal)preparedOrderItem.Product.SalePrice,
+                        OrderItemBatches = orderItemBatches
                     };
                     order.OrderItems.Add(orderItem);
                 }
