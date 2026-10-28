@@ -65,7 +65,6 @@ public class CreateOrderCommandHandler(
         var preparedOrderItems = new List<PreparedOrderItem>();
 
         var orders = new List<OrderEntity>();
-        var orderItemBatches = new List<OrderItemBatch>();
         foreach (var orderItemRequest in request.Request.OrderItemRequest)
         {
             if (!products.TryGetValue(orderItemRequest.ProductId, out var product))
@@ -137,6 +136,8 @@ public class CreateOrderCommandHandler(
                     throw new ResourceNotFoundException("Product not found ");
                 }
 
+                var orderItemBatches = new List<OrderItemBatch>();
+
                 foreach (var batch in productBatch)
                 {
                     var orderItemBatch = new OrderItemBatch
@@ -153,6 +154,7 @@ public class CreateOrderCommandHandler(
                 if (existingOrderItem != null)
                 {
                     existingOrderItem.Quantity += preparedOrderItem.Quantity;
+                    existingOrderItem.OrderItemBatches.AddRange(orderItemBatches);
                     existingOrderItem.TotalPrice =
                         existingOrderItem.Quantity * (decimal)preparedOrderItem.Product.SalePrice;
                 }
