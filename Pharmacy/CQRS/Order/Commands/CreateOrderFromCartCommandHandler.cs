@@ -73,7 +73,6 @@ public class CreatOrderFromCartHandler(
         var preparedCartItems = new List<PreparedOrderItem>();
 
         var orders = new List<OrderEntity>();
-        var orderItemBatches = new List<OrderItemBatch>();
         foreach (var item in cart.CartItems)
         {
             if (!products.TryGetValue(item.ProductEntityId, out var product))
@@ -149,6 +148,7 @@ public class CreatOrderFromCartHandler(
                 {
                     throw new ResourceNotFoundException("Product not found ");
                 }
+                var orderItemBatches = new List<OrderItemBatch>();
 
                 foreach (var batch in productBatch)
                 {
