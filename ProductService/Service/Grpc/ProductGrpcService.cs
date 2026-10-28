@@ -361,7 +361,7 @@ namespace ProductService.Service.Grpc
             var products = await dbContext.Products
                 .Where(x => productIds.Contains(x.Id))
                 .ToDictionaryAsync(x => x.Id);
-
+            var newProductBatches = new List<ProductBatch>();
             foreach (var batchRequest in request.ProductBatchRequest)
             {
                 if (!productBatches.TryGetValue(batchRequest.ProductBatchId, out var productBatch))
@@ -374,10 +374,33 @@ namespace ProductService.Service.Grpc
                     throw new ResourceNotFoundException("Product not found");
                 }
 
-                productBatch.Quantity -= batchRequest.Quantity;
-                productEntity.Stock -= batchRequest.Quantity;
+                if (!productBatch.IsActive)
+                {
+                    var newProductBatch = new ProductBatch
+                    {
+                        PharmacyId = productBatch.PharmacyId,
+                        ProductEntityId = productBatch.ProductEntityId,
+                        Name = productBatch.Name,
+                        Country = productBatch.Country,
+                        Quantity = batchRequest.Quantity,
+                        PurchaseItemId = productBatch.PurchaseItemId,
+                        ProductionDate = productBatch.ProductionDate,
+                        ExpiryDate = productBatch.ExpiryDate,
+                        PurchasePrice = productBatch.PurchasePrice,
+                        IsActive = true,
+                        TotalPurchasePrice = productBatch.TotalPurchasePrice
+                    };
+                    newProductBatches.Add(newProductBatch);
+                }
+                else
+                {
+                    productBatch.Quantity += batchRequest.Quantity;
+                }
+
+                productEntity.Stock += batchRequest.Quantity;
             }
 
+            dbContext.ProductBatches.AddRange(newProductBatches);
             await dbContext.SaveChangesAsync();
             return new UpdateStockResponse
             {
