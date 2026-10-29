@@ -11,13 +11,18 @@ using Pharmacy.Domain.Models.Customer.DTOs.Response;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 using Pharmacy.Domain.Models.Product.DTos.Response.Customer;
 using Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
+using Product.Endpoint.Clients.IProductApi;
 
 namespace Gateway.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Customer))]
-public class Customer(ICustomerEndpoint customerEndpoint) : ControllerBase
+public class Customer(
+    ICustomerEndpoint customerEndpoint,
+    ICategory category,
+    IProductForCustomer productForCustomer,
+    IProductForPharmacy productForPharmacy) : ControllerBase
 {
     [HttpPatch]
     public async Task<ActionResult<CartItemResponse>> UpdateCartItemQuantity(long productId, int quantity)
@@ -53,10 +58,11 @@ public class Customer(ICustomerEndpoint customerEndpoint) : ControllerBase
 
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetCategoryWithProducts(int categoryId, int page,
-        int pageSize)
+    public async Task<ActionResult<List<ProductForCustomerResponse>>> GetCategoryWithProducts(int categoryId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await customerEndpoint.GetCategoryWithProducts(categoryId, page, pageSize);
+        var response =
+            await productForCustomer.GetByCategoryId(categoryId, paginationRequest);
         return Ok(response);
     }
 
@@ -101,18 +107,20 @@ public class Customer(ICustomerEndpoint customerEndpoint) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CategoryResponse>>> GetAllCategory(int page, int pageSize)
+    public async Task<ActionResult<List<CategoryResponse>>> GetAllCategory(
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await customerEndpoint.GetAllCategory(page, pageSize);
+        var response = await category.GetAll(paginationRequest);
         return Ok(response);
     }
 
     [HttpGet]
     public async Task<ActionResult<List<ProductForCustomerResponse>>> GetPharmacyProductsByCategory(long pharmacyId,
-        long categoryId, int page, int pageSize)
+        long categoryId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
         var response =
-            await customerEndpoint.GetPharmacyProductsByCategory(pharmacyId, categoryId, page, pageSize);
+            await productForPharmacy.GetByCategory(pharmacyId, categoryId, paginationRequest);
         return Ok(response);
     }
 }

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Customer.Queries;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Customer.DTOs.Response;
 
 namespace Pharmacy.Controllers;
@@ -10,25 +11,29 @@ namespace Pharmacy.Controllers;
 public class CustomerControllerForAdmin(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<CustomerResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
+    public async Task<ActionResult<List<CustomerResponse>>> GetAll(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetAllCustomerByPaginationQuery(pageNumber, pageSize, pharmacyId));
+        var response = await mediator.Send(
+            new GetAllCustomerByPaginationQuery(pharmacyId, paginationRequest));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<CustomerResponse>> GetByPhone(long pharmacyId, string phone, int page,
-        int pageSize)
+    public async Task<ActionResult<CustomerResponse>> GetByPhone(long pharmacyId, string phone,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetCustomerByPhoneNumberQuery(pharmacyId, phone, page, pageSize));
+        var response = await mediator.Send(
+            new GetCustomerByPhoneNumberQuery(pharmacyId, phone, paginationRequest));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CustomerResponse>>> GetByName(long pharmacyId, string name, int page,
-        int pageSize)
+    public async Task<ActionResult<List<CustomerResponse>>> GetByName(long pharmacyId, string name,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetCustomerByNameQuery(pharmacyId, name, page, pageSize));
+        var response = await mediator.Send(
+            new GetCustomerByNameQuery(pharmacyId, name, paginationRequest));
         return Ok(response);
     }
 }

@@ -1,3 +1,4 @@
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Customer.DTOs.Response;
 using Refit;
 
@@ -8,22 +9,19 @@ public interface ICustomerForAdmin
     [Get("/api/CustomerControllerForAdmin/GetAll")]
     Task<List<CustomerResponse>> GetAll(
         long pharmacyId,
-        int pageNumber,
-        int pageSize);
+        [Query] PaginationRequest paginationRequest);
 
 
     [Get("/api/CustomerControllerForAdmin/GetByPhone")]
     Task<CustomerResponse> GetByPhone(
         long pharmacyId,
         string phone,
-        int page,
-        int pageSize);
+        [Query] PaginationRequest paginationRequest);
 
 
     [Get("/api/CustomerControllerForAdmin/GetByName")]
     Task<List<CustomerResponse>> GetByName(
         long pharmacyId,
         string name,
-        int page,
-        int pageSize);
+        [Query] PaginationRequest paginationRequest);
 }

@@ -1,16 +1,15 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Customer.Mapper;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Customer.DTOs.Response;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Customer.Queries;
 
 public record GetAllCustomerByPaginationQuery(
-    int PageNumber,
-    int PageSize,
-    long PharmacyId
-) : IRequest<List<CustomerResponse>>;
+    long PharmacyId,
+    PaginationRequest PaginationRequest) : IRequest<List<CustomerResponse>>;
 
 public class GetAllCustomerByPaginationHandler(
     IApplicationDbContext dbContext) : IRequestHandler<GetAllCustomerByPaginationQuery, List<CustomerResponse>>
@@ -32,8 +31,8 @@ public class GetAllCustomerByPaginationHandler(
 
         var customers = await dbContext.Customers
             .Where(x => customerIds.Contains(x.Id))
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);
 
         return CustomerMappers.ToListCustomerResponse(customers);
