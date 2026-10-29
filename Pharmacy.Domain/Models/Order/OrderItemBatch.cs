@@ -4,7 +4,7 @@ namespace Pharmacy.Domain.Models.Order;
 
 public class OrderItemBatch : BaseEntity
 {
-    public long OrderItemId { get; set; }
+    public long OrderItemEntityId { get; set; }
     public long ProductBatchId { get; set; }
     public int Quantity { get; set; }
 }

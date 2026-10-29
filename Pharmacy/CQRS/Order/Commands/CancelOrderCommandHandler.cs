@@ -48,7 +48,7 @@ public class CancelOrderCommandHandler(
         var orderItemIds = order.OrderItems.Select(x => x.Id)
             .ToList();
         var orderItemBatch = await dbContext.OrderItemBatches
-            .Where(x => orderItemIds.Contains(x.OrderItemId))
+            .Where(x => orderItemIds.Contains(x.OrderItemEntityId))
             .Select(x => new ProductBatchRequest
                 {
                     ProductBatchId = x.ProductBatchId,
