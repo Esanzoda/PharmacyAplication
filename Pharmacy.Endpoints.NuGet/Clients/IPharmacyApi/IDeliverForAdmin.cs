@@ -1,3 +1,4 @@
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
 using Refit;
@@ -8,33 +9,26 @@ public interface IDeliverForAdmin
 {
     [Post("/api/DeliverForAdmin/Add")]
     Task<DeliverResponse> Add(
-     [Body] DeliverRequest request);
-
+        [Body] DeliverRequest request);
 
     [Put("/api/DeliverForAdmin/Update")]
-  Task<DeliverResponse> Update(
-   long id, 
-   [Body] UpdateDeliverRequest request);
-
+    Task<DeliverResponse> Update(
+        long id,
+        [Body] UpdateDeliverRequest request);
 
     [Get("/api/DeliverForAdmin/GetById")]
     Task<DeliverResponse> GetById(
-     long id);
-
+        long id);
 
     [Get("/api/DeliverForAdmin/GetByEmail")]
-   Task<DeliverResponse> GetByEmail(
-    string email);
-
+    Task<DeliverResponse> GetByEmail(
+        string email);
 
     [Get("/api/DeliverForAdmin/GetAll")]
-     Task<List<DeliverResponse>> GetAll(
-      int pageNumber, 
-      int pageSize);
-
+    Task<List<DeliverResponse>> GetAll(
+        [Query] PaginationRequest paginationRequest);
 
     [Delete("/api/DeliverForAdmin/DeleteById")]
-     Task<string> DeleteById(
-      long id);
-
+    Task<string> DeleteById(
+        long id);
 }

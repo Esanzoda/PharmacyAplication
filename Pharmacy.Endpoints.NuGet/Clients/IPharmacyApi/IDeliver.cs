@@ -1,4 +1,5 @@
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
@@ -14,13 +15,11 @@ public interface IDeliver
         long deliverId,
         [Body] UpdateDeliverRequest request);
 
-
     [Patch("/api/Deliver/UpdatePassword")]
     Task<string> UpdatePassword(
         long deliverId,
         string oldPassword,
         string newPassword);
-
 
     [Put("/api/Deliver/UpdateOrderStatus")]
     Task<OrderStatus> UpdateOrderStatus(
@@ -28,16 +27,12 @@ public interface IDeliver
         long orderId,
         DeliverUpdateOrderStatus newOrderStatus);
 
-
     [Get("/api/Deliver/GetReadyToPickupOrders")]
     Task<List<DeliverResponse>> GetReadyToPickupOrders(
-        int page, 
-        int pageSize);
-
+        [Query] PaginationRequest paginationRequest);
 
     [Patch("/api/Deliver/AcceptOrder")]
     Task<OrderResponseForDeliver> AcceptOrder(
         long deliverId,
         long orderId);
-
 }
