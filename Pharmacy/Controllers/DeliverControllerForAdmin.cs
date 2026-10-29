@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Deliver.Commands;
 using Pharmacy.CQRS.Deliver.Queries;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
 
@@ -40,9 +41,10 @@ public class DeliverControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<DeliverResponse>>> GetAll(int pageNumber, int pageSize)
+    public async Task<ActionResult<List<DeliverResponse>>> GetAll(
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetAllDeliverQuery(pageNumber, pageSize));
+        var response = await mediator.Send(new GetAllDeliverQuery(paginationRequest));
         return Ok(response);
     }
 

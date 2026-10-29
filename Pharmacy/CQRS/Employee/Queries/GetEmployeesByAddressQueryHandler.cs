@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Employee.Mapper;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Employee.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -9,8 +10,7 @@ namespace Pharmacy.CQRS.Employee.Queries;
 public record GetEmployeesByAddressQuery(
     long PharmacyId,
     string Address,
-    int Page,
-    int PageSize) : IRequest<List<EmployeeResponse>>;
+    PaginationRequest PaginationRequest) : IRequest<List<EmployeeResponse>>;
 
 public class GetEmployeesByAddressQueryHandler(
     IApplicationDbContext dbContext) : IRequestHandler<GetEmployeesByAddressQuery, List<EmployeeResponse>>
@@ -23,8 +23,8 @@ public class GetEmployeesByAddressQueryHandler(
             .Where(x => x.PharmacyId == request.PharmacyId &&
                         x.Address.ToLower().Contains(request.Address.ToLower()) && x.IsDeleted == false)
             .OrderBy(x => x.Id)
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 

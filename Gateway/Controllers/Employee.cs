@@ -24,7 +24,8 @@ public class Employee(IEmployeeEndpoint employeeEndpoint) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<EmployeeResponse>> Update([FromBody] UpdateEmployeeRequest request, long pharmacyId)
+    public async Task<ActionResult<EmployeeResponse>> Update([FromBody] UpdateEmployeeRequest request,
+        long pharmacyId)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await employeeEndpoint.Update(employeeId, request, pharmacyId);
@@ -40,7 +41,8 @@ public class Employee(IEmployeeEndpoint employeeEndpoint) : ControllerBase
     }
 
     [HttpPatch]
-    public async Task<ActionResult<string>> UpdatePassword(long pharmacyId, string oldPassword, string newPassword)
+    public async Task<ActionResult<string>> UpdatePassword(long pharmacyId, string oldPassword,
+        string newPassword)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =

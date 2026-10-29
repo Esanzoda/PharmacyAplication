@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 using Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
@@ -20,9 +21,10 @@ public class PharmacyForAdmin(IPharmacyForAdmin pharmacyForAdmin) : ControllerBa
     }
 
     [HttpGet]
-    public async Task<ActionResult<PharmacyResponse>> GetAll(int page, int pageSize)
+    public async Task<ActionResult<PharmacyResponse>> GetAll(
+        [FromQuery]PaginationRequest paginationRequest)
     {
-        var response = await pharmacyForAdmin.GetAll(page, pageSize);
+        var response = await pharmacyForAdmin.GetAll(paginationRequest);
         return Ok(response);
     }
 

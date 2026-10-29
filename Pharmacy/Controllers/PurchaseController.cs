@@ -13,7 +13,8 @@ namespace Pharmacy.Controllers;
 public class PurchaseController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<PurchaseResponse>> Add(long employeeId, [FromBody] PurchaseRequest request,
+    public async Task<ActionResult<PurchaseResponse>> Add(long employeeId,
+        [FromBody] PurchaseRequest request,
         long pharmacyId)
     {
         var response = await mediator.Send(new CreatePurchaseCommand(pharmacyId, employeeId, request));
@@ -21,16 +22,19 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PurchaseResponse>> GetById(long id, long pharmacyId)
+    public async Task<ActionResult<PurchaseResponse>> GetById(long id,
+        long pharmacyId)
     {
         var response = await mediator.Send(new GetPurchaseBuIdQuery(pharmacyId, id));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
+    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetAllPurchaseQuery(pharmacyId, pageNumber, pageSize));
+        var response = await mediator.Send(
+            new GetAllPurchaseQuery(pharmacyId, paginationRequest));
         return Ok(response);
     }
 
@@ -71,17 +75,17 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<PurchaseItemResponse>>> GetPurchaseByEmployeeId(long pharmacyId,
         int employeeId,
-        int page,
-        int pageSize)
+        [FromQuery] PaginationRequest paginationRequest)
     {
         var response =
             await mediator.Send(
-                new GetPurchaseByEmployeeIdQuery(pharmacyId, employeeId, page, pageSize));
+                new GetPurchaseByEmployeeIdQuery(pharmacyId, employeeId, paginationRequest));
         return Ok(response);
     }
 
     [HttpDelete]
-    public async Task<ActionResult<string>> DeleteById(long employeeId, long id, long pharmacyId)
+    public async Task<ActionResult<string>> DeleteById(long employeeId, long id,
+        long pharmacyId)
     {
         var response = await mediator.Send(new DeletePurchaseCommand(pharmacyId, employeeId, id));
         return Ok(response);
@@ -106,7 +110,8 @@ public class PurchaseController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult<PurchaseResponse>> RemoveItem(long employeeId, long purchaseId, long pharmacyId,
+    public async Task<ActionResult<PurchaseResponse>> RemoveItem(long employeeId, long purchaseId,
+        long pharmacyId,
         long purchaseItemId)
     {
         var response =

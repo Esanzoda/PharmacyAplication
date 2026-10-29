@@ -13,7 +13,9 @@ namespace Pharmacy.Controllers;
 public class EmployeeController(IMediator mediator) : ControllerBase
 {
     [HttpPut]
-    public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long employeeId,long orderId, long pharmacyId,
+    public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long employeeId,
+        long orderId,
+        long pharmacyId,
         OrderStatus newOrderStatus)
     {
         var response =
@@ -22,21 +24,26 @@ public class EmployeeController(IMediator mediator) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<EmployeeResponse>> Update(long employeeId,[FromBody] UpdateEmployeeRequest request, long pharmacyId)
+    public async Task<ActionResult<EmployeeResponse>> Update(long employeeId,
+        [FromBody] UpdateEmployeeRequest request,
+        long pharmacyId)
     {
         var response = await mediator.Send(new UpdateEmployeeCommand(pharmacyId, employeeId, request));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<EmployeeResponse>> GetInformation(long employeeId,long pharmacyId)
+    public async Task<ActionResult<EmployeeResponse>> GetInformation(long employeeId, long pharmacyId)
     {
         var response = await mediator.Send(new GetEmployeeByIdQuery(pharmacyId, employeeId));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<string>> UpdatePassword(long employeeId,long pharmacyId, string oldPassword, string newPassword)
+    public async Task<ActionResult<string>> UpdatePassword(long employeeId,
+        long pharmacyId,
+        string oldPassword,
+        string newPassword)
     {
         var response =
             await mediator.Send(new UpdateEmployeePasswordCommand(employeeId, pharmacyId, oldPassword, newPassword));

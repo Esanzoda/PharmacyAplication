@@ -21,8 +21,7 @@ public interface IPurchaseEndpoint
     [Get("/api/Purchase/GetAll")]
     Task<List<PurchaseResponse>> GetAll(
         long pharmacyId,
-        int pageNumber,
-        int pageSize);
+        [Query] PaginationRequest paginationRequest);
 
     [Get("/api/Purchase/GetPurchasesBySupplierIdForSpecificDate")]
     Task<List<PurchaseResponse>> GetPurchasesBySupplierIdForSpecificDate(
@@ -54,8 +53,7 @@ public interface IPurchaseEndpoint
     Task<List<PurchaseResponse>> GetPurchaseByEmployeeId(
         long pharmacyId,
         long employeeId,
-        int page,
-        int pageSize);
+        [Query] PaginationRequest paginationRequest);
 
     [Delete("/api/Purchase/DeleteById")]
     Task<string> DeleteById(

@@ -2,13 +2,14 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Deliver.Mapper;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Order.DTOs.Response;
 using Pharmacy.Interfaces;
 
 namespace Pharmacy.CQRS.Deliver.Queries;
 
-public record GetOrdersByStatusReadyForPickupQuery(int PageNumber, int PageSize)
-    : IRequest<List<OrderResponseForDeliver>>;
+public record GetOrdersByStatusReadyForPickupQuery(
+    PaginationRequest PaginationRequest) : IRequest<List<OrderResponseForDeliver>>;
 
 public class GetOrdersNotReserveQueryHandler(
     IApplicationDbContext dbContext)
@@ -22,8 +23,8 @@ public class GetOrdersNotReserveQueryHandler(
             .Where(x => x.Deliver == null &&
                         x.OrderType == OrderType.Deliver)
             .OrderBy(x => x.Id)
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 

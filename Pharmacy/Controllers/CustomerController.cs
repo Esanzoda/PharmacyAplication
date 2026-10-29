@@ -4,6 +4,7 @@ using Pharmacy.CQRS.Cart.Commands;
 using Pharmacy.CQRS.Cart.Queries;
 using Pharmacy.CQRS.Customer.Commands;
 using Pharmacy.CQRS.Pharmacy.Queries;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Cart.DTOs.Request;
 using Pharmacy.Domain.Models.Cart.DTOs.Response;
 using Pharmacy.Domain.Models.Customer.DTOs.Request;
@@ -75,9 +76,10 @@ public class CustomerController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PharmacyResponse>>> GetAllPharmacy(int page, int pageSize)
+    public async Task<ActionResult<List<PharmacyResponse>>> GetAllPharmacy(
+        [FromQuery]PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetAllPharmacyQuery(page, pageSize));
+        var response = await mediator.Send(new GetAllPharmacyQuery(paginationRequest));
         return Ok(response);
     }
 }

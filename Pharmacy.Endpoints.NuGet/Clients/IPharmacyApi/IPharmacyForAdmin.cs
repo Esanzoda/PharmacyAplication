@@ -1,3 +1,4 @@
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 using Refit;
@@ -12,8 +13,7 @@ public interface IPharmacyForAdmin
 
     [Get("/api/PharmacyControllerForAdmin/GetAll")]
      Task<List<PharmacyResponse>> GetAll(
-         int page, 
-         int pageSize);
+         [Query]PaginationRequest paginationRequest);
 
     [Delete("/api/PharmacyControllerForAdmin/Delete")]
     Task<string> Delete(

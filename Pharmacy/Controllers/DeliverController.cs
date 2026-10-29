@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Deliver.Commands;
 using Pharmacy.CQRS.Deliver.Queries;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Deliver;
 using Pharmacy.Domain.Models.Deliver.DTOs.Request;
 using Pharmacy.Domain.Models.Deliver.DTOs.Response;
@@ -16,21 +17,21 @@ public class DeliverController(
     IMediator mediator) : ControllerBase
 {
     [HttpPut]
-    public async Task<ActionResult<DeliverResponse>> Update(long deliverId,[FromBody] UpdateDeliverRequest request)
+    public async Task<ActionResult<DeliverResponse>> Update(long deliverId, [FromBody] UpdateDeliverRequest request)
     {
         var response = await mediator.Send(new UpdateDeliverCommand(deliverId, request));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<string>> UpdatePassword(long deliverId,string oldPassword, string newPassword)
+    public async Task<ActionResult<string>> UpdatePassword(long deliverId, string oldPassword, string newPassword)
     {
         var response = await mediator.Send(new UpdateDeliverPasswordCommand(deliverId, oldPassword, newPassword));
         return response;
     }
 
     [HttpPut]
-    public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long deliverId,long orderId,
+    public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long deliverId, long orderId,
         DeliverUpdateOrderStatus newOrderStatus)
     {
         var response =
@@ -39,15 +40,16 @@ public class DeliverController(
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<DeliverResponse>>> GetReadyToPickupOrders(int page, int pageSize)
+    public async Task<ActionResult<List<DeliverResponse>>> GetReadyToPickupOrders(
+        [FromQuery] PaginationRequest paginationRequest)
     {
         var response =
-            await mediator.Send(new GetOrdersByStatusReadyForPickupQuery(page, pageSize));
+            await mediator.Send(new GetOrdersByStatusReadyForPickupQuery(paginationRequest));
         return Ok(response);
     }
 
     [HttpPatch]
-    public async Task<ActionResult<OrderResponseForDeliver>> AcceptOrder(long deliverId,long orderId)
+    public async Task<ActionResult<OrderResponseForDeliver>> AcceptOrder(long deliverId, long orderId)
     {
         var response =
             await mediator.Send(new ShippedOrderCommand(orderId, deliverId));
