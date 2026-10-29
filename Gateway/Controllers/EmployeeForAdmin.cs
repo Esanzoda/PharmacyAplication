@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Employee.DTOs.Request;
 using Pharmacy.Domain.Models.Employee.DTOs.Response;
 using Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
@@ -13,9 +14,10 @@ namespace Gateway.Controllers;
 public class EmployeeForAdmin(IEmployeeForAdmin employeeForAdmin) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<EmployeeResponse>> Add([FromBody] EmployeeRequest request, long pharmacyId)
+    public async Task<ActionResult<EmployeeResponse>> Add([FromBody] EmployeeRequest request,
+        long pharmacyId)
     {
-        var response = await employeeForAdmin.Add(request,pharmacyId);
+        var response = await employeeForAdmin.Add(request, pharmacyId);
         return Ok(response);
     }
 
@@ -27,9 +29,10 @@ public class EmployeeForAdmin(IEmployeeForAdmin employeeForAdmin) : ControllerBa
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetAll(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await employeeForAdmin.GetAll(pharmacyId, pageNumber, pageSize);
+        var response = await employeeForAdmin.GetAll(pharmacyId, paginationRequest);
         return Ok(response);
     }
 
@@ -41,18 +44,20 @@ public class EmployeeForAdmin(IEmployeeForAdmin employeeForAdmin) : ControllerBa
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(long pharmacyId, string name, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(long pharmacyId, string name,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await employeeForAdmin.GetByName(pharmacyId, name, page, pageSize);
+        var response = await employeeForAdmin.GetByName(pharmacyId, name, paginationRequest);
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(long pharmacyId, string address, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(long pharmacyId,
+        string address,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await employeeForAdmin.GetByAddress(pharmacyId, address, page, pageSize);
+        var response = await employeeForAdmin.GetByAddress(pharmacyId,
+            address, paginationRequest);
         return Ok(response);
     }
 
@@ -71,18 +76,20 @@ public class EmployeeForAdmin(IEmployeeForAdmin employeeForAdmin) : ControllerBa
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(long pharmacyId, decimal salary, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(long pharmacyId, decimal salary,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await employeeForAdmin.GetBySalary(pharmacyId, salary, page, pageSize);
+        var response = await employeeForAdmin.GetBySalary(pharmacyId,
+            salary, paginationRequest);
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(long pharmacyId, Position position, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(long pharmacyId, Position position,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await employeeForAdmin.GetByPosition(pharmacyId, position, page, pageSize);
+        var response = await employeeForAdmin.GetByPosition(pharmacyId,
+            position, paginationRequest);
         return Ok(response);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pharmacy.CQRS.Employee.Commands;
 using Pharmacy.CQRS.Employee.Queries;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Employee.DTOs.Request;
 using Pharmacy.Domain.Models.Employee.DTOs.Response;
 
@@ -27,9 +28,11 @@ public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetAll(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetAllEmployeeByPaginationQuery(pharmacyId, pageNumber, pageSize));
+        var response = await mediator.Send(
+            new GetAllEmployeeByPaginationQuery(pharmacyId, paginationRequest));
         return Ok(response);
     }
 
@@ -41,18 +44,20 @@ public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(long pharmacyId, string name, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByName(long pharmacyId, string name,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetEmployeesByNameQuery(pharmacyId, name, page, pageSize));
+        var response = await mediator.Send(
+            new GetEmployeesByNameQuery(pharmacyId, name, paginationRequest));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(long pharmacyId, string address, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByAddress(long pharmacyId, string address,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetEmployeesByAddressQuery(pharmacyId, address, page, pageSize));
+        var response = await mediator.Send(
+            new GetEmployeesByAddressQuery(pharmacyId, address, paginationRequest));
         return Ok(response);
     }
 
@@ -71,18 +76,21 @@ public class EmployeeControllerForAdmin(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(long pharmacyId, decimal salary, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetBySalary(long pharmacyId,
+        decimal salary,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetEmployeesBySalaryQuery(pharmacyId, salary, page, pageSize));
+        var response = await mediator.Send(
+            new GetEmployeesBySalaryQuery(pharmacyId, salary, paginationRequest));
         return Ok(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(long pharmacyId, Position position, int page,
-        int pageSize)
+    public async Task<ActionResult<List<EmployeeResponse>>> GetByPosition(long pharmacyId, Position position,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetEmployeesByPositionQuery(pharmacyId, position, page, pageSize));
+        var response = await mediator.Send(
+            new GetEmployeesByPositionQuery(pharmacyId, position, paginationRequest));
         return Ok(response);
     }
 }
