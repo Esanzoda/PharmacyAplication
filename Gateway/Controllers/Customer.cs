@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Cart.DTOs.Request;
 using Pharmacy.Domain.Models.Cart.DTOs.Response;
 using Pharmacy.Domain.Models.Category.DTOs.Response;
@@ -92,9 +93,10 @@ public class Customer(ICustomerEndpoint customerEndpoint) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PharmacyResponse>>> GetAllPharmacy(int page, int pageSize)
+    public async Task<ActionResult<List<PharmacyResponse>>> GetAllPharmacy(
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await customerEndpoint.GetAllPharmacy(page, pageSize);
+        var response = await customerEndpoint.GetAllPharmacy(paginationRequest);
         return Ok(response);
     }
 

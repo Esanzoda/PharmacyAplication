@@ -1,3 +1,4 @@
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Cart.DTOs.Request;
 using Pharmacy.Domain.Models.Cart.DTOs.Response;
 using Pharmacy.Domain.Models.Category.DTOs.Response;
@@ -14,7 +15,7 @@ public interface ICustomerEndpoint
     [Patch("/api/Customer/UpdateCartItemQuantity")]
     Task<CartItemResponse> UpdateCartItemQuantity(
         long customerId,
-        long productId, 
+        long productId,
         int quantity);
 
 
@@ -27,7 +28,7 @@ public interface ICustomerEndpoint
     [Patch("/api/Customer/UpdatePassword")]
     Task<CustomerResponse> UpdatePassword(
         long customerId,
-        string oldPassword, 
+        string oldPassword,
         string newPassword);
 
 
@@ -35,7 +36,6 @@ public interface ICustomerEndpoint
     Task<string> UpdateAddress(
         long customerId,
         string newAddress);
-
 
 
     [Get("/api/Customer/GetCategoryWithProducts")]
@@ -68,8 +68,7 @@ public interface ICustomerEndpoint
 
     [Get("/api/Customer/GetAllPharmacy")]
     Task<List<PharmacyResponse>> GetAllPharmacy(
-        int page,
-        int pageSize);
+        [Query] PaginationRequest paginationRequest);
 
 
     [Get("/api/Customer/GetAllCategory")]
@@ -84,5 +83,4 @@ public interface ICustomerEndpoint
         long categoryId,
         int page,
         int pageSize);
-
 }
