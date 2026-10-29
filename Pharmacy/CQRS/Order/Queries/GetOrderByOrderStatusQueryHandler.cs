@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Order.Mapper;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Order.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -10,8 +11,7 @@ namespace Pharmacy.CQRS.Order.Queries;
 public record GetOrderByOrderStatusQuery(
     long CustomerId,
     OrderStatus OrderStatus,
-    int PageNumber,
-    int PageSize) : IRequest<List<OrderResponseForCustomer>>;
+    PaginationRequest PaginationRequest) : IRequest<List<OrderResponseForCustomer>>;
 
 public class GetOrderByOrderStatusQueryHandler(
     IApplicationDbContext dbContext) : IRequestHandler<GetOrderByOrderStatusQuery, List<OrderResponseForCustomer>>
@@ -24,8 +24,8 @@ public class GetOrderByOrderStatusQueryHandler(
             .Where(x => x.CustomerEntityId == request.CustomerId &&
                         x.OrderStatus == request.OrderStatus)
             .OrderBy(x => x.Id)
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
