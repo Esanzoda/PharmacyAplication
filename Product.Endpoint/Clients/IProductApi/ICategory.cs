@@ -14,11 +14,11 @@ public interface ICategory
         [Body] CreateCategoryRequest request);
 
 
-    [Put("/api/Category/")]
+    [Put("/api/Category/Update")]
     Task<CategoryResponse> Update(long id, [Body] UpdateCategoryRequest request);
 
 
-    [Get("/api/Category/Update")]
+    [Get("/api/Category/GetById")]
     Task<CategoryResponse> GetById(long id,
         CancellationToken cancellationToken = default);
 
