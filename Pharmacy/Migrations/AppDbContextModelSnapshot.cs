@@ -369,10 +369,7 @@ namespace Pharmacy.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<long?>("OrderItemEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("OrderItemId")
+                    b.Property<long>("OrderItemEntityId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ProductBatchId")
@@ -822,7 +819,9 @@ namespace Pharmacy.Migrations
                 {
                     b.HasOne("Pharmacy.Domain.Models.Order.OrderItemEntity", null)
                         .WithMany("OrderItemBatches")
-                        .HasForeignKey("OrderItemEntityId");
+                        .HasForeignKey("OrderItemEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
