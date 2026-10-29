@@ -4,5 +4,5 @@ public enum Position
 {
     AdminPharmacy = 0,
     ManagerPharmacy = 1,
-    Assistant = 2
+    AssistantPharmacy = 2
 }
