@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Purchase.Mapper;
+using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.PurchaseEntity.DTOs.Response;
 using Pharmacy.Interfaces;
 
@@ -8,8 +9,7 @@ namespace Pharmacy.CQRS.Purchase.Queries;
 
 public record GetAllPurchaseQuery(
     long PharmacyId,
-    int Page,
-    int PageSize) : IRequest<List<PurchaseResponse>>;
+    PaginationRequest PaginationRequest) : IRequest<List<PurchaseResponse>>;
 
 public class GetAllPurchaseQueryHandler(
     IApplicationDbContext dbContext) : IRequestHandler<GetAllPurchaseQuery, List<PurchaseResponse>>
@@ -23,8 +23,8 @@ public class GetAllPurchaseQueryHandler(
             .Where(x => x.PharmacyId == request.PharmacyId)
             .Include(o => o.PurchaseItems)
             .OrderBy(x => x.Id)
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
+            .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);
 
         return PurchaseMappers.ToListPurchaseResponse(purchases);

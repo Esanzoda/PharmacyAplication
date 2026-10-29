@@ -15,7 +15,8 @@ namespace Gateway.Controllers;
 public class PurchaseController(IPurchaseEndpoint purchaseEndpoint) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<PurchaseResponse>> Add([FromBody] PurchaseRequest request, long pharmacyId)
+    public async Task<ActionResult<PurchaseResponse>> Add(long pharmacyId,
+        [FromBody] PurchaseRequest request)
     {
         var employeeId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response = await purchaseEndpoint.Add(employeeId, request, pharmacyId);
@@ -30,9 +31,10 @@ public class PurchaseController(IPurchaseEndpoint purchaseEndpoint) : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(long pharmacyId, int pageNumber, int pageSize)
+    public async Task<ActionResult<List<PurchaseResponse>>> GetAll(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await purchaseEndpoint.GetAll(pharmacyId, pageNumber, pageSize);
+        var response = await purchaseEndpoint.GetAll(pharmacyId, paginationRequest);
         return Ok(response);
     }
 
@@ -88,12 +90,11 @@ public class PurchaseController(IPurchaseEndpoint purchaseEndpoint) : Controller
     public async Task<ActionResult<List<PurchaseResponse>>> GetPurchaseByEmployeeId(
         long pharmacyId,
         long employeeId,
-        int page,
-        int pageSize)
+        [FromQuery] PaginationRequest paginationRequest)
     {
         var response =
             await purchaseEndpoint.GetPurchaseByEmployeeId(
-                pharmacyId, employeeId, page, pageSize);
+                pharmacyId, employeeId, paginationRequest);
         return Ok(response);
     }
 
