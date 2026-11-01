@@ -12,6 +12,7 @@ builder.Services.AddPharmacyApi();
 builder.Services.AddProductApi();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
+builder.Services.AddFluentValidation();
 
 
 var app = builder.Build();
