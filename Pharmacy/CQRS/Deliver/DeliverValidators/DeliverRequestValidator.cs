@@ -25,7 +25,7 @@ public class DeliverRequestValidator : AbstractValidator<DeliverRequest>
             .NotNull()
             .NotEmpty()
             .WithMessage("Deliver email is required")
-            // .EmailAddress()
+            .EmailAddress()
             .WithMessage("Deliver email is invalid");
     }
 }

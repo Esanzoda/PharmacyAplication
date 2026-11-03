@@ -16,7 +16,7 @@ public class CustomerRequestValidator : AbstractValidator<CustomerRequest>
             .NotEmpty()
             .NotNull()
             .WithMessage("Email is required")
-            // .EmailAddress()
+            .EmailAddress()
             .WithMessage("Invalid email format");
 
         RuleFor(x => x.PhoneNumber)
@@ -29,12 +29,10 @@ public class CustomerRequestValidator : AbstractValidator<CustomerRequest>
             .NotNull()
             .WithMessage("Invalid adress format");
 
-
-        /*
-         RuleFor(x => x.Password)
+        RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required")
             .MinimumLength(8)
-            .WithMessage("Password must be at least 8 characters");*/
+            .WithMessage("Password must be at least 8 characters");
     }
 }
