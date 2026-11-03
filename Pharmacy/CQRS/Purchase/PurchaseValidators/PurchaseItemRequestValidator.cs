@@ -16,15 +16,15 @@ public class PurchaseItemRequestValidator : AbstractValidator<PurchaseItemReques
             .WithMessage("ProductId must be greater than 0");
 
         RuleFor(x => x.PurchasePrice)
-            .NotNull()
+            .NotEmpty()
             .WithMessage("Purchase Price must not be null")
             .GreaterThan(0)
             .WithMessage("Purchase Price must be greater than 0");
 
         RuleFor(x => x.ExpiryDate)
-            .NotNull()
+            .NotEmpty()
             .WithMessage("ExpiryDate must not be null")
-            //    .GreaterThan(DateTime.UtcNow)
+            .GreaterThan(DateOnly.FromDateTime(DateTime.UtcNow.Date))
             .WithMessage("Expiry date must be in the future");
     }
 }

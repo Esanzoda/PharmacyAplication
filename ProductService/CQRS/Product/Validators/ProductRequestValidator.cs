@@ -13,14 +13,11 @@ public class ProductRequestValidator : AbstractValidator<ProductRequest>
 
         RuleFor(x => x.SalePrice)
             .NotEmpty()
-            .NotNull()
-            .WithMessage("Order price is required")
+            .WithMessage("Sale price is required")
             .GreaterThan(0)
-            .WithMessage("Order price must be greater than 0");
+            .WithMessage("Sale price must be greater than 0");
 
         RuleFor(x => x.CategoryId)
-            .NotEmpty()
-            .WithMessage("CategoryId is required")
             .GreaterThan(0)
             .WithMessage("CategoryId must be greater than 0");
     }

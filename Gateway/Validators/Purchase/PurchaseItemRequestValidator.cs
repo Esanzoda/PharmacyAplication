@@ -20,7 +20,7 @@ public class PurchaseItemRequestValidator : AbstractValidator<PurchaseItemReques
             .WithMessage("Purchase Price must be greater than 0");
 
         RuleFor(x => x.ExpiryDate)
-            .NotNull()
+            .NotEmpty()
             .WithMessage("ExpiryDate must not be null")
             .GreaterThan(DateOnly.FromDateTime(DateTime.Now.Date))
             .WithMessage("Expiry date must be in the future");

@@ -3,7 +3,7 @@ using Pharmacy.Domain.Models.Product.DTos.Request;
 
 namespace ProductService.CQRS.Product.Validators;
 
-public class UpdateProductRequestValidator:AbstractValidator<UpdateProductRequest>
+public class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequest>
 {
     public UpdateProductRequestValidator()
     {
@@ -14,6 +14,5 @@ public class UpdateProductRequestValidator:AbstractValidator<UpdateProductReques
             .MaximumLength(40)
             .MinimumLength(4)
             .WithMessage("Min length 4 Max length 40");
-
     }
 }
