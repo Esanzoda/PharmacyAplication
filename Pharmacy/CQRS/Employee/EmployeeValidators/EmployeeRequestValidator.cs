@@ -14,7 +14,7 @@ public class EmployeeRequestValidator : AbstractValidator<EmployeeRequest>
         RuleFor(x => x.Email)
             .NotEmpty()
             .WithMessage("Email is required")
-            // .EmailAddress()
+            .EmailAddress()
             .WithMessage("Invalid email format");
 
         RuleFor(x => x.PhoneNumber)
@@ -25,8 +25,8 @@ public class EmployeeRequestValidator : AbstractValidator<EmployeeRequest>
             .GreaterThan(0)
             .WithMessage("Salary must be greater than 0");
 
-        /*  RuleFor(x => x.Password)
-              .MinimumLength(8)
-              .WithMessage("Password must be at least 8 characters");*/
+        RuleFor(x => x.Password)
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters");
     }
 }
