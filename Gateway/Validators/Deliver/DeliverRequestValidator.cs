@@ -8,7 +8,6 @@ public class DeliverRequestValidator : AbstractValidator<DeliverRequest>
     public DeliverRequestValidator()
     {
         RuleFor(x => x.Name)
-            .NotNull()
             .NotEmpty()
             .WithMessage("Name is required");
 
@@ -17,12 +16,10 @@ public class DeliverRequestValidator : AbstractValidator<DeliverRequest>
             .WithMessage("Phone number is required");
 
         RuleFor(x => x.Address)
-            .NotNull()
             .NotEmpty()
             .WithMessage("Address is required");
 
         RuleFor(x => x.Email)
-            .NotNull()
             .NotEmpty()
             .WithMessage("Email is required")
             .EmailAddress()

@@ -26,6 +26,8 @@ public class EmployeeRequestValidator : AbstractValidator<EmployeeRequest>
             .WithMessage("Salary must be greater than 0");
 
         RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage("Password is required")
             .MinimumLength(8)
             .WithMessage("Password must be at least 8 characters");
     }

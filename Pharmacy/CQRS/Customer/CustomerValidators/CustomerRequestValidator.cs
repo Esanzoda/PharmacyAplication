@@ -9,25 +9,21 @@ public class CustomerRequestValidator : AbstractValidator<CustomerRequest>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .NotNull()
-            .WithMessage("Name is requared");
+            .WithMessage("Name is required");
 
         RuleFor(x => x.Email)
             .NotEmpty()
-            .NotNull()
             .WithMessage("Email is required")
             .EmailAddress()
             .WithMessage("Invalid email format");
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .NotNull()
-            .WithMessage("Invalid phone number format");
+            .WithMessage("Phone number is required");
 
         RuleFor(x => x.Address)
             .NotEmpty()
-            .NotNull()
-            .WithMessage("Invalid adress format");
+            .WithMessage("Address is required");
 
         RuleFor(x => x.Password)
             .NotEmpty()

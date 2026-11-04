@@ -61,9 +61,13 @@ public static class ServicesExtension
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
 
-
         services
             .AddRefitClient<IPurchaseEndpoint>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri(baseUrl));
+
+        services
+            .AddRefitClient<ISupplier>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
         return services;

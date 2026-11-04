@@ -8,24 +8,27 @@ public class DeliverRequestValidator : AbstractValidator<DeliverRequest>
     public DeliverRequestValidator()
     {
         RuleFor(x => x.Name)
-            .NotNull()
             .NotEmpty()
-            .WithMessage("Deliver name is required");
+            .WithMessage("Name is required");
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .WithMessage("Deliver phone number is required");
+            .WithMessage("Phone number is required");
 
         RuleFor(x => x.Address)
-            .NotNull()
             .NotEmpty()
-            .WithMessage("Deliver address is required");
+            .WithMessage("Address is required");
 
         RuleFor(x => x.Email)
-            .NotNull()
             .NotEmpty()
-            .WithMessage("Deliver email is required")
+            .WithMessage("Email is required")
             .EmailAddress()
-            .WithMessage("Deliver email is invalid");
+            .WithMessage("Invalid Email is format");
+
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage("Password is required")
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters");
     }
 }
