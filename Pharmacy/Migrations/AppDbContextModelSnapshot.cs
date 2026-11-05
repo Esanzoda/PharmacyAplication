@@ -456,11 +456,11 @@ namespace Pharmacy.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("numeric");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -694,11 +694,11 @@ namespace Pharmacy.Migrations
                 {
                     b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("numeric");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("numeric");
 
                     b.HasDiscriminator().HasValue("CustomerEntity");
                 });

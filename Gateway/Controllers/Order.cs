@@ -16,8 +16,8 @@ public class Order(IOrderEndpoint orderEndpoint) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> Create([FromBody] CreateOrderRequest request,
-        double? newCustomerLat,
-        double? newCustomerLong,
+        decimal? newCustomerLat,
+        decimal? newCustomerLong,
         string? newCustomerAddress)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -28,8 +28,8 @@ public class Order(IOrderEndpoint orderEndpoint) : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(OrderType orderType,
-        double? newCustomerLatitude,
-        double? newCustomerLongitude,
+        decimal? newCustomerLatitude,
+        decimal? newCustomerLongitude,
         string? newCustomerAddress)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
