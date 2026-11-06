@@ -19,8 +19,8 @@ namespace Pharmacy.CQRS.Order.Commands;
 public record CreateOrderFromCartCommand(
     long CustomerId,
     OrderType OrderType,
-    double? NewCustomerLatitude,
-    double? NewCustomerLongitude,
+    decimal? NewCustomerLatitude,
+    decimal? NewCustomerLongitude,
     string? NewCustomerAddress) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreatOrderFromCartHandler(

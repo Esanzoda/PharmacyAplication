@@ -18,8 +18,8 @@ namespace Pharmacy.CQRS.Order.Commands;
 
 public record CreateOrderCommand(
     long CustomerId,
-    double? NewCustomerLatitude,
-    double? NewCustomerLongitude,
+    decimal? NewCustomerLatitude,
+    decimal? NewCustomerLongitude,
     string? NewCustomerAddress,
     CreateOrderRequest Request) : IRequest<List<OrderResponseForCustomer>>;
 

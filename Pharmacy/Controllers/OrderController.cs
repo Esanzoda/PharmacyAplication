@@ -16,8 +16,8 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> Create(long customerId,
         [FromBody] CreateOrderRequest request,
-        double? newCustomerLat,
-        double? newCustomerLong,
+        decimal? newCustomerLat,
+        decimal? newCustomerLong,
         string? newCustomerAddress)
     {
         var response =
@@ -29,8 +29,8 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(long customerId,
         OrderType orderType,
-        double? newCustomerLatitude,
-        double? newCustomerLongitude,
+        decimal? newCustomerLatitude,
+        decimal? newCustomerLongitude,
         string? newCustomerAddress)
     {
         var response =

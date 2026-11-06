@@ -2,13 +2,13 @@ namespace Pharmacy.Domain.Models.Base.Domain;
 
 public class RoutesApiRequest
 {
-    public double StartLat { get; init; }
+    public decimal StartLat { get; init; }
 
-    public double StartLng { get; init; }
+    public decimal StartLng { get; init; }
 
-    public double FinishLat { get; init; }
+    public decimal FinishLat { get; init; }
 
-    public double FinishLng { get; init; }
+    public decimal FinishLng { get; init; }
 }
 
 public class RoutesApiResponse
