@@ -12,9 +12,6 @@ builder.Services.Configure<ConnectionStringsOption>(
 builder.Services.Configure<JwtOption>(
     builder.Configuration.GetSection(JwtOption.SettingName));
 
-builder.Services.Configure<GoogleMap>(
-    builder.Configuration.GetSection(GoogleMap.SettingName));
-
 builder.Services.AddAppDbContext(builder.Configuration);
 builder.Services.AddHangfire(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -46,7 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHangfireDashboard();
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors("Frontend"); 
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
