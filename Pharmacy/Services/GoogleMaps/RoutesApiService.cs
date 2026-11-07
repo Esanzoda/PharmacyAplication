@@ -1,80 +1,39 @@
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
 using Pharmacy.Domain.Models.Base.Domain;
-using Pharmacy.Infrastructure.Setting;
 
 namespace Pharmacy.Services.GoogleMaps;
 
 public interface IRoutesService
 {
-    Task<RoutesApiResponse> CalculateRouteAsync(RoutesApiRequest request);
+    Task<RoutesApiResponse> CalculateRouteAsync(RoutesApiRequest routesApiRequest);
 }
 
-public class RoutesApiService(HttpClient httpClient, IConfiguration configuration) : IRoutesService
+public class RoutesApiService(HttpClient httpClient) : IRoutesService
 {
-    public async Task<RoutesApiResponse> CalculateRouteAsync(RoutesApiRequest request)
+    public async Task<RoutesApiResponse> CalculateRouteAsync(RoutesApiRequest routesApiRequest)
     {
-        var routesApiKey = configuration.GetSection(GoogleMap.SettingName)
-            .Get<GoogleMap>();
-        var url = "https://routes.googleapis.com/directions/v2:computeRoutes";
-        var body = new
-        {
-            origin = new
-            {
-                location = new
-                {
-                    latLng = new
-                    {
-                        latitude = request.StartLat,
-                        longitude = request.StartLng
-                    }
-                }
-            },
+        var url = string.Create(CultureInfo.InvariantCulture,
+            $"http://router.project-osrm.org/route/v1/driving/" +
+            $"{routesApiRequest.StartLng.ToString(CultureInfo.InvariantCulture)}," +
+            $"{routesApiRequest.StartLat.ToString(CultureInfo.InvariantCulture)};" +
+            $"{routesApiRequest.FinishLng.ToString(CultureInfo.InvariantCulture)}," +
+            $"{routesApiRequest.FinishLat.ToString(CultureInfo.InvariantCulture)}?overview=false");
 
-            destination = new
-            {
-                location = new
-                {
-                    latLng = new
-                    {
-                        latitude = request.FinishLat,
-                        longitude = request.FinishLng
-                    }
-                }
-            },
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+        requestMessage.Headers.UserAgent.ParseAdd("PharmacyApplication");
 
-            travelMode = "DRIVE"
-        };
-
-        var content = new StringContent(JsonSerializer.Serialize(body),
-            Encoding.UTF8,
-            "application/json");
-        httpClient.DefaultRequestHeaders.Clear();
-        httpClient.DefaultRequestHeaders.Add("X-Goog-Api-Key", routesApiKey?.RoutesApiKey);
-        //httpClient.DefaultRequestHeaders.Remove("X-Goog-FieldMask");
-        httpClient.DefaultRequestHeaders.Add("X-Goog-FieldMask", "routes.distanceMeters,routes.duration");
-
-
-        var response = await httpClient.PostAsync(url, content);
-        var result = await response.Content.ReadAsStringAsync();
+        var response = await httpClient.SendAsync(requestMessage);
         response.EnsureSuccessStatusCode();
-        using var doc = JsonDocument.Parse(result);
+        var json = await response.Content.ReadAsStringAsync();
 
-        if (!doc.RootElement.TryGetProperty("routes", out var routes))
-        {
-            throw new System.Exception($"Property 'routes' not found.\nResponse:\n{result}");
-        }
+        using var doc = JsonDocument.Parse(json);
+        if (!doc.RootElement.TryGetProperty("routes", out var routes) || routes.GetArrayLength() == 0)
+            throw new System.Exception($"Route not found.\nResponse:\n{json}");
 
         var route = routes[0];
-        var meters = route.GetProperty("distanceMeters").GetDouble();
-        var durationStr = route.GetProperty("duration").GetString() ?? "0s";
-        double seconds = 0;
-        if (double.TryParse(durationStr.TrimEnd('s'), CultureInfo.InvariantCulture, out double parsedSeconds))
-        {
-            seconds = parsedSeconds;
-        }
-
+        var meters = route.GetProperty("distance").GetDouble();
+        var seconds = route.GetProperty("duration").GetDouble();
         return new RoutesApiResponse
         {
             DistanceKm = Math.Round(meters / 1000.0, 2),
