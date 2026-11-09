@@ -18,7 +18,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Customer))]
-public class Customer(
+public class CustomerController(
     ICustomerEndpoint customerEndpoint,
     ICategory category,
     IProductForCustomer productForCustomer,

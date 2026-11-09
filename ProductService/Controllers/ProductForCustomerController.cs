@@ -9,7 +9,7 @@ namespace ProductService.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class ProductForCustomer(IMediator mediator) : ControllerBase
+public class ProductForCustomerController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<ProductForCustomerResponse>>> GetAll(

@@ -11,7 +11,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Employee))]
-public class Employee(IEmployeeEndpoint employeeEndpoint) : ControllerBase
+public class EmployeeController(IEmployeeEndpoint employeeEndpoint) : ControllerBase
 {
     [HttpPut]
     public async Task<ActionResult<OrderStatus>> UpdateOrderStatus(long orderId, long pharmacyId,

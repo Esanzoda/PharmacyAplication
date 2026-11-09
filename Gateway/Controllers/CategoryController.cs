@@ -12,7 +12,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Admin))]
-public class Category(ICategory categoryEndpoint) : ControllerBase
+public class CategoryController(ICategory categoryEndpoint) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> Add(

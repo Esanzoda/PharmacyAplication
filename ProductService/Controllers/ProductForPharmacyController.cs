@@ -11,7 +11,7 @@ namespace ProductService.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class ProductForPharmacy(IMediator mediator) : ControllerBase
+public class ProductForPharmacyController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<ProductForPharmacyResponse>> Add(long pharmacyId,

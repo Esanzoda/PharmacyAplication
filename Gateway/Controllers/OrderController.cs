@@ -12,7 +12,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Customer))]
-public class Order(IOrderEndpoint orderEndpoint) : ControllerBase
+public class OrderController(IOrderEndpoint orderEndpoint) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> Create([FromBody] CreateOrderRequest request,

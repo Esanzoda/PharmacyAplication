@@ -11,7 +11,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Position.AdminPharmacy) + "," + nameof(Position.ManagerPharmacy))]
-public class ProductForAdmin(IProductForPharmacy productForAdminEndpoint) : ControllerBase
+public class ProductForAdminController(IProductForPharmacy productForAdminEndpoint) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<ProductForPharmacyResponse>> Add(
