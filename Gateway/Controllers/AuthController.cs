@@ -24,8 +24,6 @@ public class AuthController(
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request,
         CancellationToken cancellationToken)
     {
-        var sa = request;
-        Console.WriteLine(sa);
         var response = await authEndpoint.Login(request, cancellationToken);
         return Ok(response);
     }
