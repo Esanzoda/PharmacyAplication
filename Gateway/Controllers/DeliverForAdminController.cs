@@ -11,7 +11,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Admin))]
-public class DeliverForAdmin(IDeliverForAdmin deliverForAdmin) : ControllerBase
+public class DeliverForAdminController(IDeliverForAdmin deliverForAdmin) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<DeliverResponse>> Add([FromBody] DeliverRequest request)

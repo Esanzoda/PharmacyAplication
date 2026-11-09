@@ -15,7 +15,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Role.Deliver))]
-public class Deliver(
+public class DeliverController(
     IDeliver deliver) : ControllerBase
 {
     [HttpPut]

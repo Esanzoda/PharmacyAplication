@@ -13,7 +13,7 @@ namespace ProductService.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class Category(IMediator mediator) : ControllerBase
+public class CategoryController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> Add([FromBody] CreateCategoryRequest request)
