@@ -7,7 +7,7 @@ namespace Gateway.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class Supplier(ISupplier supplier) : ControllerBase
+public class SupplierController(ISupplier supplier) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<SupplierResponse>> Add(

@@ -10,7 +10,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Position.AdminPharmacy))]
-public class CustomerForAdmin(ICustomerForAdmin customerForAdmin) : ControllerBase
+public class CustomerForAdminController(ICustomerForAdmin customerForAdmin) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<CustomerResponse>>> GetAll(long pharmacyId,

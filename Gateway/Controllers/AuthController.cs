@@ -10,7 +10,7 @@ namespace Gateway.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class Auth(
+public class AuthController(
     IAuthEndpoint authEndpoint) : ControllerBase
 {
     [HttpPost]

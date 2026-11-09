@@ -11,7 +11,7 @@ namespace Gateway.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [Authorize(Roles = nameof(Position.AdminPharmacy))]
-public class EmployeeForAdmin(IEmployeeForAdmin employeeForAdmin) : ControllerBase
+public class EmployeeForAdminController(IEmployeeForAdmin employeeForAdmin) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<EmployeeResponse>> Add([FromBody] EmployeeRequest request,
