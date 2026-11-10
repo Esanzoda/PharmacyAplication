@@ -24,6 +24,7 @@ public class DeleteEmployeeHandler(
                 x => x.PharmacyId == request.PharmacyId &&
                      x.Id == request.EmployeeId,
                 cancellationToken);
+
         if (employee is null)
         {
             throw new ResourceNotFoundException($"Employee with id {request.EmployeeId} not found");

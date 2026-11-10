@@ -56,15 +56,17 @@ public class CancelOrderCommandHandler(
                 }
             )
             .ToListAsync(cancellationToken);
+        
         if (orderItemBatch.Count == 0)
         {
             throw new ResourceNotFoundException(" OrderItemBatch not found");
         }
-        
+
         var cancelOrder = await productServiceClient.CancelOrderAsync(new CancelOrderRequest
         {
             ProductBatchRequest = { orderItemBatch }
         });
+        
         if (!cancelOrder.Success)
         {
             throw new BusinessException(cancelOrder.Message);

@@ -28,8 +28,12 @@ public class RoutesApiService(HttpClient httpClient) : IRoutesService
         var json = await response.Content.ReadAsStringAsync();
 
         using var doc = JsonDocument.Parse(json);
+
         if (!doc.RootElement.TryGetProperty("routes", out var routes) || routes.GetArrayLength() == 0)
+        {
             throw new System.Exception($"Route not found.\nResponse:\n{json}");
+        }
+
 
         var route = routes[0];
         var meters = route.GetProperty("distance").GetDouble();

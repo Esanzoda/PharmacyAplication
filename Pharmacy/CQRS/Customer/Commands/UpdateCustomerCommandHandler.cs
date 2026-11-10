@@ -24,6 +24,7 @@ public class UpdateCustomerCommandHandler(
         var customer = await dbContext.Customers
             .FindAsync([request.Id],
                 cancellationToken);
+
         if (customer == null)
         {
             throw new ResourceNotFoundException($"Customer not found with id {request.Id}");

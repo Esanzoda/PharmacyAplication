@@ -19,6 +19,7 @@ public class UpdateSupplierCommandHandler(
         var supplier = await dbContext.Suppliers
             .FirstOrDefaultAsync(x => x.Id == request.Id,
                 cancellationToken);
+
         if (supplier == null)
         {
             throw new ResourceNotFoundException("Suppler not found");
@@ -29,6 +30,7 @@ public class UpdateSupplierCommandHandler(
                            x.PhoneNumber == request.UpdateSupplierRequest.PhoneNumber &&
                            x.VehicleNumber == request.UpdateSupplierRequest.VehicleNumber,
                 cancellationToken);
+
         if (supplierExists)
         {
             throw new ResourceIsAlreadyExistException("Supplier already exist with this information");
@@ -36,6 +38,7 @@ public class UpdateSupplierCommandHandler(
 
         SupplierMappers.ToUpdateSupplier(request.UpdateSupplierRequest, supplier);
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return SupplierMappers.ToSupplierResponse(supplier);
     }
 }

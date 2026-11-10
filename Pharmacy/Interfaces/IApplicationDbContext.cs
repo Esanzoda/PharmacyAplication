@@ -27,6 +27,5 @@ public interface IApplicationDbContext
     DbSet<Supplier> Suppliers { get; }
     DbSet<OrderItemBatch> OrderItemBatches { get; }
 
-
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

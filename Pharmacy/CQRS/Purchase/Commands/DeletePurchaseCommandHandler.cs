@@ -41,6 +41,7 @@ public class DeletePurchaseCommandHandler(
                 PurchaseItemId = { purchaseItemIds }
             },
             cancellationToken: cancellationToken);
+        
         if (!productBatch.Success)
         {
             throw new BusinessException(productBatch.Message);

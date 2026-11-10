@@ -26,6 +26,7 @@ public class UpdateOrderStatusCommandHandler(
             .FirstOrDefaultAsync(x => x.Id == request.OrderId &&
                                       x.PharmacyId == request.PharmacyId,
                 cancellationToken);
+        
         if (order == null)
         {
             throw new ResourceNotFoundException("Order not found");

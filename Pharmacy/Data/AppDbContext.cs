@@ -32,8 +32,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<OrderItemBatch> OrderItemBatches { get; set; }
-
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

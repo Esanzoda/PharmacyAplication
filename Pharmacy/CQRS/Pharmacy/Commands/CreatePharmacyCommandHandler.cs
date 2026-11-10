@@ -68,6 +68,7 @@ public class CreatePharmacyCommandHandler(
         await dbContext.Employees
             .AddAsync(employee, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
+        
         return PharmacyMappers.ToPharmacyResponse(newpharmacy);
     }
 }

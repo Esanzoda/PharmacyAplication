@@ -18,6 +18,7 @@ public class GetSupplierByIdQueryHandler(
         var supplier = await dbContext.Suppliers
             .FirstOrDefaultAsync(x => x.Id == request.Id,
                 cancellationToken);
+
         if (supplier == null)
         {
             throw new ResourceNotFoundException("Supplier not found");

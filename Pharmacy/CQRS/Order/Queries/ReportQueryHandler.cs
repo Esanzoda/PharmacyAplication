@@ -28,6 +28,7 @@ public class ReportQueryHandler(
             .OrderBy(x => x.Id)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        
         if (completedOrders.Count == 0)
         {
             return;

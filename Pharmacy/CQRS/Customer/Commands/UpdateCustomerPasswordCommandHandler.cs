@@ -25,12 +25,14 @@ public class UpdateCustomerPasswordHandler(
         var customer = await dbContext.Customers
             .FindAsync([request.Id],
                 cancellationToken);
+
         if (customer is null)
         {
             throw new ResourceNotFoundException("Customer not found");
         }
 
         var passwordCheck = await passwordService.PasswordVerify(request.Password, customer.PasswordHash);
+
         if (!passwordCheck)
         {
             throw new BusinessException("Invalid password");

@@ -38,6 +38,7 @@ public class CreateOrderCommandHandler(
         var customer = await dbContext.Customers
             .FindAsync([request.CustomerId],
                 cancellationToken);
+        
         if (customer is null)
         {
             throw new ResourceNotFoundException("Customer not found");
@@ -175,6 +176,7 @@ public class CreateOrderCommandHandler(
             var totalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
             decimal deliveryFee = 0;
+            
             if (request.Request.OrderType is OrderType.Deliver)
             {
                 if (!pharmacies.TryGetValue(pharmacy.Key, out var currentPharmacy))

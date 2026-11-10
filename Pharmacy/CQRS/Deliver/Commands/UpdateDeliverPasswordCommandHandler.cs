@@ -43,6 +43,7 @@ public class UpdateDeliverPasswordCommandHandler(
         await cache.RemoveAsync(key, cancellationToken);
 
         var response = $"Your password update successfully {request.NewPassword}";
+        
         return response;
     }
 }

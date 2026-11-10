@@ -21,6 +21,7 @@ public class UpdatePharmacyEmailCommandHandler(
         var pharmacy = await dbContext.Pharmacies
             .FindAsync([request.Id],
                 cancellationToken);
+        
         if (pharmacy is null)
         {
             throw new ResourceNotFoundException("Pharmacy not found");
@@ -38,6 +39,7 @@ public class UpdatePharmacyEmailCommandHandler(
 
         pharmacy.Email = request.NewEmail;
         await dbContext.SaveChangesAsync(cancellationToken);
+        
         return PharmacyMappers.ToPharmacyResponse(pharmacy);
     }
 }

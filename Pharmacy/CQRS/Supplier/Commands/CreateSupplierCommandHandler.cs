@@ -40,6 +40,7 @@ public class CreateSupplierCommandHandler(
             .AddAsync(newSupplier, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return SupplierMappers.ToSupplierResponse(newSupplier);
     }
 }

@@ -20,6 +20,7 @@ public class GetSuppliersQueryHandler(
             .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
             .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);
+
         return SupplierMappers.ToSuppliersResponse(suppliers);
     }
 }

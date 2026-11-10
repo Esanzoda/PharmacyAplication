@@ -30,6 +30,7 @@ public class LoginCommandHandler(
             .FirstOrDefaultAsync(x => x.Email == request.Request.Email &&
                                       x.Role == request.Request.Role,
                 cancellationToken);
+
         if (user is null)
         {
             throw new ResourceNotFoundException("User not found");
@@ -54,6 +55,7 @@ public class LoginCommandHandler(
 
         await dbContext.RefreshTokens.AddAsync(newRefreshToken, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return new LoginResponse
         {
             AccessToken = token,

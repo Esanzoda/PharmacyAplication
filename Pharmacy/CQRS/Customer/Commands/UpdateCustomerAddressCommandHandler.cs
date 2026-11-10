@@ -20,6 +20,7 @@ public class UpdateCustomerAddressCommandHandler(
         var customer = await dbContext.Customers
             .FindAsync([request.CustomerId],
                 cancellationToken);
+
         if (customer is null)
         {
             throw new ResourceNotFoundException("Customer not found");
@@ -31,6 +32,7 @@ public class UpdateCustomerAddressCommandHandler(
         customer.Longitude = geocoding.Lng;
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return $"Your address successful updated to {customer.Address}";
     }
 }
