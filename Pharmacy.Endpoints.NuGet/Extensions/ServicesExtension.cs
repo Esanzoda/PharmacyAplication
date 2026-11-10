@@ -70,6 +70,7 @@ public static class ServicesExtension
             .AddRefitClient<ISupplier>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
+
         return services;
     }
 }

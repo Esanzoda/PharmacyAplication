@@ -10,9 +10,9 @@ namespace Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 public interface IAuthEndpoint
 {
     [Post("/api/Auth/Register")]
-    Task<CustomerResponse> Register( 
-       [Body] CustomerRequest registerRequest);
-    
+    Task<CustomerResponse> Register(
+        [Body] CustomerRequest registerRequest);
+
     [Post("/api/Auth/Login")]
     Task<LoginResponse> Login(
         LoginRequest request,
@@ -28,13 +28,11 @@ public interface IAuthEndpoint
         string email,
         Role role,
         CancellationToken cancellationToken);
-    
+
     [Post("/api/Auth/ResetPassword")]
     Task<string> ResetPassword(int code,
         string newPassword,
         string email,
         Role role,
         CancellationToken cancellationToken);
-    
-
 }
