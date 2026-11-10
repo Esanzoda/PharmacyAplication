@@ -1,7 +1,7 @@
 using FluentValidation;
 using Pharmacy.Domain.Models.Base.Dto.Request;
 
-namespace ProductService.Validator;
+namespace ProductService.Validators.Pagination;
 
 public class PaginationRequestValidator : AbstractValidator<PaginationRequest>
 {
