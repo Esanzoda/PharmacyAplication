@@ -11,24 +11,20 @@ public interface IProductForCustomer
     Task<List<ProductForCustomerResponse>> GetAll(
         [Query] PaginationRequest paginationRequest);
 
-
     [Get("/api/ProductForCustomer/GetByName")]
     Task<List<ProductForCustomerResponse>> GetByName(
         string name,
         [Query] PaginationRequest paginationRequest);
-
 
     [Get("/api/ProductForCustomer/GetByCategoryId")]
     Task<List<ProductForCustomerResponse>> GetByCategoryId(
         long categoryId,
         [Query] PaginationRequest paginationRequest);
 
-
     [Get("/api/ProductForCustomer/GetBySalePrice")]
     Task<List<ProductForCustomerResponse>> GetBySalePrice(
         decimal price,
         [Query] PaginationRequest paginationRequest);
-
 
     [Get("/api/ProductForCustomer/GetByCountry")]
     Task<List<ProductForCustomerResponse>> GetByCountry(
@@ -38,7 +34,6 @@ public interface IProductForCustomer
     [Get("/api/ProductForCustomer/GetById")]
     Task<ProductForCustomerResponse> GetById(
         long productId);
-
 
     [Get("/api/ProductForCustomer/SearchByProductNameFromPharmacy")]
     Task<List<ProductForCustomerResponse>> SearchByProductNameFromPharmacy(

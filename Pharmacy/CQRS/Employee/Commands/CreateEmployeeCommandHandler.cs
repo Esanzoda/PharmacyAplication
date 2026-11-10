@@ -43,6 +43,7 @@ public class CreateEmployeeCommandHandler(
         await dbContext.Employees.AddAsync(newEmployee, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        
         return EmployeeMappers.ToEmployeeResponse(newEmployee);
     }
 }

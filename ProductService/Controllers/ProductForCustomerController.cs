@@ -15,7 +15,8 @@ public class ProductForCustomerController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<List<ProductForCustomerResponse>>> GetAll(
         [FromQuery] PaginationRequest paginationRequest)
     {
-        var response = await mediator.Send(new GetAllProductsQuery(paginationRequest));
+        var response =
+            await mediator.Send(new GetAllProductsQuery(paginationRequest));
         return Ok(response);
     }
 
@@ -84,7 +85,7 @@ public class ProductForCustomerController(IMediator mediator) : ControllerBase
         [FromQuery] PaginationRequest paginationRequest)
     {
         var response = await mediator.Send(
-            new GetProductByIdWithRecommendationQuery(id,paginationRequest));
+            new GetProductByIdWithRecommendationQuery(id, paginationRequest));
         return Ok(response);
     }
 }

@@ -66,6 +66,7 @@ namespace ProductService.Service.Grpc
             foreach (var item in requestedItems)
             {
                 var requestQuantity = item.Quantity;
+                
                 if (!products.TryGetValue(item.ProductId, out var product))
                 {
                     throw new ResourceNotFoundException("Product not found");
@@ -77,6 +78,7 @@ namespace ProductService.Service.Grpc
                 }
 
                 var availableQuantity = productBatch.Sum(x => x.Quantity);
+                
                 if (item.Quantity > availableQuantity ||
                     item.Quantity > product.Stock)
                 {
@@ -220,6 +222,7 @@ namespace ProductService.Service.Grpc
             var product = await dbContext.Products
                 .FirstOrDefaultAsync(x => x.Id == request.Id &&
                                           x.PharmacyId == request.PharmacyId);
+            
             if (product == null)
             {
                 throw new ResourceNotFoundException("Product not found");
@@ -240,6 +243,7 @@ namespace ProductService.Service.Grpc
 
             var productBatch = await dbContext.ProductBatches
                 .FirstOrDefaultAsync(x => x.PurchaseItemId == request.PurchaseItemId);
+            
             if (productBatch == null)
             {
                 throw new ResourceNotFoundException($"Product Batch not found");
@@ -263,6 +267,7 @@ namespace ProductService.Service.Grpc
             var productBatches = await dbContext.ProductBatches
                 .Where(x => request.PurchaseItemId.Contains(x.PurchaseItemId))
                 .ToListAsync();
+            
             if (productBatches.Count != request.PurchaseItemId.Count)
             {
                 throw new BusinessException("One or more product batch not found");
@@ -288,6 +293,7 @@ namespace ProductService.Service.Grpc
             }
 
             await dbContext.SaveChangesAsync();
+            
             return new UpdateStockResponse
             {
                 Success = true,
@@ -300,6 +306,7 @@ namespace ProductService.Service.Grpc
         {
             var productBatch = await dbContext.ProductBatches
                 .FirstOrDefaultAsync(x => x.PurchaseItemId == request.PurchaseItemId);
+            
             if (productBatch == null)
             {
                 throw new ResourceNotFoundException("Product batch not found");
@@ -329,6 +336,7 @@ namespace ProductService.Service.Grpc
         {
             var product = await dbContext.Products
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
+            
             if (product == null)
             {
                 throw new ResourceNotFoundException("Product not found");

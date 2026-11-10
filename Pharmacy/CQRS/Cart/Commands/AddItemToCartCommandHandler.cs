@@ -38,6 +38,7 @@ public class AddItemToCartCommandHandler(
                 Id = request.ItemRequest.ProductId,
                 Quantity = request.ItemRequest.Quantity
             });
+        
         if (product == null)
         {
             throw new ResourceNotFoundException("Product not found");

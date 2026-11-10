@@ -19,7 +19,7 @@ public class AuthController(
     [HttpPost]
     public async Task<ActionResult<CustomerResponse>> Register([FromBody] CustomerRequest request)
     {
-        var response = await mediator.Send(new RegisterCommand( request));
+        var response = await mediator.Send(new RegisterCommand(request));
         return Ok(response);
     }
 
@@ -30,8 +30,7 @@ public class AuthController(
         var response = await mediator.Send(new LoginCommand(request), cancellationToken);
         return Ok(response);
     }
-
-
+    
     [HttpPost]
     public async Task<ActionResult<LoginResponse>> ReGenerateRefreshToken(string refreshToken,
         CancellationToken cancellationToken)

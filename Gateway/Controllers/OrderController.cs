@@ -70,7 +70,8 @@ public class OrderController(IOrderEndpoint orderEndpoint) : ControllerBase
         [FromQuery] PaginationRequest paginationRequest)
     {
         var customerId = long.Parse(User.FindFirstValue((ClaimTypes.NameIdentifier))!);
-        var response = await orderEndpoint.GetByStatus(customerId, status, paginationRequest);
+        var response =
+            await orderEndpoint.GetByStatus(customerId, status, paginationRequest);
         return Ok(response);
     }
 

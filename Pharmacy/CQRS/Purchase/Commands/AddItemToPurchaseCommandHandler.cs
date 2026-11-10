@@ -27,6 +27,7 @@ public class AddItemToPurchaseCommandHandler(
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id,
                 cancellationToken);
+
         if (purchase is null)
         {
             throw new ResourceNotFoundException($"Purchase with this id not found");
@@ -44,10 +45,12 @@ public class AddItemToPurchaseCommandHandler(
         {
             throw new ResourceNotFoundException($"Product not found");
         }
+
         long newPurchaseItemId = 0;
         decimal newPurchaseItemTotalPrice = 0;
         var existItem = purchase.PurchaseItems
             .FirstOrDefault(x => x.ProductEntityId == product.ProductId);
+
         if (existItem != null)
         {
             existItem.Quantity += request.Request.Quantity;
@@ -62,6 +65,7 @@ public class AddItemToPurchaseCommandHandler(
                     TotalPrice = (double)existItem.TotalPrice
                 },
                 cancellationToken: cancellationToken);
+
             if (!productBatch.Success)
             {
                 throw new BusinessException(productBatch.Message);
@@ -82,6 +86,7 @@ public class AddItemToPurchaseCommandHandler(
         purchase.TotalAmount = purchase.PurchaseItems.Sum(item => item.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
         if (existItem == null)
         {
             var newProductBatch = new AddProductBatch

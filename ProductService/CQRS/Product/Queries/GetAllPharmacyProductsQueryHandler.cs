@@ -12,7 +12,7 @@ public record GetAllPharmacyProductsQuery(
     PaginationRequest PaginationRequest) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetAllPharmacyProductsQueryHandler(
-    IProductDbContext dbContext) : 
+    IProductDbContext dbContext) :
     IRequestHandler<GetAllPharmacyProductsQuery, List<ProductForPharmacyResponse>>
 {
     public async Task<List<ProductForPharmacyResponse>> Handle(

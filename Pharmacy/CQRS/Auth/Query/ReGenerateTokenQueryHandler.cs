@@ -51,6 +51,7 @@ public class ReGenerateTokenQueryHandler(
         }
 
         var newAccessToken = await authService.GenerateToken(user);
+        
         return newAccessToken;
     }
 }

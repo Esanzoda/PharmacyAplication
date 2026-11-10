@@ -8,7 +8,7 @@ using ProductService.Interfaces;
 namespace ProductService.CQRS.Category.Queries;
 
 public record GetAllCategoriesByPaginationQuery(
-   PaginationRequest PaginationRequest) : IRequest<List<CategoryResponse>>;
+    PaginationRequest PaginationRequest) : IRequest<List<CategoryResponse>>;
 
 public class GetAllCategoryQueryHandler(
     IProductDbContext dbContext) : IRequestHandler<GetAllCategoriesByPaginationQuery, List<CategoryResponse>>

@@ -51,8 +51,7 @@ public class DeleteCategoryByIdHandler(
             logger.LogWarning("Redis is not connected");
             logger.LogInformation("Cannot remove data in Redis");
         }
-
-
+        
         return Message.Deleted;
     }
 }

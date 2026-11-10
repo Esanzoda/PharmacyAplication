@@ -26,6 +26,7 @@ public class GetPharmacyProductsByNameQueryHandler(
             .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
             .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);
+        
         return ProductMappers.ToListProductForCustomerResponse(products);
     }
 }

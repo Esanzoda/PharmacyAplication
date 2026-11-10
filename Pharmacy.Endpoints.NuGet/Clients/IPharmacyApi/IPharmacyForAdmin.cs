@@ -12,8 +12,8 @@ public interface IPharmacyForAdmin
         PharmacyRequest request);
 
     [Get("/api/PharmacyControllerForAdmin/GetAll")]
-     Task<List<PharmacyResponse>> GetAll(
-         [Query]PaginationRequest paginationRequest);
+    Task<List<PharmacyResponse>> GetAll(
+        [Query] PaginationRequest paginationRequest);
 
     [Delete("/api/PharmacyControllerForAdmin/Delete")]
     Task<string> Delete(

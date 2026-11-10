@@ -16,6 +16,7 @@ public class DeleteSupplierCommandHandler(
     {
         var supplier = await dbContext.Suppliers
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+        
         if (supplier == null)
         {
             throw new ResourceNotFoundException("Supplier not found");
@@ -24,6 +25,7 @@ public class DeleteSupplierCommandHandler(
         dbContext.Suppliers
             .Remove(supplier);
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return Message.Deleted;
     }
 }

@@ -175,6 +175,7 @@ public class CreatOrderFromCartHandler(
             var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
             decimal deliveryFee = 0;
+            
             if (request.OrderType is OrderType.Deliver)
             {
                 if (!pharmacies.TryGetValue(pharmacy.Key, out var currentPharmacy))

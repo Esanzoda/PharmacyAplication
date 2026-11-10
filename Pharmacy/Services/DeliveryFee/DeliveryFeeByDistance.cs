@@ -21,6 +21,7 @@ public class DeliveryFeeByDistance : IDeliveryFeeByDistance
         }
 
         decimal deliveryFee;
+        
         if (distanceKm < 3)
         {
             deliveryFee = _baseFee;

@@ -4,9 +4,8 @@ using Pharmacy.Domain.Models.Product;
 
 namespace ProductService.Infrastructure.Configuration;
 
-public class ProductConfiguration:IEntityTypeConfiguration<ProductEntity>
+public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
 {
-  
     public void Configure(EntityTypeBuilder<ProductEntity> builder)
     {
         builder.ToTable("Products");
@@ -32,8 +31,7 @@ public class ProductConfiguration:IEntityTypeConfiguration<ProductEntity>
 
         builder.Property(x => x.Stock)
             .IsRequired();
-
-
+        
         builder.HasOne(x => x.CategoryEntity)
             .WithMany(x => x.Products)
             .HasForeignKey(x => x.CategoryEntityId)

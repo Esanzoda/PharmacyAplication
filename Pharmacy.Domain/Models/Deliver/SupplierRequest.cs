@@ -1,4 +1,3 @@
-
 namespace Pharmacy.Domain.Models.Deliver;
 
 public class SupplierRequest

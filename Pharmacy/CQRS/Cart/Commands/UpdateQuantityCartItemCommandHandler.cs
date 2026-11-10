@@ -36,6 +36,7 @@ public class UpdateQuantityCartItemCommandHandler(
         cartItem.CartEntity.TotalAmount = cartItem.CartEntity.CartItems.Sum(x => x.TotalPrice);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        
         return CartMappers.ToCartItemResponse(cartItem);
     }
 }

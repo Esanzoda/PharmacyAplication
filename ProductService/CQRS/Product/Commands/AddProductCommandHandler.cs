@@ -16,7 +16,8 @@ public class AddProductCommandHandler(
     IProductDbContext dbContext
 ) : IRequestHandler<AddProductCommand, ProductForPharmacyResponse>
 {
-    public async Task<ProductForPharmacyResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
+    public async Task<ProductForPharmacyResponse> Handle(AddProductCommand request, 
+        CancellationToken cancellationToken)
     {
         var category = await dbContext.Categories
             .FindAsync([request.Request.CategoryId], cancellationToken);
@@ -24,15 +25,18 @@ public class AddProductCommandHandler(
         {
             throw new ResourceNotFoundException($"Category with this[{request.Request.CategoryId}] not found");
         }
+
         var productExist = await dbContext.Products
             .AnyAsync(x => x.PharmacyId == request.PharmacyId &&
                            x.Barcode == request.Request.Barcode,
                 cancellationToken);
+        
         if (productExist)
         {
             throw new ResourceIsAlreadyExistException(
                 $"Product already exists with  barcode {request.Request.Barcode}");
         }
+
         var product = ProductMappers.ToProduct(request.Request);
         product.PharmacyId = request.PharmacyId;
         product.CategoryEntity = category;
@@ -42,6 +46,5 @@ public class AddProductCommandHandler(
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return ProductMappers.ToProductForPharmacyResponse(product);
-
     }
 }

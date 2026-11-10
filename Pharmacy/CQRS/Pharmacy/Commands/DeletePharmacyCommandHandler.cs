@@ -17,6 +17,7 @@ public class DeletePharmacyCommandHandler(IApplicationDbContext dbContext)
         var pharmacy = await dbContext.Pharmacies
             .FindAsync([request.PharmacyId],
                 cancellationToken);
+        
         if (pharmacy == null)
         {
             throw new ResourceNotFoundException("Pharmacy not found");
@@ -24,6 +25,7 @@ public class DeletePharmacyCommandHandler(IApplicationDbContext dbContext)
 
         dbContext.Pharmacies.Remove(pharmacy);
         await dbContext.SaveChangesAsync(cancellationToken);
+        
         return Message.Deleted;
     }
 }

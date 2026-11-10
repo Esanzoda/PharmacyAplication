@@ -23,6 +23,7 @@ public class GetEmployeeByIdQueryHandler(
     {
         var key = $"Employee-{request.PharmacyId}{request.Id}";
         var cachedEmployee = await cache.GetStringAsync(key, cancellationToken);
+        
         if (cachedEmployee is not null)
         {
             var redis = JsonConvert.DeserializeObject<EmployeeResponse>(cachedEmployee);
@@ -36,6 +37,7 @@ public class GetEmployeeByIdQueryHandler(
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id,
                 cancellationToken);
+        
         if (employee is null)
         {
             throw new ResourceNotFoundException("Employee not found");
@@ -51,6 +53,7 @@ public class GetEmployeeByIdQueryHandler(
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
             },
             cancellationToken);
+        
         return response;
     }
 }

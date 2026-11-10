@@ -4,7 +4,7 @@ using Pharmacy.Domain.Models.Category;
 
 namespace ProductService.Infrastructure.Configuration;
 
-public class CategoryConfiguration:IEntityTypeConfiguration<CategoryEntity>
+public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
 {
     public void Configure(EntityTypeBuilder<CategoryEntity> builder)
     {

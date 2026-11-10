@@ -13,18 +13,15 @@ public interface IEmployeeForAdmin
         [Body] EmployeeRequest request,
         long pharmacyId);
 
-
     [Get("/api/EmployeeControllerForAdmin/GetById")]
     Task<EmployeeResponse> GetById(
         long pharmacyId,
         long id);
 
-
     [Get("/api/EmployeeControllerForAdmin/GetAll")]
     Task<List<EmployeeResponse>> GetAll(
         long pharmacyId,
         [Query] PaginationRequest paginationRequest);
-
 
     [Delete("/api/EmployeeControllerForAdmin/DeleteById")]
     Task<string> DeleteById(

@@ -25,6 +25,7 @@ public class UpdateOrderStatusCommandHandler(
         var deliver = await dbContext.Delivers
             .FindAsync([request.DeliverId],
                 cancellationToken);
+        
         if (deliver is null)
         {
             throw new ResourceNotFoundException("Deliver not found");
@@ -40,6 +41,7 @@ public class UpdateOrderStatusCommandHandler(
                                       x.Deliver != null &&
                                       x.Deliver.Id == request.DeliverId,
                 cancellationToken);
+        
         if (order is null)
         {
             throw new ResourceNotFoundException("Order not found");
@@ -47,6 +49,7 @@ public class UpdateOrderStatusCommandHandler(
 
         order.OrderStatus = (OrderStatus)request.NewOrderStatus;
         await dbContext.SaveChangesAsync(cancellationToken);
+        
         if (order.OrderStatus == OrderStatus.Completed)
         {
             await publishEndpoint.Publish(new OrderCompletedEvent

@@ -41,7 +41,7 @@ public class UpdateDeliverHandler(
         }
 
         DeliverMappers.ToDeliver(deliver, request.Request);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        
         return DeliverMappers.ToDeliverResponse(deliver);
     }
 }

@@ -27,6 +27,7 @@ public class RegisterHandler(
             .AnyAsync(x => x.Email == request.Request.Email ||
                            x.PhoneNumber == request.Request.PhoneNumber,
                 cancellationToken);
+        
         if (customerExist)
         {
             throw new ResourceIsAlreadyExistException(

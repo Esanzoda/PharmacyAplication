@@ -22,9 +22,11 @@ public class GetDeliverByIdHandler(
     {
         var key = $"DeliverById-{request.DeliverId}";
         var cached = await cache.GetStringAsync(key, cancellationToken);
+
         if (cached is not null)
         {
             var redis = JsonConvert.DeserializeObject<DeliverResponse>(cached);
+
             if (redis is not null)
             {
                 return redis;
@@ -36,6 +38,7 @@ public class GetDeliverByIdHandler(
                 x => x.Id == request.DeliverId &&
                      x.IsDeleted == false,
                 cancellationToken);
+
         if (deliver is null)
         {
             throw new ResourceNotFoundException("Deliver not found");

@@ -10,8 +10,7 @@ public interface ICustomerForAdmin
     Task<List<CustomerResponse>> GetAll(
         long pharmacyId,
         [Query] PaginationRequest paginationRequest);
-
-
+    
     [Get("/api/CustomerControllerForAdmin/GetByPhone")]
     Task<CustomerResponse> GetByPhone(
         long pharmacyId,

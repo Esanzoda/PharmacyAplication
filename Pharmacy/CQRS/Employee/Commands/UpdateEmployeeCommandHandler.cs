@@ -51,6 +51,7 @@ public class UpdateEmployeeHandler(
 
         var key = $"Employee-{request.PharmacyId}-{employee.Id}";
         await cache.RemoveAsync(key, cancellationToken);
+        
         return EmployeeMappers.ToEmployeeResponse(employee);
     }
 }

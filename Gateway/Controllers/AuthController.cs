@@ -27,8 +27,7 @@ public class AuthController(
         var response = await authEndpoint.Login(request, cancellationToken);
         return Ok(response);
     }
-
-
+    
     [HttpPost]
     public async Task<ActionResult<LoginResponse>> ReGenerateRefreshToken(string refreshToken,
         CancellationToken cancellationToken)

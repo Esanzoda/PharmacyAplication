@@ -29,6 +29,7 @@ public class RemoveItemFromCartCommandHandler(
         }
 
         var item = cart.CartItems.FirstOrDefault(x => x.ProductEntityId == request.ProductId);
+
         if (item is null)
         {
             throw new ResourceNotFoundException("Cart item not found");
@@ -38,8 +39,8 @@ public class RemoveItemFromCartCommandHandler(
         dbContext.CartItems.Remove(item);
 
         cart.TotalAmount = cart.CartItems.Sum(x => x.TotalPrice);
-
         await dbContext.SaveChangesAsync(cancellationToken);
+
         return CartMappers.ToCartResponse(cart);
     }
 }

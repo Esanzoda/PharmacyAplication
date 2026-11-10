@@ -22,7 +22,7 @@ public class PharmacyForAdminController(IPharmacyForAdmin pharmacyForAdmin) : Co
 
     [HttpGet]
     public async Task<ActionResult<PharmacyResponse>> GetAll(
-        [FromQuery]PaginationRequest paginationRequest)
+        [FromQuery] PaginationRequest paginationRequest)
     {
         var response = await pharmacyForAdmin.GetAll(paginationRequest);
         return Ok(response);

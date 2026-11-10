@@ -27,7 +27,6 @@ public class ClearCartCommandHandler(
             throw new ResourceNotFoundException("Cart not found");
         }
 
-
         dbContext.CartItems.RemoveRange(cart.CartItems);
         cart.CartItems.Clear();
         cart.TotalAmount = 0;

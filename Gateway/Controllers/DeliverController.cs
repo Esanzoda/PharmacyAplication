@@ -9,7 +9,6 @@ using Pharmacy.Domain.Models.Deliver.DTOs.Response;
 using Pharmacy.Endpoints.NuGet.Clients.IPharmacyApi;
 using Pharmacy.Domain.Models.Order.DTOs.Response;
 
-
 namespace Gateway.Controllers;
 
 [ApiController]

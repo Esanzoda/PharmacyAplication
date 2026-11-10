@@ -13,32 +13,25 @@ public interface ICategory
     Task<CategoryResponse> Add(
         [Body] CreateCategoryRequest request);
 
-
     [Put("/api/Category/Update")]
     Task<CategoryResponse> Update(long id, [Body] UpdateCategoryRequest request);
-
 
     [Get("/api/Category/GetById")]
     Task<CategoryResponse> GetById(long id,
         CancellationToken cancellationToken = default);
 
-
     [Get("/api/Category/GetAll")]
     Task<List<CategoryResponse>> GetAll([Query] PaginationRequest paginationRequest);
 
-
     [Delete("/api/Category/DeleteById")]
     Task<string> DeleteById(long id);
-
 
     [Get("/api/Category/GetProducts")]
     Task<List<ProductForCustomerResponse>> GetProducts(int categoryId,
         [Query] PaginationRequest paginationRequest);
 
-
     [Get("/api/Category/GetByName")]
     Task<List<CategoryResponse>> GetByName(string name);
-
 
     [Get("/api/Category/GetByStatus")]
     Task<List<CategoryResponse>> GetByStatus(CategoryStatus categoryStatus,

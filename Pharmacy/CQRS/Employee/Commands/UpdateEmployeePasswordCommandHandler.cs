@@ -31,6 +31,7 @@ public class UpdateEmployeePasswordCommandHandler(
         }
 
         var passwordCheck = await passwordService.PasswordVerify(request.Password, employee.PasswordHash);
+        
         if (!passwordCheck)
         {
             throw new BusinessException("Invalid password");
@@ -43,6 +44,7 @@ public class UpdateEmployeePasswordCommandHandler(
         await cache.RemoveAsync(key, cancellationToken);
 
         var response = $"Your password update successfully{request.NewPassword}";
+        
         return response;
     }
 }

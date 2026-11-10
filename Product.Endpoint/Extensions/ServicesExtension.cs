@@ -25,6 +25,7 @@ public static class ServicesExtension
             .AddRefitClient<IProductForPharmacy>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri(baseUrl));
+
         return services;
     }
 }

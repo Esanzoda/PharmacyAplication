@@ -12,7 +12,7 @@ public record ResetPasswordCommand(
     int Code,
     string NewPassword,
     string Email,
-    Role Role ) : IRequest<string>;
+    Role Role) : IRequest<string>;
 
 public class ResetPasswordCommandHandler(
     IApplicationDbContext dbContext,
@@ -23,6 +23,7 @@ public class ResetPasswordCommandHandler(
     {
         var key = $"User-{request.Email}-{request.Role}";
         var userCode = await cache.GetStringAsync(key, cancellationToken);
+
         if (userCode is null)
         {
             throw new ResourceNotFoundException($"Reset code has expired for user-{request.Email} ");
@@ -37,6 +38,7 @@ public class ResetPasswordCommandHandler(
             .FirstOrDefaultAsync(x => x.Email == request.Email &&
                                       x.Role == request.Role,
                 cancellationToken);
+
         if (user is null)
         {
             throw new ResourceNotFoundException("User not found ");
@@ -45,6 +47,7 @@ public class ResetPasswordCommandHandler(
         user.PasswordHash = await passwordService.PasswordHash(request.NewPassword);
         await dbContext.SaveChangesAsync(cancellationToken);
         var response = $"Your password successful updated ";
+
         return response;
     }
 }

@@ -26,7 +26,6 @@ public class AuthService(IOptionsMonitor<JwtOption> jwt) : IAuthService
         return Task.FromResult(Convert.ToBase64String(randomBytes));
     }
 
-
     public Task<string> GenerateToken(User user)
     {
         var claims = new List<Claim>
@@ -35,6 +34,7 @@ public class AuthService(IOptionsMonitor<JwtOption> jwt) : IAuthService
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };
+
         if (user is EmployeeEntity employee)
         {
             claims.Add(new Claim(ClaimTypes.Role, employee.Position.ToString()));

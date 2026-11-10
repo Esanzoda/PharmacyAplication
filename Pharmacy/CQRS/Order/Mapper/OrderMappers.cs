@@ -15,7 +15,6 @@ public static class OrderMappers
         };
     }
 
-
     private static OrderItemResponse ToOrderItemResponse(OrderItemEntity orderItem)
     {
         return new OrderItemResponse

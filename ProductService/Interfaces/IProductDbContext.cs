@@ -12,7 +12,6 @@ public interface IProductDbContext
     DbSet<ProductBatch> ProductBatches { get; set; }
     DbSet<ExpiredProductsEntity> ExpireDateProducts { get; }
     DbSet<ExpiredItemsEntity> ExpireDateItems { get; }
-
-
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

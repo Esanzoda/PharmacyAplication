@@ -57,13 +57,12 @@ public class GetCategoryByIdQueryHandler(
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
                 }, cancellationToken);
         }
-        catch (RedisConnectionException )
+        catch (RedisConnectionException)
         {
-           logger.LogWarning("Redis is not connected");
-           logger.LogInformation("Can not stored data in Redis");
+            logger.LogWarning("Redis is not connected");
+            logger.LogInformation("Can not stored data in Redis");
         }
-   
-
+        
         return CategoryMappers.ToCategoryResponse(category);
     }
 }
