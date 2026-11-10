@@ -55,8 +55,7 @@ public class CustomerController(
         var response = await customerEndpoint.UpdateAddress(customerId, newAddress);
         return Ok(response);
     }
-
-
+    
     [HttpGet]
     public async Task<ActionResult<List<ProductForCustomerResponse>>> GetCategoryWithProducts(int categoryId,
         [FromQuery] PaginationRequest paginationRequest)

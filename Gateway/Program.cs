@@ -14,7 +14,6 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddFluentValidation();
 
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
