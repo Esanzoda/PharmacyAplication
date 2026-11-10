@@ -17,6 +17,5 @@ public class OrderEntity : BaseEntity
     public CustomerEntity CustomerEntity { get; set; } = null!;
     public decimal DeliveryFee { get; set; }
     public decimal TotalAmount { get; set; }
-
     public List<OrderItemEntity> OrderItems { get; set; } = [];
 }
