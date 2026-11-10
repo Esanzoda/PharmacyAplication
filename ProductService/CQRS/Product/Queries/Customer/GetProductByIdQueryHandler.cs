@@ -22,6 +22,7 @@ public class GetProductByIdQueryHandler(
             .Include(x => x.ProductBatches)
             .FirstOrDefaultAsync(x => x.Id == request.Id,
                 cancellationToken);
+        
         return product is null
             ? throw new ResourceNotFoundException("ProductService not found")
             : ProductMappers.ToProductForCustomerResponse(product);

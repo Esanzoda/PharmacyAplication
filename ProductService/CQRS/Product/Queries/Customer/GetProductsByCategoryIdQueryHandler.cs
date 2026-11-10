@@ -22,6 +22,7 @@ public class GetProductsByCategoryIdQueryHandler(
         var category = await dbContext.Categories
             .AnyAsync(x => x.Id == request.CategoryId,
                 cancellationToken);
+        
         if (!category)
         {
             throw new ResourceNotFoundException("Category with this id  not found");
@@ -31,7 +32,7 @@ public class GetProductsByCategoryIdQueryHandler(
             .AsNoTracking()
             .Include(x => x.ProductBatches)
             .Where(x => x.CategoryEntityId == request.CategoryId)
-            .OrderBy(x => x.Id) 
+            .OrderBy(x => x.Id)
             .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
             .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken);

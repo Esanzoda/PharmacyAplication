@@ -22,6 +22,7 @@ public class GetProductByIdWithRecommendationQueryHandler(IProductDbContext dbCo
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == request.ProductId,
                 cancellationToken: cancellationToken);
+
         if (product == null)
         {
             throw new ResourceNotFoundException("Product not found");
@@ -36,6 +37,7 @@ public class GetProductByIdWithRecommendationQueryHandler(IProductDbContext dbCo
             .Skip((request.PaginationRequest.PageNumber - 1) * PaginationRequest.PageSize)
             .Take(PaginationRequest.PageSize)
             .ToListAsync(cancellationToken: cancellationToken);
+
         return ProductMappers.ToListProductForCustomerResponse(recommendationProduct);
     }
 }

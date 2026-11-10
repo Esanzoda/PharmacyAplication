@@ -109,8 +109,7 @@ public class CheckExpiredProductsHandler(
 
             await dbContext.ExpireDateProducts.AddAsync(expiryDate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-
-
+            
             logger.LogInformation(
                 "Created expired products report with {Count} items.",
                 expiryDate.ExpiryDateItemsList.Count);

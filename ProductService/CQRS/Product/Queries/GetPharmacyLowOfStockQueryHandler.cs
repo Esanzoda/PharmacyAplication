@@ -10,7 +10,7 @@ namespace ProductService.CQRS.Product.Queries;
 public record GetLowOfStockQuery(
     long PharmacyId,
     int MinQuantity,
-  PaginationRequest PaginationRequest) : IRequest<List<ProductForPharmacyResponse>>;
+    PaginationRequest PaginationRequest) : IRequest<List<ProductForPharmacyResponse>>;
 
 public class GetPharmacyLowOfStockQueryHandler(
     IProductDbContext dbContext) : IRequestHandler<GetLowOfStockQuery, List<ProductForPharmacyResponse>>

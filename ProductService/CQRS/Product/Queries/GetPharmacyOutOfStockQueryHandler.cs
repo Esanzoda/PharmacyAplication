@@ -1,5 +1,3 @@
-
-
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.Domain.Models.Base.Dto.Request;

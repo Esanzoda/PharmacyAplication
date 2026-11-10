@@ -55,8 +55,7 @@ public class UpdateCategoryCommandHandler(
             logger.LogWarning("Redis is not connected");
             logger.LogInformation("Cannot remove data in Redis");
         }
-
-
+        
         return CategoryMappers.ToCategoryResponse(category);
     }
 }

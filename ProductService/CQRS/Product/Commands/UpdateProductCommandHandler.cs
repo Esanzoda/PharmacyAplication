@@ -23,6 +23,7 @@ public class UpdateProductCommandHandler(IProductDbContext dbContext) :
             .FirstOrDefaultAsync(x => x.PharmacyId == request.PharmacyId &&
                                       x.Id == request.Id,
                 cancellationToken);
+
         if (product == null)
         {
             throw new ResourceNotFoundException($"Product with this id {request.Id} not found");
@@ -42,7 +43,6 @@ public class UpdateProductCommandHandler(IProductDbContext dbContext) :
         ProductMappers.ToProduct(product, request.Request);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-
 
         return ProductMappers.ToProductForPharmacyResponse(product);
     }
