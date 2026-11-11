@@ -683,6 +683,16 @@ namespace Pharmacy.Migrations
                     b.ToTable("PurchaseItems", (string)null);
                 });
 
+            modelBuilder.Entity("Pharmacy.Domain.Models.Base.Domain.BossPharmacy", b =>
+                {
+                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.HasDiscriminator().HasValue("BossPharmacy");
+                });
+
             modelBuilder.Entity("Pharmacy.Domain.Models.Base.Domain.CompanyEmployee", b =>
                 {
                     b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
@@ -739,6 +749,12 @@ namespace Pharmacy.Migrations
 
                     b.Property<decimal>("Salary")
                         .HasColumnType("numeric");
+
+                    b.ToTable("Users", t =>
+                        {
+                            t.Property("PharmacyId")
+                                .HasColumnName("EmployeeEntity_PharmacyId");
+                        });
 
                     b.HasDiscriminator().HasValue("EmployeeEntity");
                 });

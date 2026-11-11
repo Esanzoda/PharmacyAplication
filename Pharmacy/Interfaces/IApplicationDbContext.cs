@@ -26,6 +26,8 @@ public interface IApplicationDbContext
     DbSet<User> Users { get; }
     DbSet<Supplier> Suppliers { get; }
     DbSet<OrderItemBatch> OrderItemBatches { get; }
+    public DbSet<BossPharmacy> BossPharmacies { get; set; }
+
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
