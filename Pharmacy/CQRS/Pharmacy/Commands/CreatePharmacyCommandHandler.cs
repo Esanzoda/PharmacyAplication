@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.CQRS.Pharmacy.Mapper;
+using Pharmacy.Domain.Models.Base.Domain;
 using Pharmacy.Domain.Models.Base.Domain.Enum;
-using Pharmacy.Domain.Models.Employee;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Request;
 using Pharmacy.Domain.Models.Pharmacy.DTOs.Response;
 using Pharmacy.Exception;
@@ -38,37 +38,35 @@ public class CreatePharmacyCommandHandler(
             throw new ResourceIsAlreadyExistException("Pharmacy with this information already exist");
         }
 
-        var newpharmacy = PharmacyMappers.ToPharmacy(request.Request);
-        var geoCoding = await geocodingService.GetCoordinatesAsync(newpharmacy.Address);
+        var newPharmacy = PharmacyMappers.ToPharmacy(request.Request);
+        var geoCoding = await geocodingService.GetCoordinatesAsync(newPharmacy.Address);
 
         if (geoCoding == null)
         {
             throw new BusinessException("Cannot found coordinates for this address");
         }
 
-        newpharmacy.Latitude = geoCoding.Lat;
-        newpharmacy.Longitude = geoCoding.Lng;
-        var password = "string";
+        newPharmacy.Latitude = geoCoding.Lat;
+        newPharmacy.Longitude = geoCoding.Lng;
+        var password = "string1234";
 
         await dbContext.Pharmacies
-            .AddAsync(newpharmacy, cancellationToken);
+            .AddAsync(newPharmacy, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var employee = new EmployeeEntity
+        var bossPharmacy = new BossPharmacy()
         {
-            Name = "AdminPharmacy",
-            Address = newpharmacy.Address,
-            Email = newpharmacy.Email,
-            Role = Role.Employee,
+            Name = "BossPharmacy",
+            Address = newPharmacy.Address,
+            Email = newPharmacy.Email,
+            Role = Role.BossPharmacy,
             PasswordHash = await passwordService.PasswordHash(password),
-            Position = Position.AdminPharmacy,
-            Salary = 0,
-            PharmacyId = newpharmacy.Id,
-            PhoneNumber = newpharmacy.PhoneNumber
+            PharmacyId = newPharmacy.Id,
+            PhoneNumber = newPharmacy.PhoneNumber
         };
-        await dbContext.Employees
-            .AddAsync(employee, cancellationToken);
+        await dbContext.BossPharmacies
+            .AddAsync(bossPharmacy, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        
-        return PharmacyMappers.ToPharmacyResponse(newpharmacy);
+
+        return PharmacyMappers.ToPharmacyResponse(newPharmacy);
     }
 }
