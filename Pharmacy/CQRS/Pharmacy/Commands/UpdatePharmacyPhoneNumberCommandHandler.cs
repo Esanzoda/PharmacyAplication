@@ -37,7 +37,17 @@ public class UpdatePharmacyPhoneNumberCommandHandler(
             throw new ResourceIsAlreadyExistException(" Pharmacy with this number already exist ");
         }
 
+        var bossPharmacy = await dbContext.BossPharmacies
+            .FirstOrDefaultAsync(x => x.PharmacyId == pharmacy.Id
+                , cancellationToken);
+
+        if (bossPharmacy is null)
+        {
+            throw new ResourceNotFoundException("BossPharmacy not found");
+        }
+
         pharmacy.PhoneNumber = request.NewNumber;
+        bossPharmacy.PhoneNumber = pharmacy.PhoneNumber;
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return PharmacyMappers.ToPharmacyResponse(pharmacy);
