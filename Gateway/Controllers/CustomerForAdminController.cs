@@ -9,7 +9,7 @@ namespace Gateway.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Position.AdminPharmacy))]
+[Authorize(Roles = nameof(Position.AdminPharmacy) + nameof(Role.BossPharmacy))]
 public class CustomerForAdminController(ICustomerForAdmin customerForAdmin) : ControllerBase
 {
     [HttpGet]

@@ -11,7 +11,7 @@ namespace Gateway.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Roles = nameof(Position.ManagerPharmacy))]
+[Authorize(Roles = nameof(Position.ManagerPharmacy) + nameof(Role.BossPharmacy))]
 public class PurchaseController(IPurchaseEndpoint purchaseEndpoint) : ControllerBase
 {
     [HttpPost]
