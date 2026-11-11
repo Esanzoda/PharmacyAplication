@@ -21,7 +21,7 @@ public class UpdatePharmacyEmailCommandHandler(
         var pharmacy = await dbContext.Pharmacies
             .FindAsync([request.Id],
                 cancellationToken);
-        
+
         if (pharmacy is null)
         {
             throw new ResourceNotFoundException("Pharmacy not found");
@@ -37,9 +37,19 @@ public class UpdatePharmacyEmailCommandHandler(
             throw new ResourceIsAlreadyExistException("Pharmacy with this email already exist");
         }
 
-        pharmacy.Email = request.NewEmail;
+        var bossPharmacy = await dbContext.BossPharmacies
+            .FirstOrDefaultAsync(x => x.PharmacyId == pharmacy.Id
+                , cancellationToken);
+
+        if (bossPharmacy is null)
+        {
+            throw new ResourceNotFoundException("BossPharmacy not found");
+        }
+
+        bossPharmacy.Email = pharmacy.Email;
+        bossPharmacy.Email = pharmacy.Email;
         await dbContext.SaveChangesAsync(cancellationToken);
-        
+
         return PharmacyMappers.ToPharmacyResponse(pharmacy);
     }
 }
