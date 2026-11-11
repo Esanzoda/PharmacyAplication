@@ -39,10 +39,21 @@ public class UpdatePharmacyAddressCommandHandler(
             throw new ResourceIsAlreadyExistException("Pharmacy with this address already exist");
         }
 
-        var geoCoding = await geocodingService.GetCoordinatesAsync(pharmacy.Address);
+        var bossPharmacy = await dbContext.BossPharmacies
+            .FirstOrDefaultAsync(x => x.PharmacyId == pharmacy.Id
+                , cancellationToken);
 
+        if (bossPharmacy is null)
+        {
+            throw new ResourceNotFoundException("BossPharmacy not found");
+        }
+
+        var geoCoding = await geocodingService.GetCoordinatesAsync(request.NewAddress);
+
+        pharmacy.Address = request.NewAddress;
         pharmacy.Latitude = geoCoding.Lat;
         pharmacy.Longitude = geoCoding.Lng;
+        bossPharmacy.Address = pharmacy.Address;
 
         pharmacy.Address = request.NewAddress;
         await dbContext.SaveChangesAsync(cancellationToken);
