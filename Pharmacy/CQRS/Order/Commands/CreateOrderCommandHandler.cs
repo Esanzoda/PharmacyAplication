@@ -45,7 +45,7 @@ public class CreateOrderCommandHandler(
 
         var latitude = customer.Latitude;
         var longitude = customer.Longitude;
-        var address = request.NewCustomerAddress ?? customer.Address;
+        var address = customer.Address;
 
         if (request.NewCustomerAddress != null)
         {
@@ -55,7 +55,6 @@ public class CreateOrderCommandHandler(
             longitude = location.Lng;
             address = request.NewCustomerAddress;
         }
-
 
         var productIds = request.Request.OrderItemRequest
             .Select(x => x.ProductId)
