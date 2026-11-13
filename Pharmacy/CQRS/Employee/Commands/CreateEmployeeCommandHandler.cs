@@ -5,6 +5,7 @@ using Pharmacy.Domain.Models.Employee.DTOs.Request;
 using Pharmacy.Domain.Models.Employee.DTOs.Response;
 using Pharmacy.Exception;
 using Pharmacy.Interfaces;
+using Pharmacy.Services.GoogleMaps;
 using Pharmacy.Services.Password;
 
 namespace Pharmacy.CQRS.Employee.Commands;
@@ -15,7 +16,8 @@ public record CreateEmployeeCommand(
 
 public class CreateEmployeeCommandHandler(
     IApplicationDbContext dbContext,
-    IPasswordService passwordService) : IRequestHandler<CreateEmployeeCommand, EmployeeResponse>
+    IPasswordService passwordService,
+    IGeocodingService geocodingService) : IRequestHandler<CreateEmployeeCommand, EmployeeResponse>
 {
     public async Task<EmployeeResponse> Handle(
         CreateEmployeeCommand request,
@@ -35,6 +37,8 @@ public class CreateEmployeeCommandHandler(
                 $"Email ({request.Request.Email}) or Number ({request.Request.PhoneNumber}) already exists");
         }
 
+        await geocodingService.GetCoordinatesAsync(request.Request.Address);
+
         var passwordHash = await passwordService.PasswordHash(request.Request.Password);
 
         var newEmployee = EmployeeMappers.ToEmployee(request.Request);
@@ -43,7 +47,7 @@ public class CreateEmployeeCommandHandler(
         await dbContext.Employees.AddAsync(newEmployee, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        
+
         return EmployeeMappers.ToEmployeeResponse(newEmployee);
     }
 }
