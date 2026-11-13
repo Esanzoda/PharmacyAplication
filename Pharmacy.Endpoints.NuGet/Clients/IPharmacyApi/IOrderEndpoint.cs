@@ -12,8 +12,6 @@ public interface IOrderEndpoint
     Task<List<OrderResponseForCustomer>> Create(
         long customerId,
         [Body] CreateOrderRequest request,
-        decimal? newCustomerLat,
-        decimal? newCustomerLong,
         string? newCustomerAddress);
 
     [Post("/api/Order/CreateFromCart")]

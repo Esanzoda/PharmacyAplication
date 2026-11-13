@@ -18,8 +18,6 @@ namespace Pharmacy.CQRS.Order.Commands;
 
 public record CreateOrderCommand(
     long CustomerId,
-    decimal? NewCustomerLatitude,
-    decimal? NewCustomerLongitude,
     string? NewCustomerAddress,
     CreateOrderRequest Request) : IRequest<List<OrderResponseForCustomer>>;
 
@@ -28,7 +26,8 @@ public class CreateOrderCommandHandler(
     IApplicationDbContext dbContext,
     IRoutesService routesService,
     IDeliveryFeeByDistance deliveryFeeByDistance,
-    ProductService.ProductServiceClient productClient)
+    ProductService.ProductServiceClient productClient,
+    IGeocodingService geocodingService)
     : IRequestHandler<CreateOrderCommand, List<OrderResponseForCustomer>>
 {
     public async Task<List<OrderResponseForCustomer>> Handle(
@@ -38,15 +37,25 @@ public class CreateOrderCommandHandler(
         var customer = await dbContext.Customers
             .FindAsync([request.CustomerId],
                 cancellationToken);
-        
+
         if (customer is null)
         {
             throw new ResourceNotFoundException("Customer not found");
         }
 
-        var latitude = request.NewCustomerLatitude ?? customer.Latitude;
-        var longitude = request.NewCustomerLongitude ?? customer.Longitude;
+        var latitude = customer.Latitude;
+        var longitude = customer.Longitude;
         var address = request.NewCustomerAddress ?? customer.Address;
+
+        if (request.NewCustomerAddress != null)
+        {
+            var location = await geocodingService.GetCoordinatesAsync(request.NewCustomerAddress);
+
+            latitude = location.Lat;
+            longitude = location.Lng;
+            address = request.NewCustomerAddress;
+        }
+
 
         var productIds = request.Request.OrderItemRequest
             .Select(x => x.ProductId)
@@ -176,7 +185,7 @@ public class CreateOrderCommandHandler(
             var totalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
             decimal deliveryFee = 0;
-            
+
             if (request.Request.OrderType is OrderType.Deliver)
             {
                 if (!pharmacies.TryGetValue(pharmacy.Key, out var currentPharmacy))
@@ -208,7 +217,7 @@ public class CreateOrderCommandHandler(
                 {
                     OrderId = order.Id,
                     CustomerId = order.CustomerEntityId,
-                    Address = address,
+                    Address = customer.Address,
                     DeliveryFee = deliveryFee,
                     TotalAmount = order.TotalAmount,
                     Email = customer.Email
