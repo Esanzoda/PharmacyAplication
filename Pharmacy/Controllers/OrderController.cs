@@ -27,13 +27,10 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(long customerId,
         OrderType orderType,
-        decimal? newCustomerLatitude,
-        decimal? newCustomerLongitude,
         string? newCustomerAddress)
     {
         var response =
-            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType, newCustomerLatitude,
-                newCustomerLongitude,
+            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType,
                 newCustomerAddress));
         return Ok(response);
     }

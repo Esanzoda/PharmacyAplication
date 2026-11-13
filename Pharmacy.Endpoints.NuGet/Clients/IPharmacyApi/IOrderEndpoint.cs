@@ -18,8 +18,6 @@ public interface IOrderEndpoint
     Task<List<OrderResponseForCustomer>> CreateFromCart(
         long customerId,
         OrderType orderType,
-        decimal? newCustomerLatitude,
-        decimal? newCustomerLongitude,
         string? newCustomerAddress);
 
     [Put("/api/Order/CancelOrder")]

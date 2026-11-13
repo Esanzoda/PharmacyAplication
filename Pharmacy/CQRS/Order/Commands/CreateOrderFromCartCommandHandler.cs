@@ -19,8 +19,6 @@ namespace Pharmacy.CQRS.Order.Commands;
 public record CreateOrderFromCartCommand(
     long CustomerId,
     OrderType OrderType,
-    decimal? NewCustomerLatitude,
-    decimal? NewCustomerLongitude,
     string? NewCustomerAddress) : IRequest<List<OrderResponseForCustomer>>;
 
 public class CreatOrderFromCartHandler(
@@ -29,7 +27,8 @@ public class CreatOrderFromCartHandler(
     IPublishEndpoint publishEndpoint,
     IRoutesService routesService,
     IDeliveryFeeByDistance deliveryFeeByDistance,
-    ProductService.ProductServiceClient productClient)
+    ProductService.ProductServiceClient productClient,
+    IGeocodingService geocodingService)
     : IRequestHandler<CreateOrderFromCartCommand, List<OrderResponseForCustomer>>
 {
     public async Task<List<OrderResponseForCustomer>> Handle(
@@ -52,9 +51,18 @@ public class CreatOrderFromCartHandler(
             throw new BusinessException("Cart is empty");
         }
 
-        var latitude = request.NewCustomerLatitude ?? cart.CustomerEntity.Latitude;
-        var longitude = request.NewCustomerLongitude ?? cart.CustomerEntity.Longitude;
-        var address = request.NewCustomerAddress ?? cart.CustomerEntity.Address;
+        var latitude = cart.CustomerEntity.Latitude;
+        var longitude = cart.CustomerEntity.Longitude;
+        var address = cart.CustomerEntity.Address;
+
+        if (request.NewCustomerAddress != null)
+        {
+            var location = await geocodingService.GetCoordinatesAsync(request.NewCustomerAddress);
+
+            latitude = location.Lat;
+            longitude = location.Lng;
+            address = request.NewCustomerAddress;
+        }
 
         var productIds = cart.CartItems
             .Select(x => x.ProductEntityId)
@@ -148,6 +156,7 @@ public class CreatOrderFromCartHandler(
                 {
                     throw new ResourceNotFoundException("Product not found ");
                 }
+
                 var orderItemBatches = new List<OrderItemBatch>();
 
                 foreach (var batch in productBatch)
@@ -175,7 +184,7 @@ public class CreatOrderFromCartHandler(
             var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
 
             decimal deliveryFee = 0;
-            
+
             if (request.OrderType is OrderType.Deliver)
             {
                 if (!pharmacies.TryGetValue(pharmacy.Key, out var currentPharmacy))
