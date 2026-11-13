@@ -16,25 +16,21 @@ public class OrderController(IOrderEndpoint orderEndpoint) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> Create([FromBody] CreateOrderRequest request,
-        decimal? newCustomerLat,
-        decimal? newCustomerLong,
         string? newCustomerAddress)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
-            await orderEndpoint.Create(customerId, request, newCustomerLat, newCustomerLong, newCustomerAddress);
+            await orderEndpoint.Create(customerId, request, newCustomerAddress);
         return Ok(response);
     }
 
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(OrderType orderType,
-        decimal? newCustomerLatitude,
-        decimal? newCustomerLongitude,
         string? newCustomerAddress)
     {
         var customerId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var response =
-            await orderEndpoint.CreateFromCart(customerId, orderType, newCustomerLatitude, newCustomerLongitude,
+            await orderEndpoint.CreateFromCart(customerId, orderType,
                 newCustomerAddress);
         return Ok(response);
     }

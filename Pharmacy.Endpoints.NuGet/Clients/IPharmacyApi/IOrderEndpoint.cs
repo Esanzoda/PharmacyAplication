@@ -12,16 +12,12 @@ public interface IOrderEndpoint
     Task<List<OrderResponseForCustomer>> Create(
         long customerId,
         [Body] CreateOrderRequest request,
-        decimal? newCustomerLat,
-        decimal? newCustomerLong,
         string? newCustomerAddress);
 
     [Post("/api/Order/CreateFromCart")]
     Task<List<OrderResponseForCustomer>> CreateFromCart(
         long customerId,
         OrderType orderType,
-        decimal? newCustomerLatitude,
-        decimal? newCustomerLongitude,
         string? newCustomerAddress);
 
     [Put("/api/Order/CancelOrder")]

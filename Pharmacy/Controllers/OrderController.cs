@@ -16,12 +16,10 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> Create(long customerId,
         [FromBody] CreateOrderRequest request,
-        decimal? newCustomerLat,
-        decimal? newCustomerLong,
         string? newCustomerAddress)
     {
         var response =
-            await mediator.Send(new CreateOrderCommand(customerId, newCustomerLat, newCustomerLong, newCustomerAddress,
+            await mediator.Send(new CreateOrderCommand(customerId, newCustomerAddress,
                 request));
         return Ok(response);
     }
@@ -29,13 +27,10 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(long customerId,
         OrderType orderType,
-        decimal? newCustomerLatitude,
-        decimal? newCustomerLongitude,
         string? newCustomerAddress)
     {
         var response =
-            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType, newCustomerLatitude,
-                newCustomerLongitude,
+            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType,
                 newCustomerAddress));
         return Ok(response);
     }
