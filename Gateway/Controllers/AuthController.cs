@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy.Domain.Models.Base.Domain.Enum;
+using Pharmacy.Domain.Enums;
 using Pharmacy.Domain.Models.Base.Dto.Request;
 using Pharmacy.Domain.Models.Base.Dto.Response;
 using Pharmacy.Domain.Models.Customer.DTOs.Request;

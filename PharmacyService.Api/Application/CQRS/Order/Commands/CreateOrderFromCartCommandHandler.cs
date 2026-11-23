@@ -1,0 +1,231 @@
+using Grpc.Contract.Proto;
+using MassTransit;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PharmacyService.Api.Application.CQRS.Order.Mapper;
+using PharmacyService.Api.Application.DTOs.Response;
+using PharmacyService.Api.Application.Exception;
+using PharmacyService.Api.Services.DeliveryFee;
+using PharmacyService.Api.Services.GoogleMaps;
+using PharmacyService.Contract.Events;
+using PharmacyService.Domain.Entities;
+using PharmacyService.Domain.Enums;
+using ClearCartCommand = PharmacyService.Api.Application.CQRS.Cart.Commands.ClearCartCommand;
+
+namespace PharmacyService.Api.Application.CQRS.Order.Commands;
+
+public record CreateOrderFromCartCommand(
+    long CustomerId,
+    OrderType OrderType,
+    string? NewCustomerAddress) : IRequest<List<OrderResponseForCustomer>>;
+
+public class CreatOrderFromCartHandler(
+    IApplicationDbContext dbContext,
+    IMediator mediator,
+    IPublishEndpoint publishEndpoint,
+    IRoutesService routesService,
+    IDeliveryFeeByDistance deliveryFeeByDistance,
+    ProductService.ProductServiceClient productClient,
+    IGeocodingService geocodingService)
+    : IRequestHandler<CreateOrderFromCartCommand, List<OrderResponseForCustomer>>
+{
+    public async Task<List<OrderResponseForCustomer>> Handle(
+        CreateOrderFromCartCommand request,
+        CancellationToken cancellationToken)
+    {
+        var cart = await dbContext.Carts
+            .Include(x => x.CustomerEntity)
+            .Include(x => x.CartItems)
+            .FirstOrDefaultAsync(x => x.CustomerEntityId == request.CustomerId,
+                cancellationToken);
+
+        if (cart == null)
+        {
+            throw new ResourceNotFoundException("Cart not found");
+        }
+
+        if (cart.CartItems.Count == 0)
+        {
+            throw new BusinessException("Cart is empty");
+        }
+
+        var latitude = cart.CustomerEntity.Latitude;
+        var longitude = cart.CustomerEntity.Longitude;
+        var address = cart.CustomerEntity.Address;
+
+        if (request.NewCustomerAddress != null)
+        {
+            var location = await geocodingService.GetCoordinatesAsync(request.NewCustomerAddress);
+
+            latitude = location.Lat;
+            longitude = location.Lng;
+            address = request.NewCustomerAddress;
+        }
+
+        var productIds = cart.CartItems
+            .Select(x => x.ProductEntityId)
+            .Distinct()
+            .ToList();
+
+        var response = await productClient.GetProductsAsync(
+            new ProductGrpcIdsRequest
+            {
+                ProductIds = { productIds }
+            },
+            cancellationToken: cancellationToken);
+        var products = response.Products
+            .ToDictionary(x => x.ProductId);
+
+        var preparedCartItems = new List<PreparedOrderItem>();
+
+        var orders = new List<OrderEntity>();
+        foreach (var item in cart.CartItems)
+        {
+            if (!products.TryGetValue(item.ProductEntityId, out var product))
+            {
+                throw new ResourceNotFoundException("Product not found");
+            }
+
+            if (product.Stock < item.Quantity)
+            {
+                throw new BusinessException(
+                    $"Insufficient stock for product {product.SalePrice}: available {product.Stock}, requested {item.Quantity}");
+            }
+
+            preparedCartItems.Add(new PreparedOrderItem()
+            {
+                Product = product,
+                Quantity = item.Quantity
+            });
+        }
+
+        var pharmacyGroup = preparedCartItems
+            .GroupBy(x => x.Product.PharmacyId)
+            .ToList();
+
+        var pharmacyIds = pharmacyGroup
+            .Select(x => x.Key)
+            .ToList();
+
+        var pharmacies = await dbContext.Pharmacies
+            .Where(x => pharmacyIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id,
+                cancellationToken);
+
+        var preparedUpdateStockItem = preparedCartItems.Select(item =>
+            new UpdateStockItem
+            {
+                ProductId = item.Product.ProductId,
+                Quantity = item.Quantity
+            });
+
+        var updateStockResponse = await productClient.CreateOrderAsync(
+            new UpdateStockRequest
+            {
+                OrderGrpcRequest = { preparedUpdateStockItem }
+            });
+
+        if (!updateStockResponse.Success)
+        {
+            throw new BusinessException(updateStockResponse.Message);
+        }
+
+        var productBatchResponse = updateStockResponse.ProductBatchResponse
+            .GroupBy(x => x.ProductId)
+            .ToDictionary(x => x.Key);
+        foreach (var pharmacy in pharmacyGroup)
+        {
+            var order = new OrderEntity
+            {
+                CustomerEntityId = cart.CustomerEntityId,
+                PharmacyId = pharmacy.Key,
+                OrderType = request.OrderType,
+                OrderStatus = OrderStatus.Pending,
+                Address = address
+            };
+
+            await dbContext.Orders
+                .AddAsync(order, cancellationToken);
+
+            foreach (var preparedOrderItem in pharmacy)
+            {
+                if (!productBatchResponse.TryGetValue(preparedOrderItem.Product.ProductId,
+                        out var productBatch))
+                {
+                    throw new ResourceNotFoundException("Product not found ");
+                }
+
+                var orderItemBatches = new List<OrderItemBatch>();
+
+                foreach (var batch in productBatch)
+                {
+                    var orderItemBatch = new OrderItemBatch
+                    {
+                        ProductBatchId = batch.ProductBatchId,
+                        Quantity = batch.Quantity
+                    };
+                    orderItemBatches.Add(orderItemBatch);
+                }
+
+                var orderItem = new OrderItemEntity
+                {
+                    ProductEntityId = preparedOrderItem.Product.ProductId,
+                    Quantity = preparedOrderItem.Quantity,
+                    Price = (decimal)preparedOrderItem.Product.SalePrice,
+                    TotalPrice = (decimal)preparedOrderItem.Product.SalePrice * preparedOrderItem.Quantity,
+                    OrderItemBatches = orderItemBatches
+                };
+
+                order.OrderItems.Add(orderItem);
+            }
+
+            var totalAmount = order.TotalAmount = order.OrderItems.Sum(x => x.TotalPrice);
+
+            decimal deliveryFee = 0;
+
+            if (request.OrderType is OrderType.Deliver)
+            {
+                if (!pharmacies.TryGetValue(pharmacy.Key, out var currentPharmacy))
+                {
+                    throw new ResourceNotFoundException($"Pharmacy with id {pharmacy.Key} not found");
+                }
+
+                var routeRequest = new RoutesApiRequest()
+                {
+                    StartLat = currentPharmacy.Latitude,
+                    StartLng = currentPharmacy.Longitude,
+                    FinishLat = latitude,
+                    FinishLng = longitude
+                };
+
+                var distanceKm = await routesService
+                    .CalculateRouteAsync(routeRequest);
+
+                deliveryFee = deliveryFeeByDistance
+                    .CalculateDeliveryFee(distanceKm.DistanceKm);
+            }
+
+            order.TotalAmount = deliveryFee + totalAmount;
+
+            order.DeliveryFee = deliveryFee;
+            orders.Add(order);
+
+            await mediator.Send(new ClearCartCommand(request.CustomerId), cancellationToken);
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            await publishEndpoint.Publish(new OrderCreatedEvent
+            {
+                OrderId = order.Id,
+                CustomerId = order.CustomerEntityId,
+                DeliveryFee = deliveryFee,
+                TotalAmount = order.TotalAmount,
+                Email = cart.CustomerEntity.Email,
+                CreatedAt = order.CreatedAt,
+                Address = address
+            }, cancellationToken);
+        }
+
+        return OrderMappers.ToListOrderResponseForCustomers(orders);
+    }
+}
