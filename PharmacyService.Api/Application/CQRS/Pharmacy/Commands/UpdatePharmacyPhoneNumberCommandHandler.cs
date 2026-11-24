@@ -1,0 +1,54 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PharmacyService.Api.Application.CQRS.Pharmacy.Mapper;
+using PharmacyService.Api.Application.DTOs.Response;
+using PharmacyService.Api.Application.Exception;
+
+namespace PharmacyService.Api.Application.CQRS.Pharmacy.Commands;
+
+public record UpdatePharmacyPhoneNumberCommand(
+    long Id,
+    string NewNumber) : IRequest<PharmacyResponse>;
+
+public class UpdatePharmacyPhoneNumberCommandHandler(
+    IApplicationDbContext dbContext) : IRequestHandler<UpdatePharmacyPhoneNumberCommand, PharmacyResponse>
+{
+    public async Task<PharmacyResponse> Handle(
+        UpdatePharmacyPhoneNumberCommand request,
+        CancellationToken cancellationToken)
+    {
+        var pharmacy = await dbContext.Pharmacies
+            .FindAsync([request.Id],
+                cancellationToken);
+
+        if (pharmacy is null)
+        {
+            throw new ResourceNotFoundException("Pharmacy not found.");
+        }
+
+        var pharmacyExist = await dbContext.Pharmacies
+            .AnyAsync(x => x.Id != request.Id
+                           && x.PhoneNumber == request.NewNumber,
+                cancellationToken);
+
+        if (pharmacyExist)
+        {
+            throw new ResourceIsAlreadyExistException(" Pharmacy with this number already exist ");
+        }
+
+        var bossPharmacy = await dbContext.BossPharmacies
+            .FirstOrDefaultAsync(x => x.PharmacyId == pharmacy.Id
+                , cancellationToken);
+
+        if (bossPharmacy is null)
+        {
+            throw new ResourceNotFoundException("BossPharmacy not found");
+        }
+
+        pharmacy.PhoneNumber = request.NewNumber;
+        bossPharmacy.PhoneNumber = pharmacy.PhoneNumber;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return PharmacyMappers.ToPharmacyResponse(pharmacy);
+    }
+}

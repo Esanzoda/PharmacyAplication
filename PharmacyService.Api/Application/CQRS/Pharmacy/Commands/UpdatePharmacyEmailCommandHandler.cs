@@ -1,0 +1,54 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PharmacyService.Api.Application.CQRS.Pharmacy.Mapper;
+using PharmacyService.Api.Application.DTOs.Response;
+using PharmacyService.Api.Application.Exception;
+
+namespace PharmacyService.Api.Application.CQRS.Pharmacy.Commands;
+
+public record UpdatePharmacyEmailCommand(
+    long Id,
+    string NewEmail) : IRequest<PharmacyResponse>;
+
+public class UpdatePharmacyEmailCommandHandler(
+    IApplicationDbContext dbContext) : IRequestHandler<UpdatePharmacyEmailCommand, PharmacyResponse>
+{
+    public async Task<PharmacyResponse> Handle(
+        UpdatePharmacyEmailCommand request,
+        CancellationToken cancellationToken)
+    {
+        var pharmacy = await dbContext.Pharmacies
+            .FindAsync([request.Id],
+                cancellationToken);
+
+        if (pharmacy is null)
+        {
+            throw new ResourceNotFoundException("Pharmacy not found");
+        }
+
+        var pharmacyExist = await dbContext.Pharmacies
+            .AnyAsync(x => x.Id != request.Id &&
+                           x.Email == request.NewEmail,
+                cancellationToken);
+
+        if (pharmacyExist)
+        {
+            throw new ResourceIsAlreadyExistException("Pharmacy with this email already exist");
+        }
+
+        var bossPharmacy = await dbContext.BossPharmacies
+            .FirstOrDefaultAsync(x => x.PharmacyId == pharmacy.Id
+                , cancellationToken);
+
+        if (bossPharmacy is null)
+        {
+            throw new ResourceNotFoundException("BossPharmacy not found");
+        }
+
+        bossPharmacy.Email = pharmacy.Email;
+        bossPharmacy.Email = pharmacy.Email;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return PharmacyMappers.ToPharmacyResponse(pharmacy);
+    }
+}

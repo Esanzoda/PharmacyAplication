@@ -1,0 +1,48 @@
+using MassTransit;
+using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
+using PharmacyService.Api.Application.Exception;
+using PharmacyService.Contract.Events;
+using PharmacyService.Domain.Enums;
+
+namespace PharmacyService.Api.Application.CQRS.Auth.Commands;
+
+public record ForgotCommand(
+    string Email,
+    Role Role) : IRequest<string>;
+
+public class ForgotCommandHandler(
+    IApplicationDbContext dbContext,
+    IPublishEndpoint publishEndpoint,
+    IDistributedCache cache) : IRequestHandler<ForgotCommand, string>
+{
+    public async Task<string> Handle(ForgotCommand request, CancellationToken cancellationToken)
+    {
+        var user = dbContext.Users
+            .FirstOrDefault(x => x.Role == request.Role &&
+                                 x.Email == request.Email);
+        if (user is null)
+        {
+            throw new ResourceNotFoundException("User not found");
+        }
+
+        var random = new Random();
+        var newCode = random.Next(10000000, 19999999);
+        var key = $"User-{user.Email}-{user.Role}";
+        await cache.SetStringAsync(
+            key, newCode.ToString(),
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            }, cancellationToken);
+        await publishEndpoint.Publish(new ForgotPasswordEvent
+            {
+                To = user.Email,
+                Message = newCode.ToString()
+            },
+            cancellationToken);
+        var response = $"Your password successful updated chek your email {user.Email}";
+
+        return response;
+    }
+}

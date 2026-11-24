@@ -1,0 +1,80 @@
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using PharmacyService.Api.Application.CQRS.Order.Commands;
+using PharmacyService.Api.Application.CQRS.Order.Queries;
+using PharmacyService.Api.Application.DTOs.Request;
+using PharmacyService.Api.Application.DTOs.Response;
+using PharmacyService.Domain.Enums;
+
+namespace PharmacyService.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]/[action]")]
+public class OrderController(IMediator mediator) : ControllerBase
+{
+    [HttpPost]
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> Create(long customerId,
+        [FromBody] CreateOrderRequest request,
+        string? newCustomerAddress)
+    {
+        var response =
+            await mediator.Send(new CreateOrderCommand(customerId, newCustomerAddress,
+                request));
+        return Ok(response);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> CreateFromCart(long customerId,
+        OrderType orderType,
+        string? newCustomerAddress)
+    {
+        var response =
+            await mediator.Send(new CreateOrderFromCartCommand(customerId, orderType,
+                newCustomerAddress));
+        return Ok(response);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<OrderResponseForCustomer>> CancelOrder(long customerId,
+        string customerEmail,
+        long orderId)
+    {
+        var response = await mediator.Send(new CancelOrderCommand(customerId, orderId, customerEmail));
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<OrderResponseForCustomer>> GetInfo(long customerId, long id)
+    {
+        var response = await mediator.Send(new GetOrderByIdQuery(customerId, id));
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetAll(long customerId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response = await mediator.Send(
+            new GetAllOrdersQuery(customerId, paginationRequest));
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<OrderResponseForCustomer>>> GetByStatus(long customerId,
+        OrderStatus status,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response = await mediator.Send(
+            new GetOrderByOrderStatusQuery(customerId, status, paginationRequest));
+        return Ok(response);
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<OrderResponseForCustomer>> RemoveItem(long customerId,
+        long orderId,
+        long orderItemId)
+    {
+        var response = await mediator.Send(new RemoveItemFromOrderCommand(customerId, orderId, orderItemId));
+        return Ok(response);
+    }
+}

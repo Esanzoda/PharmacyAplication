@@ -1,0 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PharmacyService.Domain.Entities;
+
+namespace PharmacyService.Api.Infrastructure.Configurations;
+
+public class PurchaseItemConfiguration : IEntityTypeConfiguration<PurchaseItem>
+{
+    public void Configure(EntityTypeBuilder<PurchaseItem> builder)
+    {
+        builder.ToTable("PurchaseItems");
+
+        builder.HasKey(x => x.Id);
+
+        builder.HasOne(x => x.PurchaseEntity)
+            .WithMany(x => x.PurchaseItems)
+            .HasForeignKey(x => x.PurchaseEntityId);
+    }
+}

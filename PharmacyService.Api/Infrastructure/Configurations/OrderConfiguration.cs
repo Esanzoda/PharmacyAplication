@@ -1,0 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PharmacyService.Domain.Entities;
+
+namespace PharmacyService.Api.Infrastructure.Configurations;
+
+public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
+{
+    public void Configure(EntityTypeBuilder<OrderEntity> builder)
+    {
+        builder.ToTable("Orders");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.Address)
+            .IsRequired()
+            .HasMaxLength(100);
+    }
+}
