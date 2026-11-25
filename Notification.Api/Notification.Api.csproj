@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>Notifications</RootNamespace>
+        <RootNamespace>Notification.Api_</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,7 +17,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Pharmacy.Event\Pharmacy.Event.csproj" />
+      <ProjectReference Include="..\PharmacyService.Contract\PharmacyService.Contract.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Application\" />
+      <Folder Include="Infrastructure\" />
     </ItemGroup>
 
 </Project>

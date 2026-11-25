@@ -1,13 +1,12 @@
 using MassTransit;
-using MediatR;
-using Notifications.CQRS;
-using Pharmacy.Event.Events;
+using Notification.Api_.Application.Services;
+using PharmacyService.Contract.Events;
 
-namespace Notifications.Consumers;
+namespace Notification.Api_.Consumers;
 
 public class ReportToCeoOrderCompleted(
-    IMediator mediator,
-    ILogger<ReportToCeoOrderCompleted> logger) : IConsumer<OrderCompletedEventReportToCeo>
+    ILogger<ReportToCeoOrderCompleted> logger,
+    IEmailService emailService) : IConsumer<OrderCompletedEventReportToCeo>
 {
     public async Task Consume(ConsumeContext<OrderCompletedEventReportToCeo> context)
     {
@@ -17,10 +16,10 @@ public class ReportToCeoOrderCompleted(
             message.Day,
             message.Count,
             message.TotalAmount);
-        await mediator.Send(new ToCeoReportCompletedOrdersCommand(
+        await emailService.ToCeoReportCompletedOrders(
             message.To,
             message.Day,
             message.Count,
-            message.TotalAmount));
+            message.TotalAmount);
     }
 }

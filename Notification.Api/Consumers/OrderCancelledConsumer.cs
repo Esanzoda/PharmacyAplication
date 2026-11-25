@@ -1,13 +1,12 @@
 using MassTransit;
-using MediatR;
-using Notifications.CQRS;
-using Pharmacy.Event.Events;
+using Notification.Api_.Application.Services;
+using PharmacyService.Contract.Events;
 
-namespace Notifications.Consumers;
+namespace Notification.Api_.Consumers;
 
 public class OrderCancelledConsumer(
-    IMediator mediator,
-    ILogger<OrderCancelledConsumer> logger) : IConsumer<OrderCancelledEvent>
+    ILogger<OrderCancelledConsumer> logger,
+    IEmailService emailService) : IConsumer<OrderCancelledEvent>
 {
     public async Task Consume(ConsumeContext<OrderCancelledEvent> context)
     {
@@ -18,9 +17,9 @@ public class OrderCancelledConsumer(
             message.OrderId,
             message.CustomerId,
             message.UpdateTime);
-        await mediator.Send(new ToCustomerOrderCancelledCommand(
+        await emailService.ToCustomerOrderCancelled(
             message.Email,
             message.OrderId,
-            message.UpdateTime));
+            message.UpdateTime);
     }
 }
