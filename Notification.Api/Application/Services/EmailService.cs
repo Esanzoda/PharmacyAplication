@@ -2,54 +2,45 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Notifications.Models;
-using Notifications.Setting;
-using Pharmacy.Event.Events;
+using Notification.Api_.Domain;
+using Notification.Api_.Infrastructure.Setting;
+using PharmacyService.Contract.Events;
 
-namespace Notifications.Services;
+namespace Notification.Api_.Application.Services;
 
-public interface INotificationService
+public interface IEmailService
 {
-    Task SendToEmail(EmailMessage emailMessage, CancellationToken cancellationToken);
+    Task SendToEmail(EmailMessage emailMessage);
 
     Task ToPharmacyExpiryProduct(string email, DateTime day, int count, decimal totalPurchasePrice,
-        decimal totalSalePrice, List<ExpiredItemEvent> expiryDateItems, CancellationToken cancellationToken);
+        decimal totalSalePrice, List<ExpiredItemEvent> expiryDateItems);
 
-    Task ToCeoReportCompletedOrders(string toEmail, DateTime day, int count, decimal totalAmount,
-        CancellationToken cancellationToken);
+    Task ToCeoReportCompletedOrders(string toEmail, DateTime day, int count, decimal totalAmount);
 
-    Task ToCustomerOrderCancelled(string toEmail, long orderId, DateTime cancelledAt,
-        CancellationToken cancellationToken);
+    Task ToCustomerOrderCancelled(string toEmail, long orderId, DateTime cancelledAt);
 
-    Task ToCustomerOrderCompleted(string toEmail, long orderId, decimal totalAmount, DateTime completedAt,
-        CancellationToken cancellationToken);
+    Task ToCustomerOrderCompleted(string toEmail, long orderId, decimal totalAmount, DateTime completedAt);
 
     Task ToCustomerOrderCreated(string toEmail, long orderId, decimal totalAmount, decimal deliveryFee,
-        DateTime createdAt, CancellationToken cancellationToken);
+        DateTime createdAt);
 
     Task ToCustomerOrderShipped(string toEmail, long orderId, decimal deliveryFee, decimal totalAmount,
-        DateTime shippedAt, string deliverName, CancellationToken cancellationToken);
+        DateTime shippedAt, string deliverName);
 
-    Task ToPharmacyLowStockProduct(string toEmail, string productName, int currentStock,
-        CancellationToken cancellationToken);
-
-
-    Task ToUser(string toEmail, string message, CancellationToken cancellationToken);
+    Task ToUser(string toEmail, string message);
 }
 
-public class NotificationService(
+public class EmailService(
     IOptionsMonitor<EmailOptions> emailOption,
-    ILogger<NotificationService> logger) : INotificationService
+    ILogger<EmailService> logger) : IEmailService
 {
     public async Task SendToEmail(
-        EmailMessage emailMessage,
-        CancellationToken cancellationToken)
+        EmailMessage emailMessage)
     {
         var email = new MimeMessage();
 
         email.From.Add(new MailboxAddress(
-            emailOption.CurrentValue.FromName ?? emailOption.CurrentValue.UserName
-            ?? throw new InvalidOperationException("Email sender name (FromName) is not configured."),
+            emailOption.CurrentValue.FromName,
             emailOption.CurrentValue.From
             ?? throw new InvalidOperationException("Email sender address (From) is not configured.")));
 
@@ -72,23 +63,19 @@ public class NotificationService(
             emailOption.CurrentValue.Host
             ?? throw new InvalidOperationException("SMTP host is not configured."),
             emailOption.CurrentValue.Port,
-            SecureSocketOptions.StartTls,
-            cancellationToken);
+            SecureSocketOptions.StartTls);
 
         await smtp.AuthenticateAsync(
             emailOption.CurrentValue.UserName
             ?? throw new InvalidOperationException("SMTP username is not configured."),
             emailOption.CurrentValue.Password
-            ?? throw new InvalidOperationException("SMTP password is not configured."),
-            cancellationToken);
+            ?? throw new InvalidOperationException("SMTP password is not configured."));
 
         await smtp.SendAsync(
-            email,
-            cancellationToken);
+            email);
 
         await smtp.DisconnectAsync(
-            true,
-            cancellationToken);
+            true);
 
         logger.LogInformation(
             "Email sent to {Email} ",
@@ -98,7 +85,7 @@ public class NotificationService(
 
     public async Task ToPharmacyExpiryProduct(string email, DateTime day, int count, decimal totalPurchasePrice,
         decimal totalSalePrice,
-        List<ExpiredItemEvent> expiryDateItems, CancellationToken cancellationToken)
+        List<ExpiredItemEvent> expiryDateItems)
     {
         var itemsHtml = string.Join(
             "",
@@ -141,11 +128,10 @@ public class NotificationService(
                     </html>
                     """
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
-    public async Task ToCeoReportCompletedOrders(string toEmail, DateTime day, int count, decimal totalAmount,
-        CancellationToken cancellationToken)
+    public async Task ToCeoReportCompletedOrders(string toEmail, DateTime day, int count, decimal totalAmount)
     {
         var message = new EmailMessage()
         {
@@ -157,11 +143,10 @@ public class NotificationService(
                 <p>Count:<strong>{count}</strong> </p>
                 <p>TotalAmount:<strong>{totalAmount}</strong></p>"
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
-    public async Task ToCustomerOrderCancelled(string toEmail, long orderId, DateTime cancelledAt,
-        CancellationToken cancellationToken)
+    public async Task ToCustomerOrderCancelled(string toEmail, long orderId, DateTime cancelledAt)
     {
         var message = new EmailMessage
         {
@@ -174,11 +159,10 @@ public class NotificationService(
                 
             "
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
-    public async Task ToCustomerOrderCompleted(string toEmail, long orderId, decimal totalAmount, DateTime completedAt,
-        CancellationToken cancellationToken)
+    public async Task ToCustomerOrderCompleted(string toEmail, long orderId, decimal totalAmount, DateTime completedAt)
     {
         var message = new EmailMessage
         {
@@ -191,12 +175,11 @@ public class NotificationService(
                 <p>Thanks for choose our  Pharmacy!</p>
             "
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
     public async Task ToCustomerOrderCreated(string toEmail, long orderId, decimal totalAmount, decimal deliveryFee,
-        DateTime createdAt,
-        CancellationToken cancellationToken)
+        DateTime createdAt)
     {
         var message = new EmailMessage
         {
@@ -212,11 +195,11 @@ public class NotificationService(
 
             "
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
     public async Task ToCustomerOrderShipped(string toEmail, long orderId, decimal deliveryFee, decimal totalAmount,
-        DateTime shippedAt, string deliverName, CancellationToken cancellationToken)
+        DateTime shippedAt, string deliverName)
     {
         var message = new EmailMessage
         {
@@ -233,11 +216,10 @@ public class NotificationService(
 
             "
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
-    public async Task ToPharmacyLowStockProduct(string toEmail, string productName, int currentStock,
-        CancellationToken cancellationToken)
+    public async Task ToPharmacyLowStockProduct(string toEmail, string productName, int currentStock)
     {
         var message = new EmailMessage
         {
@@ -249,10 +231,10 @@ public class NotificationService(
                 <p>Please replenish the stock</p>
             "
         };
-        await SendToEmail(message, cancellationToken);
+        await SendToEmail(message);
     }
 
-    public async Task ToUser(string toEmail, string message, CancellationToken cancellationToken)
+    public async Task ToUser(string toEmail, string message)
     {
         var messageToUser = new EmailMessage
         {
@@ -260,6 +242,6 @@ public class NotificationService(
             Subject = "Information",
             Body = message
         };
-        await SendToEmail(messageToUser, cancellationToken);
+        await SendToEmail(messageToUser);
     }
 }

@@ -1,4 +1,4 @@
-namespace Notifications.Models;
+namespace Notification.Api_.Domain;
 
 public class BaseEntity
 {

@@ -1,22 +1,22 @@
 using MassTransit;
-using MediatR;
-using Notifications.CQRS;
-using Pharmacy.Event.Events;
+using Notification.Api_.Application.Services;
+using PharmacyService.Contract.Events;
 
-namespace Notifications.Consumers;
+namespace Notification.Api_.Consumers;
 
 public class CheckExpiryDateProductConsumer(
-    IMediator mediator) : IConsumer<CheckExpiredProductEvent>
+    IEmailService emailService) : IConsumer<CheckExpiredProductEvent>
 {
     public async Task Consume(ConsumeContext<CheckExpiredProductEvent> context)
     {
         var message = context.Message;
-        await mediator.Send(new ToPharmacyExpiryProductCommand(
+
+        await emailService.ToPharmacyExpiryProduct(
             message.To,
             message.Day,
             message.Count,
             message.TotalPurchasePrice,
             message.TotalSalePrice,
-            message.ExpiryDateItems));
+            message.ExpiryDateItems);
     }
 }

@@ -1,13 +1,12 @@
 using MassTransit;
-using MediatR;
-using Notifications.CQRS;
-using Pharmacy.Event.Events;
+using Notification.Api_.Application.Services;
+using PharmacyService.Contract.Events;
 
-namespace Notifications.Consumers;
+namespace Notification.Api_.Consumers;
 
 public class OrderCreatedConsumer(
-    IMediator mediator,
-    ILogger<OrderCreatedConsumer> logger) : IConsumer<OrderCreatedEvent>
+    ILogger<OrderCreatedConsumer> logger,
+    IEmailService emailService) : IConsumer<OrderCreatedEvent>
 {
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
@@ -17,11 +16,12 @@ public class OrderCreatedConsumer(
             $"Order created: OrderId={message.OrderId}, CustomerId={message.CustomerId}, DeliveryFee{message.DeliveryFee}" +
             $" Total={message.TotalAmount} , CreatedAt={message.CreatedAt}, Address{message.Address} Customer{message.Email}");
 
-        await mediator.Send(new ToCustomerOrderCreatedCommand(
+        await emailService.ToCustomerOrderCreated(
             message.Email,
             message.OrderId,
             message.TotalAmount,
             message.DeliveryFee,
-            message.CreatedAt));
+            message.CreatedAt
+        );
     }
 }

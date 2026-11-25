@@ -1,4 +1,4 @@
-namespace Notifications.Setting;
+namespace Notification.Api_.Infrastructure.Setting;
 
 public class EmailOptions
 {
