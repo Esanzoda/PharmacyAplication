@@ -1,5 +1,5 @@
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using PharmacyService.Api.Domain.Entities;
+using VehicleType = PharmacyService.Api.Domain.Enums.VehicleType;
 
 namespace PharmacyService.Api.Application.DTOs.Response;
 

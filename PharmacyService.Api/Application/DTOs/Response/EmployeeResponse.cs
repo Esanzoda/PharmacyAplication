@@ -1,4 +1,4 @@
-using PharmacyService.Domain.Enums;
+using Position = PharmacyService.Api.Domain.Enums.Position;
 
 namespace PharmacyService.Api.Application.DTOs.Response;
 

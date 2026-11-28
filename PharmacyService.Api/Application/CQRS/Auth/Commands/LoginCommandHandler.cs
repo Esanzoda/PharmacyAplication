@@ -4,10 +4,10 @@ using Microsoft.Extensions.Options;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using PharmacyService.Api.Domain.Entities;
 using PharmacyService.Api.Services.Auth;
 using PharmacyService.Api.Services.Password;
 using PharmacyService.Api.Setting;
-using PharmacyService.Domain.Entities;
 
 namespace PharmacyService.Api.Application.CQRS.Auth.Commands;
 

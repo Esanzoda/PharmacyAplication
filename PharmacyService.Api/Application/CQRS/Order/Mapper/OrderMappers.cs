@@ -1,6 +1,6 @@
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
-using PharmacyService.Domain.Entities;
+using PharmacyService.Api.Domain.Entities;
 
 namespace PharmacyService.Api.Application.CQRS.Order.Mapper;
 

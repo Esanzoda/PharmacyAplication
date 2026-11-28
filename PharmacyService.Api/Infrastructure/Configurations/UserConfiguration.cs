@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PharmacyService.Domain.Entities;
+using PharmacyService.Api.Domain.Entities;
 
 namespace PharmacyService.Api.Infrastructure.Configurations;
 

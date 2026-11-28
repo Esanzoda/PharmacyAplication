@@ -1,9 +1,9 @@
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using PharmacyService.Api.Domain.Entities;
+using PharmacyService.Api.Domain.Enums;
 
 namespace PharmacyService.Api.Application.DTOs.Response;
 
-public class OrderResponseForCustomer
+public record OrderResponseForCustomer
 {
     public long Id { get; init; }
     public long PharmacyId { get; init; }

@@ -1,8 +1,8 @@
-using PharmacyService.Domain.Enums;
+using VehicleType = PharmacyService.Api.Domain.Enums.VehicleType;
 
 namespace PharmacyService.Api.Application.DTOs.Request;
 
-public class SupplierRequest
+public record SupplierRequest
 {
     public required string Name { get; init; }
     public required string Address { get; init; }

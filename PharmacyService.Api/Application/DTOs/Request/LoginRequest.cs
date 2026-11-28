@@ -1,4 +1,4 @@
-using PharmacyService.Domain.Enums;
+using Role = PharmacyService.Api.Domain.Enums.Role;
 
 namespace PharmacyService.Api.Application.DTOs.Request;
 

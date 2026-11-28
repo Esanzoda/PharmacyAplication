@@ -1,0 +1,11 @@
+using ProductService.Contract.Enums;
+
+namespace ProductService.Contract.Request;
+
+public record UpdateProductRequest
+{
+    public required string Name { get; init; }
+    public ProductType ProductType { get; init; }
+    public long CategoryId { get; init; }
+    public string Description { get; init; } = string.Empty;
+}

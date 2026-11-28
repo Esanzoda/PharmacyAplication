@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PharmacyService.Domain.Entities;
+using PharmacyService.Api.Domain.Entities;
 
 namespace PharmacyService.Api.Application;
 

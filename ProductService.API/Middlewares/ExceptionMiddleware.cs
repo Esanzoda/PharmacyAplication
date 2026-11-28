@@ -1,6 +1,6 @@
-using ProductService.Application.Exceptions;
+using ProductService.Api.Application.Exception;
 
-namespace ProductService.Middlewares;
+namespace ProductService.Api.Middlewares;
 
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 {

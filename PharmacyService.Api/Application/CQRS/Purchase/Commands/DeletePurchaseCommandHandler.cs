@@ -1,8 +1,8 @@
-using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.Common;
 using PharmacyService.Api.Application.Exception;
+using ProductService.Contract.Grpc;
 
 namespace PharmacyService.Api.Application.CQRS.Purchase.Commands;
 
@@ -13,7 +13,7 @@ public record DeletePurchaseCommand(
 
 public class DeletePurchaseCommandHandler(
     IApplicationDbContext dbContext,
-    ProductService.ProductServiceClient productClient) : IRequestHandler<DeletePurchaseCommand, string>
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productClient) : IRequestHandler<DeletePurchaseCommand, string>
 {
     public async Task<string> Handle(
         DeletePurchaseCommand request,

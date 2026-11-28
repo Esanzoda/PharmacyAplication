@@ -3,8 +3,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.Exception;
+using PharmacyService.Api.Domain.Enums;
 using PharmacyService.Contract.Events;
-using PharmacyService.Domain.Enums;
 
 namespace PharmacyService.Api.Application.CQRS.Deliver.Commands;
 

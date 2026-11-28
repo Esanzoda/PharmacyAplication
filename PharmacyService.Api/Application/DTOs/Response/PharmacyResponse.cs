@@ -1,6 +1,6 @@
 namespace PharmacyService.Api.Application.DTOs.Response;
 
-public class PharmacyResponse
+public record PharmacyResponse
 {
     public long Id { get; set; }
     public required string Name { get; init; }

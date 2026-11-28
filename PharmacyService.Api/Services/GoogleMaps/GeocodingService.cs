@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using PharmacyService.Api.Application.Exception;
-using PharmacyService.Domain.Entities;
+using PharmacyService.Api.Domain.Entities;
 
 namespace PharmacyService.Api.Services.GoogleMaps;
 

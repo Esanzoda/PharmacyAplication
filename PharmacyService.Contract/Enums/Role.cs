@@ -1,0 +1,11 @@
+namespace PharmacyService.Contract.Enums;
+
+public enum Role
+{
+    Customer = 0,
+    Employee = 1,
+    Deliver = 2,
+    Admin = 3,
+    Supplier = 4,
+    BossPharmacy = 5
+}

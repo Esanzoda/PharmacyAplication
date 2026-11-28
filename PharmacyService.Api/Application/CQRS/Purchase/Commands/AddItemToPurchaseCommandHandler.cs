@@ -1,10 +1,10 @@
-using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.CQRS.Purchase.Mapper;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using ProductService.Contract.Grpc;
 
 namespace PharmacyService.Api.Application.CQRS.Purchase.Commands;
 
@@ -15,7 +15,7 @@ public record AddItemToPurchaseCommand(
 
 public class AddItemToPurchaseCommandHandler(
     IApplicationDbContext dbContext,
-    ProductService.ProductServiceClient productClient) : IRequestHandler<AddItemToPurchaseCommand, PurchaseResponse>
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productClient) : IRequestHandler<AddItemToPurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(
         AddItemToPurchaseCommand request,
@@ -95,14 +95,14 @@ public class AddItemToPurchaseCommandHandler(
                 Country = (Country)request.Request.Country,
                 Quantity = request.Request.Quantity,
                 PurchaseItemId = newPurchaseItemId,
-                ProductionDate = new Grpc.Contract.Proto.DateOnly
+                ProductionDate = new ProductService.Contract.Grpc.DateOnly
                 {
                     Year = request.Request.ProductionDate.Year,
                     Month = request.Request.ProductionDate.Month,
                     Day = request.Request.ProductionDate.Day
                 },
 
-                ExpiryDate = new Grpc.Contract.Proto.DateOnly
+                ExpiryDate = new ProductService.Contract.Grpc.DateOnly
                 {
                     Year = request.Request.ExpiryDate.Year,
                     Month = request.Request.ExpiryDate.Month,

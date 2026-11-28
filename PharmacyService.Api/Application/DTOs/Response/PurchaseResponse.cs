@@ -1,6 +1,6 @@
 namespace PharmacyService.Api.Application.DTOs.Response;
 
-public class PurchaseResponse
+public record PurchaseResponse
 {
     public long Id { get; init; }
     public decimal TotalAmount { get; init; }

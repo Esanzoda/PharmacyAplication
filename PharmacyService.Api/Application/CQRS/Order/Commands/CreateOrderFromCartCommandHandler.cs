@@ -1,15 +1,15 @@
-using Grpc.Contract.Proto;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.CQRS.Order.Mapper;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using PharmacyService.Api.Domain.Entities;
+using PharmacyService.Api.Domain.Enums;
 using PharmacyService.Api.Services.DeliveryFee;
 using PharmacyService.Api.Services.GoogleMaps;
 using PharmacyService.Contract.Events;
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using ProductService.Contract.Grpc;
 using ClearCartCommand = PharmacyService.Api.Application.CQRS.Cart.Commands.ClearCartCommand;
 
 namespace PharmacyService.Api.Application.CQRS.Order.Commands;
@@ -25,7 +25,7 @@ public class CreatOrderFromCartHandler(
     IPublishEndpoint publishEndpoint,
     IRoutesService routesService,
     IDeliveryFeeByDistance deliveryFeeByDistance,
-    ProductService.ProductServiceClient productClient,
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productClient,
     IGeocodingService geocodingService)
     : IRequestHandler<CreateOrderFromCartCommand, List<OrderResponseForCustomer>>
 {
@@ -218,11 +218,11 @@ public class CreatOrderFromCartHandler(
             {
                 OrderId = order.Id,
                 CustomerId = order.CustomerEntityId,
+                CreatedAt = order.CreatedAt,
+                Address = address,
                 DeliveryFee = deliveryFee,
                 TotalAmount = order.TotalAmount,
                 Email = cart.CustomerEntity.Email,
-                CreatedAt = order.CreatedAt,
-                Address = address
             }, cancellationToken);
         }
 

@@ -22,7 +22,568 @@ namespace Pharmacy.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Base.Domain.RefreshToken", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CartEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("Carts", (string)null);
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CartItemEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CartEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("ProductEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartEntityId");
+
+                    b.HasIndex("CustomerEntityId");
+
+                    b.HasIndex("ProductEntityId");
+
+                    b.ToTable("CartItems", (string)null);
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CategoryEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("CategoryStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CategoryEntity");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ExpiredItemsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ExpiryDateEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductBatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalPurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalSalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiryDateEntityId");
+
+                    b.HasIndex("ProductBatchId");
+
+                    b.ToTable("ExpireDateItems");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ExpiredProductsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalPurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalSalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExpireDateProducts");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeliverId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("DeliveryFee")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderType")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("PicKupTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerEntityId");
+
+                    b.HasIndex("DeliverId");
+
+                    b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderItemBatch", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("OrderItemEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductBatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderItemEntityId");
+
+                    b.ToTable("OrderItemBatches");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderItemEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("OrderEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<long>("ProductEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderEntityId");
+
+                    b.HasIndex("ProductEntityId");
+
+                    b.ToTable("OrderItems", (string)null);
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.PharmacyEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<TimeOnly>("ClosingTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<TimeOnly>("OpeningTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pharmacies");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ProductBatch", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Country")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("ExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly>("ProductionDate")
+                        .HasColumnType("date");
+
+                    b.Property<long>("PurchaseItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("PurchasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalPurchasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductEntityId");
+
+                    b.ToTable("ProductBatch");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ProductEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("CategoryEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ProductType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SalePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryEntityId");
+
+                    b.ToTable("ProductEntity");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.Purchase", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("EmployeeEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SupplierId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeEntityId");
+
+                    b.ToTable("Purchases", (string)null);
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.PurchaseItem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Country")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("ExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateOnly>("ProductionDate")
+                        .HasColumnType("date");
+
+                    b.Property<long>("PurchaseEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("PurchasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseEntityId");
+
+                    b.ToTable("PurchaseItems", (string)null);
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +618,7 @@ namespace Pharmacy.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Base.Domain.User", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,593 +677,25 @@ namespace Pharmacy.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Cart.CartEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.BossPharmacy", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerEntityId")
-                        .IsUnique();
-
-                    b.ToTable("Carts", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Cart.CartItemEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CartEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("ProductEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartEntityId");
-
-                    b.HasIndex("CustomerEntityId");
-
-                    b.HasIndex("ProductEntityId");
-
-                    b.ToTable("CartItems", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Category.CategoryEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("CategoryStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredItemsEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("ExpiryDateEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                    b.HasBaseType("PharmacyService.Api.Domain.Entities.User");
 
                     b.Property<long>("PharmacyId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ProductBatchId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("TotalPurchasePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalSalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExpiryDateEntityId");
-
-                    b.HasIndex("ProductBatchId");
-
-                    b.ToTable("ExpireDateItems");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredProductsEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("TotalPurchasePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalSalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExpireDateProducts");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeliverId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("DeliveryFee")
-                        .HasColumnType("numeric");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("OrderStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrderType")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("PicKupTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerEntityId");
-
-                    b.HasIndex("DeliverId");
-
-                    b.ToTable("Orders", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemBatch", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("OrderItemEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductBatchId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderItemEntityId");
-
-                    b.ToTable("OrderItemBatches");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("OrderEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<long>("ProductEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderEntityId");
-
-                    b.HasIndex("ProductEntityId");
-
-                    b.ToTable("OrderItems", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Pharmacy.PharmacyEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<TimeOnly>("ClosingTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<TimeOnly>("OpeningTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Pharmacies");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductBatch", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("Country")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateOnly>("ExpiryDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateOnly>("ProductionDate")
-                        .HasColumnType("date");
-
-                    b.Property<long>("PurchaseItemId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalPurchasePrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductEntityId");
-
-                    b.ToTable("ProductBatch");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Barcode")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(true)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<long>("CategoryEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ProductType")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryEntityId");
-
-                    b.ToTable("Products", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.PurchaseEntity.Purchase", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("EmployeeEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SupplierId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeEntityId");
-
-                    b.ToTable("Purchases", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.PurchaseEntity.PurchaseItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("Country")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateOnly>("ExpiryDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateOnly>("ProductionDate")
-                        .HasColumnType("date");
-
-                    b.Property<long>("PurchaseEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PurchaseEntityId");
-
-                    b.ToTable("PurchaseItems", (string)null);
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Base.Domain.BossPharmacy", b =>
-                {
-                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
+                    b.ToTable("Users", t =>
+                        {
+                            t.Property("PharmacyId")
+                                .HasColumnName("BossPharmacy_PharmacyId");
+                        });
 
                     b.HasDiscriminator().HasValue("BossPharmacy");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Base.Domain.CompanyEmployee", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CustomerEntity", b =>
                 {
-                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
-
-                    b.HasDiscriminator().HasValue("CompanyEmployee");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Customer.CustomerEntity", b =>
-                {
-                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
+                    b.HasBaseType("PharmacyService.Api.Domain.Entities.User");
 
                     b.Property<decimal>("Latitude")
                         .HasColumnType("numeric");
@@ -713,9 +706,9 @@ namespace Pharmacy.Migrations
                     b.HasDiscriminator().HasValue("CustomerEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Deliver.DeliverEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.DeliverEntity", b =>
                 {
-                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
+                    b.HasBaseType("PharmacyService.Api.Domain.Entities.User");
 
                     b.Property<decimal>("Shot")
                         .HasColumnType("numeric");
@@ -723,9 +716,25 @@ namespace Pharmacy.Migrations
                     b.HasDiscriminator().HasValue("DeliverEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Deliver.Supplier", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.EmployeeEntity", b =>
                 {
-                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
+                    b.HasBaseType("PharmacyService.Api.Domain.Entities.User");
+
+                    b.Property<long>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.HasDiscriminator().HasValue("EmployeeEntity");
+                });
+
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.Supplier", b =>
+                {
+                    b.HasBaseType("PharmacyService.Api.Domain.Entities.User");
 
                     b.Property<string>("VehicleNumber")
                         .IsRequired()
@@ -737,54 +746,32 @@ namespace Pharmacy.Migrations
                     b.HasDiscriminator().HasValue("Supplier");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Employee.EmployeeEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CartEntity", b =>
                 {
-                    b.HasBaseType("Pharmacy.Domain.Models.Base.Domain.User");
-
-                    b.Property<long>("PharmacyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("numeric");
-
-                    b.ToTable("Users", t =>
-                        {
-                            t.Property("PharmacyId")
-                                .HasColumnName("EmployeeEntity_PharmacyId");
-                        });
-
-                    b.HasDiscriminator().HasValue("EmployeeEntity");
-                });
-
-            modelBuilder.Entity("Pharmacy.Domain.Models.Cart.CartEntity", b =>
-                {
-                    b.HasOne("Pharmacy.Domain.Models.Customer.CustomerEntity", "CustomerEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.CustomerEntity", "CustomerEntity")
                         .WithOne("CartEntity")
-                        .HasForeignKey("Pharmacy.Domain.Models.Cart.CartEntity", "CustomerEntityId")
+                        .HasForeignKey("PharmacyService.Api.Domain.Entities.CartEntity", "CustomerEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CustomerEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Cart.CartItemEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CartItemEntity", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Cart.CartEntity", "CartEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.CartEntity", "CartEntity")
                         .WithMany()
                         .HasForeignKey("CartEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pharmacy.Domain.Models.Cart.CartEntity", null)
+                    b.HasOne("PharmacyService.Api.Domain.Entities.CartEntity", null)
                         .WithMany("CartItems")
                         .HasForeignKey("CustomerEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", "ProductEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.ProductEntity", "ProductEntity")
                         .WithMany()
                         .HasForeignKey("ProductEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -795,15 +782,15 @@ namespace Pharmacy.Migrations
                     b.Navigation("ProductEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredItemsEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ExpiredItemsEntity", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Expired.ExpiredProductsEntity", "ExpiredProductsEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.ExpiredProductsEntity", "ExpiredProductsEntity")
                         .WithMany("ExpiryDateItemsList")
                         .HasForeignKey("ExpiryDateEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pharmacy.Domain.Models.Product.ProductBatch", "ProductBatch")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.ProductBatch", "ProductBatch")
                         .WithMany()
                         .HasForeignKey("ProductBatchId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -814,15 +801,15 @@ namespace Pharmacy.Migrations
                     b.Navigation("ProductBatch");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderEntity", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Customer.CustomerEntity", "CustomerEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.CustomerEntity", "CustomerEntity")
                         .WithMany()
                         .HasForeignKey("CustomerEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pharmacy.Domain.Models.Deliver.DeliverEntity", "Deliver")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.DeliverEntity", "Deliver")
                         .WithMany("Orders")
                         .HasForeignKey("DeliverId");
 
@@ -831,53 +818,53 @@ namespace Pharmacy.Migrations
                     b.Navigation("Deliver");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemBatch", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderItemBatch", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Order.OrderItemEntity", null)
+                    b.HasOne("PharmacyService.Api.Domain.Entities.OrderItemEntity", null)
                         .WithMany("OrderItemBatches")
                         .HasForeignKey("OrderItemEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderItemEntity", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Order.OrderEntity", null)
+                    b.HasOne("PharmacyService.Api.Domain.Entities.OrderEntity", null)
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", null)
+                    b.HasOne("PharmacyService.Api.Domain.Entities.ProductEntity", null)
                         .WithMany()
                         .HasForeignKey("ProductEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductBatch", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ProductBatch", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Product.ProductEntity", null)
+                    b.HasOne("PharmacyService.Api.Domain.Entities.ProductEntity", null)
                         .WithMany("ProductBatches")
                         .HasForeignKey("ProductEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ProductEntity", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Category.CategoryEntity", "CategoryEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.CategoryEntity", "CategoryEntity")
                         .WithMany("Products")
                         .HasForeignKey("CategoryEntityId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CategoryEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.PurchaseEntity.Purchase", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.Purchase", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.Employee.EmployeeEntity", "EmployeeEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.EmployeeEntity", "EmployeeEntity")
                         .WithMany()
                         .HasForeignKey("EmployeeEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -886,9 +873,9 @@ namespace Pharmacy.Migrations
                     b.Navigation("EmployeeEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.PurchaseEntity.PurchaseItem", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.PurchaseItem", b =>
                 {
-                    b.HasOne("Pharmacy.Domain.Models.PurchaseEntity.Purchase", "PurchaseEntity")
+                    b.HasOne("PharmacyService.Api.Domain.Entities.Purchase", "PurchaseEntity")
                         .WithMany("PurchaseItems")
                         .HasForeignKey("PurchaseEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -897,48 +884,48 @@ namespace Pharmacy.Migrations
                     b.Navigation("PurchaseEntity");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Cart.CartEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CartEntity", b =>
                 {
                     b.Navigation("CartItems");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Category.CategoryEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CategoryEntity", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Expired.ExpiredProductsEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ExpiredProductsEntity", b =>
                 {
                     b.Navigation("ExpiryDateItemsList");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderEntity", b =>
                 {
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Order.OrderItemEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.OrderItemEntity", b =>
                 {
                     b.Navigation("OrderItemBatches");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Product.ProductEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.ProductEntity", b =>
                 {
                     b.Navigation("ProductBatches");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.PurchaseEntity.Purchase", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.Purchase", b =>
                 {
                     b.Navigation("PurchaseItems");
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Customer.CustomerEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.CustomerEntity", b =>
                 {
                     b.Navigation("CartEntity")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pharmacy.Domain.Models.Deliver.DeliverEntity", b =>
+            modelBuilder.Entity("PharmacyService.Api.Domain.Entities.DeliverEntity", b =>
                 {
                     b.Navigation("Orders");
                 });

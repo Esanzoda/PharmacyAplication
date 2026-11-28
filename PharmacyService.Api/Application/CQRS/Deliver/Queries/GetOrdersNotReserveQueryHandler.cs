@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.CQRS.Deliver.Mapper;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
-using PharmacyService.Domain.Enums;
+using PharmacyService.Api.Domain.Enums;
 
 namespace PharmacyService.Api.Application.CQRS.Deliver.Queries;
 

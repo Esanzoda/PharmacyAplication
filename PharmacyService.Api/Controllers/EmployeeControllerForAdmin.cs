@@ -4,7 +4,7 @@ using PharmacyService.Api.Application.CQRS.Employee.Commands;
 using PharmacyService.Api.Application.CQRS.Employee.Queries;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
-using PharmacyService.Domain.Enums;
+using Position = PharmacyService.Api.Domain.Enums.Position;
 
 namespace PharmacyService.Api.Controllers;
 

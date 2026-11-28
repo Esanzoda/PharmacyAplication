@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using PharmacyService.Domain.Entities;
+using PharmacyService.Api.Domain.Entities;
 
 namespace PharmacyService.Api.Infrastructure.Data;
 
