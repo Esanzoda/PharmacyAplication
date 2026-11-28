@@ -1,0 +1,18 @@
+using ProductService.Api.Domain.Enums;
+
+namespace ProductService.Api.Domain.Entities;
+
+public class ProductBatch : BaseEntity
+{
+    public long PharmacyId { get; set; }
+    public long ProductEntityId { get; set; }
+    public required string Name { get; set; }
+    public CountryEnum Country { get; set; }
+    public int Quantity { get; set; }
+    public long PurchaseItemId { get; set; }
+    public DateOnly ProductionDate { get; set; }
+    public DateOnly ExpiryDate { get; set; }
+    public decimal PurchasePrice { get; set; }
+    public bool IsActive { get; set; }
+    public decimal TotalPurchasePrice { get; set; }
+}

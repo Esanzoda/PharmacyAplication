@@ -1,7 +1,7 @@
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using PharmacyService.Api.Domain.Entities;
+using Role = PharmacyService.Api.Domain.Enums.Role;
 
 namespace PharmacyService.Api.Application.CQRS.Customer.Mapper;
 

@@ -1,7 +1,8 @@
-using Grpc.Contract.Proto;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
-using PharmacyService.Domain.Entities;
+using PharmacyService.Api.Domain.Entities;
+using PharmacyService.Contract.Grpc;
+
 
 namespace PharmacyService.Api.Application.CQRS.Pharmacy.Mapper;
 

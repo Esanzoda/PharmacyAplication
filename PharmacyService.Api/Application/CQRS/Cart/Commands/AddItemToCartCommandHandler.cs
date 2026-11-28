@@ -1,10 +1,10 @@
-using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.CQRS.Cart.Mappers;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using ProductService.Contract.Grpc;
 
 namespace PharmacyService.Api.Application.CQRS.Cart.Commands;
 
@@ -14,7 +14,7 @@ public record AddItemToCartCommand(
 
 public class AddItemToCartCommandHandler(
     IApplicationDbContext dbContext,
-    ProductService.ProductServiceClient productServiceClient) :
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productServiceClient) :
     IRequestHandler<AddItemToCartCommand, CartResponse>
 {
     public async Task<CartResponse> Handle(

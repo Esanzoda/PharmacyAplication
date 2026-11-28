@@ -1,0 +1,116 @@
+syntax = "proto3";
+option csharp_namespace = "ProductService.Contract.Grpc";
+
+service ProductService{
+  rpc GetProducts (ProductGrpcIdsRequest)
+      returns (ProductsGrpcResponseFromProductService);
+  rpc CreateOrder(UpdateStockRequest)
+      returns(CreateOrderResponse);
+  rpc AddProductBatches(ProductBatches)
+      returns(UpdateStockResponse);
+  rpc GetProductWithIdAndPharmacyId(ProductWithIdAndPharmacyIdRequest)
+      returns(ProductGrpcResponse);
+  rpc UpdateProductBatch(AddItemToBatchRequest)
+      returns(UpdateStockResponse);
+  rpc DeleteProductBatchesByPurchaseItemIds(PurchaseItemIdsRequest)
+      returns(UpdateStockResponse);
+  rpc DeleteProductBatchByPurchaseId(PurchaseItemIdRequest)
+      returns(UpdateStockResponse);
+  rpc CheckProductAvailability(CheckProductAvailabilityRequest)
+      returns(ProductGrpcResponse);
+  rpc CancelOrder(CancelOrderRequest)
+      returns(UpdateStockResponse);
+
+}
+message ProductBatchViaGrpcResponse{
+  int64 productId = 1;
+  int64 productBatchId = 2;
+  int32 quantity = 3;
+}
+message CreateOrderResponse{
+  bool success = 1;
+  string message = 2;
+  repeated ProductBatchViaGrpcResponse productBatchResponse = 3;
+}
+message ProductGrpcIdsRequest {
+  repeated int64 productIds = 1;
+}
+message ProductsGrpcResponseFromProductService{
+  repeated ProductGrpcResponse products = 1;
+}
+message ProductGrpcResponse{
+  int64 productId = 1;
+  int64 pharmacyId = 2;
+  int32 stock = 3;
+  double salePrice = 4;
+}
+message ReserveStockResponse {
+  bool success = 1;
+  string message = 2;
+}
+message UpdateStockItem{
+  int64  productId = 1;
+  int32 quantity = 2;
+}
+message UpdateStockRequest{
+  repeated UpdateStockItem orderGrpcRequest = 1;
+}
+message UpdateStockResponse{
+  bool success = 1;
+  string message = 2;
+
+}
+message ProductBatches{
+  repeated AddProductBatch branches = 1;
+}
+message AddProductBatch{
+  int64 pharmacyId = 1;
+  int64 productId = 2;
+  Country country = 3;
+  int32 quantity = 4;
+  int64 purchaseItemId = 5;
+  DateOnly productionDate = 6;
+  DateOnly expiryDate = 7;
+  double purchasePrice = 8;
+  double totalPrice = 9;
+}
+enum Country{
+  Tajikistan = 0;
+  Russia = 1;
+  China = 2;
+  India = 3;
+  Germany = 4;
+}
+message DateOnly{
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}
+message ProductWithIdAndPharmacyIdRequest{
+  int64 id = 1;
+  int64  pharmacyId = 2;
+}
+message AddItemToBatchRequest{
+  int64 productId = 1;
+  int64 purchaseItemId = 2;
+  int32 quantity = 3;
+  double totalPrice = 4;
+}
+message PurchaseItemIdsRequest{
+  repeated int64 purchaseItemId = 1;
+}
+message PurchaseItemIdRequest{
+  int64 purchaseItemId = 1;
+}
+message CheckProductAvailabilityRequest{
+  int64 id = 1;
+  int32 quantity = 2;
+}
+message ProductBatchRequest{
+  int64 productBatchId = 1;
+  int32 quantity = 2;
+}
+
+message CancelOrderRequest{
+  repeated ProductBatchRequest productBatchRequest = 1;
+}

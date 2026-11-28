@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using PharmacyService.Api.Application.Exception;
 using PharmacyService.Api.Services.Password;
-using PharmacyService.Domain.Enums;
+using Role = PharmacyService.Api.Domain.Enums.Role;
 
 namespace PharmacyService.Api.Application.CQRS.Auth.Commands;
 

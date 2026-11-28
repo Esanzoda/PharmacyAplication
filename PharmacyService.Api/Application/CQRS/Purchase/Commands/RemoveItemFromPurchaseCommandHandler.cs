@@ -1,9 +1,9 @@
-using Grpc.Contract.Proto;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PharmacyService.Api.Application.CQRS.Purchase.Mapper;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using ProductService.Contract.Grpc;
 
 namespace PharmacyService.Api.Application.CQRS.Purchase.Commands;
 
@@ -15,7 +15,7 @@ public record RemoveItemFromPurchaseCommand(
 
 public class RemoveItemFromPurchaseCommandHandler(
     IApplicationDbContext dbContext,
-    ProductService.ProductServiceClient productClient)
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productClient)
     : IRequestHandler<RemoveItemFromPurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(

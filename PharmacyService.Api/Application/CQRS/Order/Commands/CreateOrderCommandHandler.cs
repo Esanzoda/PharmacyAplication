@@ -1,4 +1,3 @@
-using Grpc.Contract.Proto;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -6,11 +5,12 @@ using PharmacyService.Api.Application.CQRS.Order.Mapper;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using PharmacyService.Api.Domain.Entities;
+using PharmacyService.Api.Domain.Enums;
 using PharmacyService.Api.Services.DeliveryFee;
 using PharmacyService.Api.Services.GoogleMaps;
 using PharmacyService.Contract.Events;
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using ProductService.Contract.Grpc;
 
 namespace PharmacyService.Api.Application.CQRS.Order.Commands;
 
@@ -24,7 +24,7 @@ public class CreateOrderCommandHandler(
     IApplicationDbContext dbContext,
     IRoutesService routesService,
     IDeliveryFeeByDistance deliveryFeeByDistance,
-    ProductService.ProductServiceClient productClient,
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productClient,
     IGeocodingService geocodingService)
     : IRequestHandler<CreateOrderCommand, List<OrderResponseForCustomer>>
 {
@@ -214,6 +214,7 @@ public class CreateOrderCommandHandler(
                 {
                     OrderId = order.Id,
                     CustomerId = order.CustomerEntityId,
+                    CreatedAt = DateTime.UtcNow,
                     Address = customer.Address,
                     DeliveryFee = deliveryFee,
                     TotalAmount = order.TotalAmount,

@@ -4,10 +4,10 @@ using PharmacyService.Api.Application.CQRS.Pharmacy.Mapper;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using PharmacyService.Api.Domain.Entities;
 using PharmacyService.Api.Services.GoogleMaps;
 using PharmacyService.Api.Services.Password;
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using Role = PharmacyService.Api.Domain.Enums.Role;
 
 namespace PharmacyService.Api.Application.CQRS.Pharmacy.Commands;
 

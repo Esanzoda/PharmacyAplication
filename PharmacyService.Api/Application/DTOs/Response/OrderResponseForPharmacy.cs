@@ -1,5 +1,5 @@
-using PharmacyService.Domain.Entities;
-using PharmacyService.Domain.Enums;
+using PharmacyService.Api.Domain.Entities;
+using PharmacyService.Api.Domain.Enums;
 
 namespace PharmacyService.Api.Application.DTOs.Response;
 

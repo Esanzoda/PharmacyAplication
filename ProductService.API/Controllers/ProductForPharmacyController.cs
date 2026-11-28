@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ProductService.Application.CQRS.Product.Commands;
-using ProductService.Application.CQRS.Product.Queries;
-using ProductService.Application.DTOs.Request;
-using ProductService.Application.DTOs.Response;
-using ProductServiceDomain.Enums;
+using ProductService.Api.Application.CQRS.Product.Commands;
+using ProductService.Api.Application.CQRS.Product.Queries;
+using ProductService.Api.Application.DTOs.Request;
+using ProductService.Api.Application.DTOs.Response;
+using ProductService.Api.Domain.Enums;
 
-namespace ProductService.Controllers;
+namespace ProductService.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

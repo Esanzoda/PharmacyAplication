@@ -4,8 +4,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PharmacyService.Api.Domain.Entities;
 using PharmacyService.Api.Setting;
-using PharmacyService.Domain.Entities;
 
 namespace PharmacyService.Api.Services.Auth;
 

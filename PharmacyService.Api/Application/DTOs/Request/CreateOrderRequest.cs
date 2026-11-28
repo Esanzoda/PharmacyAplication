@@ -1,4 +1,4 @@
-using PharmacyService.Domain.Enums;
+using PharmacyService.Api.Domain.Enums;
 
 namespace PharmacyService.Api.Application.DTOs.Request;
 

@@ -1,0 +1,155 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PharmacyService.Contract.Enums;
+using ProductService.ApiClient.Clients.IProductApi;
+using ProductService.Contract.Request;
+using ProductService.Contract.Response;
+using CountryEnum = ProductService.Contract.Enums.CountryEnum;
+
+namespace GatewayService.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]/[action]")]
+[Authorize(Roles = nameof(Position.AdminPharmacy) + nameof(Position.ManagerPharmacy) +
+                   nameof(Role.BossPharmacy))]
+public class ProductForAdminController(IProductForPharmacy productForAdminEndpoint) : ControllerBase
+{
+    [HttpPost]
+    public async Task<ActionResult<ProductForPharmacyResponse>> Add(
+        [FromBody] ProductRequest request, long pharmacyId)
+    {
+        var response = await productForAdminEndpoint.Add(pharmacyId, request);
+        return Ok(response);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<ProductForPharmacyResponse>> Update(
+        long id,
+        [FromBody] UpdateProductRequest request,
+        long pharmacyId)
+    {
+        var response = await productForAdminEndpoint.Update(pharmacyId, id, request);
+        return Ok(response);
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<string>> DeleteById(long id, long pharmacyId)
+    {
+        var response = await productForAdminEndpoint.DeleteById(id, pharmacyId);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ProductForPharmacyResponse>> GetById(
+        long id,
+        long pharmacyId)
+    {
+        var response = await productForAdminEndpoint.GetById(id, pharmacyId);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetAll(
+        long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetAll(pharmacyId, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ProductForPharmacyResponse>> GetByBarcode(
+        long pharmacyId,
+        string barcode)
+    {
+        var response = await productForAdminEndpoint.GetByBarcode(pharmacyId, barcode);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetByName(
+        long pharmacyId,
+        string name,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetByName(pharmacyId, name, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetByCategory(
+        long pharmacyId,
+        long categoryId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetByCategory(pharmacyId, categoryId, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetOutOfStockAsync(
+        long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetOutOfStock(pharmacyId, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetLowOfStockAsync(
+        long pharmacyId,
+        int minimumQuantity,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetLowOfStock(pharmacyId, minimumQuantity, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetByPurchasePriceAsync(
+        long pharmacyId,
+        decimal price,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetByPurchasePrice(pharmacyId, price, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetByOrderPrice(
+        long pharmacyId,
+        decimal price,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetByOrderPrice(pharmacyId, price, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductForPharmacyResponse>>> GetByCountry(
+        long pharmacyId,
+        CountryEnum country,
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        var response =
+            await productForAdminEndpoint.GetByCountry(pharmacyId, country, paginationRequest);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<ExpiredResponse>>> GetExpiredProducts(long pharmacyId,
+        [FromQuery] PaginationRequest paginationRequest
+    )
+    {
+        var response = await productForAdminEndpoint.GetExpiredProducts(pharmacyId,
+            paginationRequest);
+        return Ok(response);
+    }
+}

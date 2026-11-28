@@ -1,0 +1,49 @@
+using PharmacyService.Contract.Enums;
+using PharmacyService.Contract.Request;
+using PharmacyService.Contract.Response;
+using Refit;
+
+namespace PharmacyService.ApiClient.Clients.IPharmacyApi;
+
+public interface IOrderEndpoint
+{
+    [Post("/api/Order/Create")]
+    Task<List<OrderResponseForCustomer>> Create(
+        long customerId,
+        [Body] CreateOrderRequest request,
+        string? newCustomerAddress);
+
+    [Post("/api/Order/CreateFromCart")]
+    Task<List<OrderResponseForCustomer>> CreateFromCart(
+        long customerId,
+        OrderType orderType,
+        string? newCustomerAddress);
+
+    [Put("/api/Order/CancelOrder")]
+    Task<OrderResponseForCustomer> CancelOrder(
+        long customerId,
+        string customerEmail,
+        long orderId);
+
+    [Get("/api/Order/GetInfo")]
+    Task<OrderResponseForCustomer> GetInfo(
+        long customerId,
+        long id);
+
+    [Get("/api/Order/GetAll")]
+    Task<List<OrderResponseForCustomer>> GetAll(
+        long customerId,
+        [Query] PaginationRequest paginationRequest);
+
+    [Get("/api/Order/GetByStatus")]
+    Task<List<OrderResponseForCustomer>> GetByStatus(
+        long customerId,
+        OrderStatus status,
+        [Query] PaginationRequest paginationRequest);
+
+    [Delete("/api/Order/RemoveItem")]
+    Task<OrderResponseForCustomer> RemoveItem(
+        long customerId,
+        long orderId,
+        long orderItemId);
+}

@@ -1,0 +1,15 @@
+using PharmacyService.Contract.Enums;
+
+namespace PharmacyService.Contract.Response;
+
+public record PurchaseItemResponse
+{
+    public long Id { get; init; }
+    public long PharmacyId { get; init; }
+    public long PurchaseEntityId { get; init; }
+    public long ProductEntityId { get; init; }
+    public decimal PurchasePrice { get; init; }
+    public CountryEnum Country { get; init; }
+    public int Quantity { get; init; }
+    public decimal TotalPrice { get; init; }
+}

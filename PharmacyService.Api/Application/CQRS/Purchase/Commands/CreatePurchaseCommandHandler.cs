@@ -1,9 +1,9 @@
-using Grpc.Contract.Proto;
 using MediatR;
 using PharmacyService.Api.Application.CQRS.Purchase.Mapper;
 using PharmacyService.Api.Application.DTOs.Request;
 using PharmacyService.Api.Application.DTOs.Response;
 using PharmacyService.Api.Application.Exception;
+using ProductService.Contract.Grpc;
 
 namespace PharmacyService.Api.Application.CQRS.Purchase.Commands;
 
@@ -14,7 +14,7 @@ public record CreatePurchaseCommand(
 
 public class CreatePurchaseCommandHandler(
     IApplicationDbContext dbContext,
-    ProductService.ProductServiceClient productClient) : IRequestHandler<CreatePurchaseCommand, PurchaseResponse>
+    ProductService.Contract.Grpc.ProductService.ProductServiceClient productClient) : IRequestHandler<CreatePurchaseCommand, PurchaseResponse>
 {
     public async Task<PurchaseResponse> Handle(
         CreatePurchaseCommand request,
@@ -78,14 +78,14 @@ public class CreatePurchaseCommandHandler(
                 Country = (Country)item.Country,
                 Quantity = item.Quantity,
                 PurchaseItemId = item.Id,
-                ProductionDate = new Grpc.Contract.Proto.DateOnly
+                ProductionDate = new ProductService.Contract.Grpc.DateOnly
                 {
                     Year = item.ProductionDate.Year,
                     Month = item.ProductionDate.Month,
                     Day = item.ProductionDate.Day
                 },
 
-                ExpiryDate = new Grpc.Contract.Proto.DateOnly
+                ExpiryDate = new ProductService.Contract.Grpc.DateOnly
                 {
                     Year = item.ExpiryDate.Year,
                     Month = item.ExpiryDate.Month,
